@@ -16,12 +16,12 @@ The API could then be used to develop Renku and Moodle integration plugin and th
 
 ## Objectives
 The final integration should allow:
-    - project creation
-    - group management
-    - students participation analysis
-    - project due date addition to the calendar
-    - grade and feedbacks visualisation
-    - bidirectional synchronization of course documents with a repository
+- project creation
+- group management
+- students participation analysis
+- project due date addition to the calendar
+- grade and feedbacks visualisation
+- bidirectional synchronization of course documents with a repository
 
 Additional requirements:
 - The API should support multiple Git repository hosting services
