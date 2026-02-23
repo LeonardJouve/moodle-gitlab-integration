@@ -25,6 +25,7 @@ To achieve it, we must:
 - Evaluate and identify most suitable technologies for the implementation
 - Analyze possibilities and limitations with the GitLab and Moodle APIs
 - Design the system architecture of the solution
+- Publish the code repository as open source on Github
 - Develop the integration between Moodle and Gitlab
 - Validate and test with representative users
 - Analyze test results and improve solution accordingly
@@ -54,6 +55,8 @@ This project should provide an integration for any Git repository hosting servic
 The setup of the plugin should be easy and intuitive.
 
 It should help teachers as well as students with their organisation, documents / informations centralization and automate / simplify tedious workflows.
+
+It should be released as open source to allow others to access, use, and build upon the work.
 
 ## Sources
 
