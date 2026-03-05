@@ -1,0 +1,1 @@
+Simplified Moodle for development [fork](https://github.com/LeonardJouve/moodle-docker) on docker
