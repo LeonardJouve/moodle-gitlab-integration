@@ -7,6 +7,8 @@ Moodle plugins to overview:
 - https://moodle.org/plugins/local_myddleware
 - https://moodle.org/plugins/mod_board
 - https://moodle.org/plugins/local_mc_plugin
+- https://github.com/andresmrg/local_coursetocal
+- https://github.com/danpoltawski/moodle-repository_github
 
 Existing solutions:
 - https://www.zohoflow.com/en-ca/apps/canvas-lms/integrations/gitlab simple closed source premium integration

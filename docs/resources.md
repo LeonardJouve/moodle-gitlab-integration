@@ -1,0 +1,8 @@
+- https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/api/openapi/openapi_v3.yaml?ref_type=heads
+- https://github.com/GitLabPHP/Client
+- https://gitlab.com/lauraschauer/canvas-gitlab-public
+- https://gitlab.com/robstewart57/gitlab-haskell
+- https://github.com/classmoji/classmoji/blob/main/docs/APPLICATION_GUIDE.md
+- https://moodle.academy/
+- https://docs.moodle.org/dev/Main_Page
+- https://github.com/heig-lherman/gaps-cli
