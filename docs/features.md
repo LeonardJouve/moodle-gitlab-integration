@@ -1,4 +1,4 @@
-Graded in priority from *1* to *4*:
+Graded with priorities from *1* to *4*:
 - *1* = highest priority
 - *4* = lowest priority
 
