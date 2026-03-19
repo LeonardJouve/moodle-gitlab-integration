@@ -19,14 +19,14 @@ Graded with priorities from *1* to *4*:
     - assign reviewer
 - Group list | *1*
 - Direct access to repo | *1*
-- Commits participations / lines | *2*
 - CI jobs results | *1*
+- Commits participations / lines | *2*
 - Download source button | *2*
 - Status (graded / non-graded) | *1*
 
 ### Student Dashboard
 - Join group => init group repo | *1*
-    - Automatically add project due date to Moodle calendar | 1
+    - Automatically add project due date to Moodle calendar | *1*
 - Link to repo | *1*
 - Grade / feedbacks (from MR) | *1*
     - Notification after grading | *2*
