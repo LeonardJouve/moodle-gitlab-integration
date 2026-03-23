@@ -23,13 +23,25 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
-$string['modulename'] = 'gitlab';
-$string['modulenameplural'] = 'gitlab';
-$string['pluginname'] = 'gitlab';
-$string['gitlabname'] = 'gitlab';
-$string['gitlabsettings'] = 'gitlab';
-$string['gitlabname'] = 'gitlab';
-$string['gitlabfieldset'] = 'gitlab';
-$string['gitlabname_help'] = 'Help';
+$capabilities = array(
+    'mod/gitlab:view' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'guest' => CAP_ALLOW,
+            'user' => CAP_ALLOW,
+        )
+    ),
+    'mod/gitlab:addinstance' => array(
+        'riskbitmask' => RISK_XSS,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
+        'clonepermissionsfrom' => 'moodle/course:manageactivities'
+    ),
+);
