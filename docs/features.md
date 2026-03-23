@@ -84,6 +84,8 @@ After the practical work due date, the template `solution` branch is published w
 
 Some custom integrations could be done with internal HES-SO tools `Gaps` and `Eval` but are to be determined.
 
+Another possible integration would be with a grade assessments plateform such as `Gradescope` or `ANS`, but it means an integration with a proprietary plateform which could diverge based on teachers preferences.
+
 ### Features list
 
 Graded with priorities from *1* to *4*:
