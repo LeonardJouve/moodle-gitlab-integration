@@ -6,3 +6,5 @@
 - https://moodle.academy/
 - https://docs.moodle.org/dev/Main_Page
 - https://github.com/heig-lherman/gaps-cli
+- https://gitlab.fhnw.ch/gitlab-tools/gitlab-tools
+- https://dl.acm.org/doi/epdf/10.1145/3639474.3640056
