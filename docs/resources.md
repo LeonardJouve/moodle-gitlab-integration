@@ -2,7 +2,6 @@
 - https://moodle.academy/
 - https://docs.moodle.org/dev/Main_Page
 - https://github.com/heig-lherman/gaps-cli
-- https://dl.acm.org/doi/epdf/10.1145/3639474.3640056
 - https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/api/openapi/openapi_v3.yaml?ref_type=heads
 - https://github.com/GitLabPHP/Client
 - https://gitlab.com/robstewart57/gitlab-haskell
