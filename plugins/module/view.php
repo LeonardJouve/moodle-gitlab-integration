@@ -56,8 +56,9 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
+$client = new gitlab($moduleinstance->token);
+
 if ($action === 'createrepository') {
-    $client = new gitlab($moduleinstance->token);
     $client->create_repository($moduleinstance->name . "_" . $USER->username . "_" . bin2hex(random_bytes(8)), $moduleinstance->group_id);
 
     redirect(
@@ -78,5 +79,11 @@ echo html_writer::link(
     'Create GitLab Repository',
     ['class' => 'btn btn-primary']
 );
+
+$repositories = $client->list_repositories($moduleinstance->group_id);
+foreach ($data as $project) {
+    echo $project['name'];
+    echo $project['web_url'];
+}
 
 echo $OUTPUT->footer();

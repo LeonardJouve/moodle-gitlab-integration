@@ -55,6 +55,16 @@ class gitlab {
         return @json_decode($this->curl->post(gitlab::BASE_URL . $endpoint, json_encode($data)));
     }
 
+    private function get(string $endpoint) {
+        $this->curl->setHeader([
+            'Accept: application/json',
+            'PRIVATE-TOKEN: ' . $this->token,
+        ]);
+
+        return @json_decode($this->curl->get(gitlab::BASE_URL . $endpoint));
+    }
+
+
     public function create_group(string $name) {
         $data = [
             'name' => $name,
@@ -71,5 +81,9 @@ class gitlab {
         ];
 
         return $this->post("/projects", $data);
+    }
+
+    public function list_repositories(int $group_id) {
+        return $this->get("/groups/" . $group_id . "/projects");
     }
 }
