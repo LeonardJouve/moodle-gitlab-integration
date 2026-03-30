@@ -66,7 +66,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
         $mform->addElement('header', 'gitlabfieldset', get_string('gitlabfieldset', 'mod_gitlab'));
 
         $mform->addElement('text', 'token', get_string('token', 'mod_gitlab'), ['size' => '64']);
-        $mform->setType('token', PARAM_ALPHANUMEXT);
+        $mform->setType('token', PARAM_TEXT);
         $mform->addRule('token', null, 'required', null, 'client');
         $mform->addHelpButton('token', 'token', 'mod_gitlab');
 
