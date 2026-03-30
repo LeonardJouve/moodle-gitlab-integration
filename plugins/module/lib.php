@@ -18,7 +18,7 @@
  * Library of interface functions and constants.
  *
  * @package     mod_gitlab
- * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
+ * @copyright   2026 Léonard Jouve <leonard.jouve@gmail.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -94,4 +94,68 @@ function gitlab_delete_instance($id) {
     $DB->delete_records('gitlab', ['id' => $id]);
 
     return true;
+}
+
+/**
+ * Returns the lists of all browsable file areas within the given module context.
+ *
+ * The file area 'intro' for the activity introduction field is added automatically
+ * by {@see file_browser::get_file_info_context_module()}.
+ *
+ * @package     mod_gitlab
+ * @category    files
+ *
+ * @param stdClass $course
+ * @param stdClass $cm
+ * @param stdClass $context
+ * @return string[].
+ */
+function gitlab_get_file_areas($course, $cm, $context) {
+    return [];
+}
+
+/**
+ * File browsing support for mod_gitlab file areas.
+ *
+ * @package     mod_gitlab
+ * @category    files
+ *
+ * @param file_browser $browser
+ * @param array $areas
+ * @param stdClass $course
+ * @param stdClass $cm
+ * @param stdClass $context
+ * @param string $filearea
+ * @param int $itemid
+ * @param string $filepath
+ * @param string $filename
+ * @return file_info Instance or null if not found.
+ */
+function gitlab_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
+    return null;
+}
+
+/**
+ * Serves the files from the mod_gitlab file areas.
+ *
+ * @package     mod_gitlab
+ * @category    files
+ *
+ * @param stdClass $course The course object.
+ * @param stdClass $cm The course module object.
+ * @param stdClass $context The mod_gitlab's context.
+ * @param string $filearea The name of the file area.
+ * @param array $args Extra arguments (itemid, path).
+ * @param bool $forcedownload Whether or not force download.
+ * @param array $options Additional options affecting the file serving.
+ */
+function gitlab_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, $options = []) {
+    global $DB, $CFG;
+
+    if ($context->contextlevel != CONTEXT_MODULE) {
+        send_file_not_found();
+    }
+
+    require_login($course, true, $cm);
+    send_file_not_found();
 }

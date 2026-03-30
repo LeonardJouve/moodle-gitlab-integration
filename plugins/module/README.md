@@ -1,4 +1,4 @@
-# gitlab #
+# gitlab-integration #
 
 TO-DO Describe the plugin shortly here.
 
@@ -29,7 +29,7 @@ to complete the installation from the command line.
 
 ## License ##
 
-2026 Léonard Jouve leonard.jouve@gmail.com
+2026 Léonard Jouve <leonard.jouve@gmail.com>
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software

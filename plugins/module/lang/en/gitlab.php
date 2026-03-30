@@ -19,15 +19,15 @@
  *
  * @package     mod_gitlab
  * @category    string
- * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
+ * @copyright   2026 Léonard Jouve <leonard.jouve@gmail.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'gitlab';
 $string['modulename'] = 'gitlab';
 $string['modulenameplural'] = 'gitlab';
+$string['pluginname'] = 'gitlab';
 $string['gitlabname'] = 'gitlab';
 $string['gitlabsettings'] = 'gitlab';
 $string['gitlabname'] = 'gitlab';
