@@ -25,11 +25,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'gitlab';
+$string['gitlabfieldset'] = 'gitlab';
+$string['gitlabname'] = 'gitlab';
+$string['gitlabname_help'] = 'Help';
+$string['gitlabsettings'] = 'gitlab';
 $string['modulename'] = 'gitlab';
 $string['modulenameplural'] = 'gitlab';
-$string['gitlabname'] = 'gitlab';
-$string['gitlabsettings'] = 'gitlab';
-$string['gitlabname'] = 'gitlab';
-$string['gitlabfieldset'] = 'gitlab';
-$string['gitlabname_help'] = 'Help';
+$string['pluginname'] = 'gitlab';
