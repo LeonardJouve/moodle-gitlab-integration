@@ -28,7 +28,7 @@
  *
  * @param int $oldversion Version number the plugin is being upgraded from.
  */
-function xmldb_local_greetings_upgrade($oldversion) {
+function xmldb_gitlab_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
 
