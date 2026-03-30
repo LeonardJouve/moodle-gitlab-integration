@@ -81,9 +81,20 @@ echo html_writer::link(
 );
 
 $repositories = $client->list_repositories($moduleinstance->group_id);
-foreach ($data as $project) {
-    echo $project['name'];
-    echo $project['web_url'];
+
+echo html_writer::start_tag('ul');
+
+foreach ($repositories as $repository) {
+    echo html_writer::tag(
+        'li',
+        html_writer::link(
+            $repository->web_url,
+            format_string($repository->name),
+            ['target' => '_blank']
+        )
+    );
 }
+
+echo html_writer::end_tag('ul');
 
 echo $OUTPUT->footer();
