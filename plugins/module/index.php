@@ -18,13 +18,17 @@
  * Display information about all the mod_gitlab modules in the requested course.
  *
  * @package     mod_gitlab
- * @copyright   2026 Léonard Jouve <leonard.jouve@gmail.com>
+ * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require(__DIR__ . '/../../config.php');
 
 require_once(__DIR__ . '/lib.php');
+
+use core\output\html_writer;
+use core_table\output\html_table;
+use core\url;
 
 $id = required_param('id', PARAM_INT);
 
@@ -52,7 +56,7 @@ echo $OUTPUT->heading($modulenameplural);
 $gitlabs = get_all_instances_in_course('gitlab', $course);
 
 if (empty($gitlabs)) {
-    notice(get_string('no$gitlabinstances', 'mod_gitlab'), new moodle_url('/course/view.php', ['id' => $course->id]));
+    notice(get_string('no$gitlabinstances', 'mod_gitlab'), new url('/course/view.php', ['id' => $course->id]));
 }
 
 $table = new html_table();
@@ -61,7 +65,7 @@ $table->attributes['class'] = 'generaltable mod_index';
 if ($course->format == 'weeks') {
     $table->head  = [get_string('week'), get_string('name')];
     $table->align = ['center', 'left'];
-} else if ($course->format == 'topics') {
+} elseif ($course->format == 'topics') {
     $table->head  = [get_string('topic'), get_string('name')];
     $table->align = ['center', 'left', 'left', 'left'];
 } else {
@@ -72,13 +76,13 @@ if ($course->format == 'weeks') {
 foreach ($gitlabs as $gitlab) {
     if (!$gitlab->visible) {
         $link = html_writer::link(
-            new moodle_url('/mod/gitlab/view.php', ['id' => $gitlab->coursemodule]),
+            new url('/mod/gitlab/view.php', ['id' => $gitlab->coursemodule]),
             format_string($gitlab->name, true),
             ['class' => 'dimmed']
         );
     } else {
         $link = html_writer::link(
-            new moodle_url('/mod/gitlab/view.php', ['id' => $gitlab->coursemodule]),
+            new url('/mod/gitlab/view.php', ['id' => $gitlab->coursemodule]),
             format_string($gitlab->name, true)
         );
     }
