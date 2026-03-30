@@ -31,6 +31,7 @@ $string['gitlabname_help'] = 'Help';
 $string['gitlabsettings'] = 'gitlab';
 $string['modulename'] = 'gitlab';
 $string['modulenameplural'] = 'gitlab';
+$string['pluginadministration'] = 'administration';
 $string['pluginname'] = 'gitlab';
 $string['token_help'] = 'Gitlab token';
 $string['token'] = 'Token';

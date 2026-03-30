@@ -45,14 +45,6 @@ require_login($course, true, $cm);
 
 $modulecontext = context_module::instance($cm->id);
 
-$event = \mod_gitlab\event\course_module_viewed::create([
-    'objectid' => $moduleinstance->id,
-    'context' => $modulecontext,
-]);
-$event->add_record_snapshot('course', $course);
-$event->add_record_snapshot('gitlab', $moduleinstance);
-$event->trigger();
-
 $PAGE->set_url('/mod/gitlab/view.php', ['id' => $cm->id]);
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
