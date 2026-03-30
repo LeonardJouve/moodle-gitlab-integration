@@ -18,7 +18,7 @@
  * The main mod_gitlab configuration form.
  *
  * @package     mod_gitlab
- * @copyright   2026 Léonard Jouve <leonard.jouve@gmail.com>
+ * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ require_once($CFG->dirroot . '/course/moodleform_mod.php');
  * Module instance settings form.
  *
  * @package     mod_gitlab
- * @copyright   2026 Léonard Jouve <leonard.jouve@gmail.com>
+ * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_gitlab_mod_form extends moodleform_mod {
