@@ -22,6 +22,10 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\output\html_writer;
+use core\url;
+use mod_gitlab\http\gitlab;
+
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 
@@ -30,6 +34,8 @@ $id = optional_param('id', 0, PARAM_INT);
 
 // Activity instance id.
 $g = optional_param('g', 0, PARAM_INT);
+
+$action = optional_param('action', '', PARAM_ALPHA);
 
 if ($id) {
     $cm = get_coursemodule_from_id('gitlab', $id, 0, false, MUST_EXIST);
@@ -50,6 +56,27 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
+if ($action === 'createrepository') {
+    $client = new gitlab($moduleinstance->token);
+    $client->create_repository($moduleinstance->name . "_" . $USER->username . "_" . bin2hex(random_bytes(8)), $moduleinstance->group_id);
+
+    redirect(
+        new url('/mod/gitlab/view.php', ['id' => $cm->id]),
+        'Repository created!'
+    );
+}
+
 echo $OUTPUT->header();
+
+$url = new url('/mod/gitlab/view.php', [
+    'id' => $cm->id,
+    'action' => 'createrepository'
+]);
+
+echo html_writer::link(
+    $url,
+    'Create GitLab Repository',
+    ['class' => 'btn btn-primary']
+);
 
 echo $OUTPUT->footer();

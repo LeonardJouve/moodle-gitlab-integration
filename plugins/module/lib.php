@@ -55,9 +55,10 @@ function gitlab_add_instance($moduleinstance, $mform = null) {
 
     $client = new gitlab($moduleinstance->token);
 
-    // $group_id = $client->create_group($moduleinstance->name)->id;
+    // $moduleinstance->group_id = $client->create_group($moduleinstance->name)->id;
+    $moduleinstance->group_id = 128333288;
 
-    $client->create_repository($moduleinstance->name, 128333288/* $group_id */);
+    $client->create_repository($moduleinstance->name, $moduleinstance->group_id);
 
     $moduleinstance->timecreated = time();
 
