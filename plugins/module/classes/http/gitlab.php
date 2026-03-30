@@ -36,7 +36,7 @@ require_once($CFG->libdir . '/filelib.php');
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class gitlab {
-    private const BASE_URL = 'https://gitlab.com';
+    private const BASE_URL = 'https://gitlab.com/api/v4';
     private \curl $curl;
     private string $token;
 
@@ -46,17 +46,16 @@ class gitlab {
     }
 
     private function post(string $endpoint, $data) {
-        $options = [
-            'CURLOPT_HTTPHEADER' => [
-                'PRIVATE-TOKEN: ' . $this->token,
-                'Accept: application/json',
-            ],
-        ];
+        $this->curl->setHeader([
+            'Content-type: application/json',
+            'Accept: application/json',
+            'PRIVATE-TOKEN: ' . $this->token,
+        ]);
 
-        return @json_decode($this->curl->post(gitlab::BASE_URL . $endpoint, $data, $options));
+        return @json_decode($this->curl->post(gitlab::BASE_URL . $endpoint, json_encode($data)));
     }
 
-    public function createGroup(string $name) {
+    public function create_group(string $name) {
         $data = [
             'name' => $name,
             'path' => strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '-', $name), '-')),
@@ -65,7 +64,7 @@ class gitlab {
         return $this->post("/groups", $data);
     }
 
-    public function createRepository(string $name, int $group_id) {
+    public function create_repository(string $name, int $group_id) {
         $data = [
             'name' => $name,
             'namespace_id' => $group_id,

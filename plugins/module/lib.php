@@ -53,12 +53,11 @@ function gitlab_supports($feature) {
 function gitlab_add_instance($moduleinstance, $mform = null) {
     global $DB;
 
-    debugging(print_r($mform, true));
-    debugging(print_r($moduleinstance, true));
+    $client = new gitlab($moduleinstance->token);
 
-    // $client = new gitlab($token);
+    $group_id = $client->create_group($moduleinstance->name)->id;
 
-    // $client->createGroup("moooooooooodle");
+    $client->create_repository($moduleinstance->name, $group_id);
 
     $moduleinstance->timecreated = time();
 
