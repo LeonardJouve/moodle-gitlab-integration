@@ -1,11 +1,12 @@
 name: Deploy
 on:
   push:
-    branches:
-      - "**"
+    tags:
+      - "v*"
 
 jobs:
-  build:
+  deploy:
+    if: github.event.base_ref == 'refs/heads/main'
     name: Update
     runs-on: ubuntu-latest
     steps:
