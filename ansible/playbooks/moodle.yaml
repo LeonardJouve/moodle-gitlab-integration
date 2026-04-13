@@ -30,6 +30,16 @@
         src: docker/moodle.yaml
         dest: "{{ moodle_dir }}/docker-compose.override.yml"
 
+    - name: Copy update script file from local
+      copy:
+        src: res/update.sh
+        dest: "{{ moodle_dir }}/update.sh"
+
+    - name: Make script executable
+      file:
+        path: "{{ moodle_dir }}/update.sh"
+        mode: "0755"
+
     - name: Check if env exists
       stat:
         path: "{{ moodle_dir }}/.env"
