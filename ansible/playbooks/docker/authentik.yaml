@@ -21,6 +21,7 @@ services:
     volumes:
       - database:/var/lib/postgresql/data
   server:
+    container_name: authentik-server
     command: server
     networks:
       - proxy
@@ -35,16 +36,17 @@ services:
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
-      AUTHENTIK_EXTERNAL_URL: ${AUTHENTIK_EXTERNAL_URL:?external url required}
+      AUTHENTIK_EXTERNAL_URL: ${AUTHENTIK_EXTERNAL_URL}
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2026.2.2}
     restart: unless-stopped
     shm_size: 512mb
     volumes:
       - ./data:/data
       - ./custom-templates:/templates
+      - ./blueprints:/blueprints
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.authentik.rule=Host(`${AUTHENTIK_EXTERNAL_HOST:?external host required}`)"
+      - "traefik.http.routers.authentik.rule=Host(`${AUTHENTIK_EXTERNAL_HOST}`)"
       - "traefik.http.routers.authentik.entrypoints=web"
       - "traefik.http.services.authentik.loadbalancer.server.port=9000"
   worker:

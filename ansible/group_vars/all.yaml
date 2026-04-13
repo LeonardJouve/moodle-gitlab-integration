@@ -1,2 +1,3 @@
 authentik_external_url: "http://localhost"
-authentik_host: "localhost"
+authentik_external_host: "localhost"
+moodle_external_host: "localhost"

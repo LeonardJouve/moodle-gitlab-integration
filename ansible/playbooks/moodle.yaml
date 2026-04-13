@@ -1,0 +1,61 @@
+- name: Deploy Moodle
+  hosts: dev
+  become: true
+
+  vars:
+    moodle_dir: /opt/moodle
+
+  tasks:
+    - name: Install git
+      apt:
+        name: git
+        state: present
+        update_cache: yes
+
+    - name: Clone repository
+      git:
+        repo: "https://github.com/LeonardJouve/moodle-docker.git"
+        dest: "{{ moodle_dir }}"
+        version: main
+        recursive: yes
+
+    - name: Clone repository
+      git:
+        repo: "https://github.com/LeonardJouve/moodle-gitlab-integration.git"
+        dest: "{{ moodle_dir }}/moodle-gitlab-integration"
+        version: main
+
+    - name: Copy compose file from local
+      copy:
+        src: docker/moodle.yaml
+        dest: "{{ moodle_dir }}/docker-compose.override.yml"
+
+    - name: Check if env exists
+      stat:
+        path: "{{ moodle_dir }}/.env"
+      register: env_file
+
+    - name: Generate secrets
+      set_fact:
+        db_password: "{{ lookup('ansible.builtin.pipe', 'openssl rand -base64 36 | tr -d \"\\n\"') }}"
+      when: not env_file.stat.exists
+
+    - name: Create env file
+      copy:
+        dest: "{{ moodle_dir }}/.env"
+        content: |
+          DB_USER=moodle
+          DB_NAME=moodle
+          DB_PASSWORD={{ db_password }}
+          DB_PORT=8765
+          WEB_HOST={{ moodle_external_host }}
+          WEB_PORT=9876
+      when: not env_file.stat.exists
+
+    - name: Start stack with Docker Compose
+      community.docker.docker_compose_v2:
+        project_src: "{{ moodle_dir }}"
+        files:
+          - docker-compose.yml
+          - docker-compose.override.yml
+        state: present

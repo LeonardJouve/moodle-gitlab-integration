@@ -1,0 +1,30 @@
+services:
+  webserver:
+    volumes:
+      - "./moodle-gitlab-integration/plugins/module:/var/www/html/public/mod/gitlab"
+    networks:
+      - proxy
+    environment:
+      MOODLE_DOCKER_WEB_PORT: ""
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.moodle.rule=Host(`${WEB_HOST}`)"
+      - "traefik.http.routers.moodle.entrypoints=web"
+      - "traefik.http.services.moodle.loadbalancer.server.port=80"
+  db:
+    networks:
+      - proxy
+  mailpit:
+    networks:
+      - proxy
+  exttests:
+    networks:
+      - proxy
+  selenium:
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    external: true

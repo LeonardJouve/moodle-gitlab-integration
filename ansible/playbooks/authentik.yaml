@@ -16,6 +16,16 @@
         src: docker/authentik.yaml
         dest: "{{ authentik_dir }}/docker-compose.yml"
 
+    - name: Create blueprints directory
+      file:
+        path: "{{ authentik_dir }}/blueprints"
+        state: directory
+
+    - name: Copy blueprint file from local
+      copy:
+        src: res/moodle-authentik.yaml
+        dest: "{{ authentik_dir }}/blueprints/moodle.yml"
+
     - name: Check if env exists
       stat:
         path: "{{ authentik_dir }}/.env"
@@ -41,3 +51,12 @@
       community.docker.docker_compose_v2:
         project_src: "{{ authentik_dir }}"
         state: present
+
+    - name: Wait for startup
+      pause:
+        seconds: 10
+
+    - name: Apply blueprint
+      community.docker.docker_container_exec:
+        container: authentik-server
+        command: ak apply_blueprint /blueprints/moodle.yml
