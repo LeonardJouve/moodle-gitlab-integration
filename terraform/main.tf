@@ -34,6 +34,12 @@ resource "aws_instance" "dev" {
     key_name      = aws_key_pair.generated.key_name
     vpc_security_group_ids = [aws_security_group.dev_sg.id]
     
+    root_block_device {
+        volume_size = 20
+        volume_type = "gp3"
+        delete_on_termination = true
+    }
+
     tags = {
         Name = "moodle-gitlab-integration-ec2"
     }
