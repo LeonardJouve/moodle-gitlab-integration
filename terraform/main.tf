@@ -30,7 +30,7 @@ resource "aws_key_pair" "generated" {
 
 resource "aws_instance" "dev" {
     ami           = data.aws_ami.ubuntu.id
-    instance_type = "t3.micro"
+    instance_type = "t3.medium"
     key_name      = aws_key_pair.generated.key_name
     vpc_security_group_ids = [aws_security_group.dev_sg.id]
     

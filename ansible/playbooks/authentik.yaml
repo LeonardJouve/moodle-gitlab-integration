@@ -1,0 +1,43 @@
+- name: Deploy Authentik
+  hosts: dev
+  become: yes
+
+  vars:
+    authentik_dir: /opt/authentik
+
+  tasks:
+    - name: Create directory
+      file:
+        path: "{{ authentik_dir }}"
+        state: directory
+
+    - name: Copy compose file from local
+      copy:
+        src: compose.yml
+        dest: "{{ authentik_dir }}/docker-compose.yml"
+
+    - name: Check if env exists
+      stat:
+        path: "{{ authentik_dir }}/.env"
+      register: env_file
+
+    - name: Generate secrets
+      set_fact:
+        pg_pass: "{{ lookup('ansible.builtin.pipe', 'openssl rand -base64 36') }}"
+        authentik_secret: "{{ lookup('ansible.builtin.pipe', 'openssl rand -base64 60') }}"
+      when: not env_file.stat.exists
+
+    - name: Create env file
+      copy:
+        dest: "{{ authentik_dir }}/.env"
+        content: |
+          PG_PASS={{ pg_pass }}
+          AUTHENTIK_SECRET_KEY={{ authentik_secret }}
+          AUTHENTIK_EXTERNAL_URL={{ authentik_external_url }}
+          AUTHENTIK_HOST={{ authentik_host }}
+      when: not env_file.stat.exists
+
+    - name: Start stack with Docker Compose
+      community.docker.docker_compose_v2:
+        project_src: "{{ authentik_dir }}"
+        state: present

@@ -6,3 +6,6 @@ terraform.tfvars
 .terraform
 .terraform.*
 *.pem
+
+inventory.ini
+all.yaml
