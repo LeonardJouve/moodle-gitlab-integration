@@ -1,22 +1,4 @@
 services:
-  traefik:
-    image: "traefik:v3.6"
-    container_name: "traefik"
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    networks:
-      - proxy
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-    ports:
-      - "80:80"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-  
   postgresql:
     env_file:
       - .env
@@ -62,7 +44,7 @@ services:
       - ./custom-templates:/templates
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.authentik.rule=Host(`${AUTHENTIK_HOST:?host required}`)"
+      - "traefik.http.routers.authentik.rule=Host(`${AUTHENTIK_EXTERNAL_HOST:?external host required}`)"
       - "traefik.http.routers.authentik.entrypoints=web"
       - "traefik.http.services.authentik.loadbalancer.server.port=9000"
   worker:
@@ -89,9 +71,12 @@ services:
       - ./data:/data
       - ./certs:/certs
       - ./custom-templates:/templates
+
 volumes:
   database:
     driver: local
+
 networks:
   proxy:
     name: proxy
+    external: true

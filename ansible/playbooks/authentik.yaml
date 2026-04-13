@@ -13,7 +13,7 @@
 
     - name: Copy compose file from local
       copy:
-        src: compose.yml
+        src: docker/authentik.yaml
         dest: "{{ authentik_dir }}/docker-compose.yml"
 
     - name: Check if env exists
@@ -23,18 +23,18 @@
 
     - name: Generate secrets
       set_fact:
-        pg_pass: "{{ lookup('ansible.builtin.pipe', 'openssl rand -base64 36') }}"
-        authentik_secret: "{{ lookup('ansible.builtin.pipe', 'openssl rand -base64 60') }}"
+        pg_pass: "{{ lookup('ansible.builtin.pipe', 'openssl rand -base64 36 | tr -d \"\\n\"') }}"
+        authentik_secret: "{{ lookup('ansible.builtin.pipe', 'openssl rand -base64 60 | tr -d \"\\n\"') }}"
       when: not env_file.stat.exists
 
     - name: Create env file
       copy:
         dest: "{{ authentik_dir }}/.env"
         content: |
-          PG_PASS={{ pg_pass }}
-          AUTHENTIK_SECRET_KEY={{ authentik_secret }}
+          PG_PASS="{{ pg_pass }}"
+          AUTHENTIK_SECRET_KEY="{{ authentik_secret }}"
           AUTHENTIK_EXTERNAL_URL={{ authentik_external_url }}
-          AUTHENTIK_HOST={{ authentik_host }}
+          AUTHENTIK_EXTERNAL_HOST={{ authentik_external_host }}
       when: not env_file.stat.exists
 
     - name: Start stack with Docker Compose
