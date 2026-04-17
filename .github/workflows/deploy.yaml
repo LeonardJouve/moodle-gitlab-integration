@@ -6,7 +6,6 @@ on:
 
 jobs:
   deploy:
-    if: github.event.base_ref == 'refs/heads/main'
     name: Update
     runs-on: ubuntu-latest
     steps:

@@ -7,13 +7,21 @@ cd "/opt/moodle"
 echo "Stopping containers..."
 docker compose down
 
-cd ./moodle-gitlab-integration
-
 echo "Updating git repository..."
 git pull
 
 echo "Updating submodules..."
 git submodule update --init --recursive
+
+cd ./moodle-gitlab-integration
+
+git fetch --tags
+
+latest_tag=$(git tag -l "v*" --sort=-v:refname | head -n 1)
+
+echo "Checking out $latest_tag"
+
+git checkout "$latest_tag"
 
 cd ../
 
