@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['modulename'] = 'gitlab';
+$string['modulename'] = 'gitlaab';
 $string['modulenameplural'] = 'gitlab';
 $string['pluginname'] = 'gitlab';
 $string['gitlabname'] = 'gitlab';
