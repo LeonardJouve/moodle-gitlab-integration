@@ -1,0 +1,36 @@
+version: 1
+metadata:
+  name: moodle
+context: {}
+entries:
+- model: authentik_providers_proxy.proxyprovider
+  identifiers:
+    name: moodle
+  attrs:
+    name: moodle
+    mode: forward_single
+    access_token_validity: hours=24
+    refresh_token_validity: days=30
+    external_host: http://moodle-gitlab.duckdns.org
+    authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-explicit-consent]]
+    invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+- model: authentik_core.application
+  identifiers:
+    slug: moodle
+  attrs:
+    name: moodle
+    slug: moodle
+    meta_icon: https://moodle.org/theme/moodleorg/pix/favicons/favicon-192.webp
+    open_in_new_tab: true
+    policy_engine_mode: any
+    provider: !Find [authentik_providers_proxy.proxyprovider, [name, moodle]]
+- model: authentik_outposts.outpost
+  identifiers:
+    name: moodle
+  attrs:
+    name: moodle
+    type: proxy
+    config:
+      authentik_host: http://auth-moodle-gitlab.duckdns.org
+    providers:
+      - !Find [authentik_providers_proxy.proxyprovider, [name, moodle]]

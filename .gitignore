@@ -1,1 +1,11 @@
 .vscode
+
+terraform.tfvars
+*.tfstate
+*.tfstate.*
+.terraform
+.terraform.*
+*.pem
+
+inventory.ini
+all.yaml
