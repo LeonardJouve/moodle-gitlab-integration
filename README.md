@@ -16,7 +16,9 @@ First modify `ansible/inventory.ini` with your SSH credentials
 
 Then modify `ansible/group_vars/all.yaml` with your host and url
 
-Finally run Ansible playbooks
+Finally modifiy `ansible/playbooks/res/moodle-authentik.yaml` with your host and url
+
+You can now run Ansible playbooks
 
 ```
 cd ansible
