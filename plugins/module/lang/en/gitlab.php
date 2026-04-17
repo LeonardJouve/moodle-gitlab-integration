@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['gitlabfieldset'] = 'gitlaab';
+$string['gitlabfieldset'] = 'gitlab';
 $string['gitlabname'] = 'gitlab';
 $string['gitlabname_help'] = 'Help';
 $string['gitlabsettings'] = 'gitlab';
