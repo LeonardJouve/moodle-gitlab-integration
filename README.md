@@ -1,5 +1,7 @@
 Simplified Moodle for development [fork](https://github.com/LeonardJouve/moodle-docker) on docker
 
+> On GitLab.com, you must use the GitLab UI to create groups without a parent group. You cannot use the API to do this. [cf](https://docs.gitlab.com/api/groups/#create-a-group)
+
 ## Deployment
 
 Create EC2 t3.medium with terraform or if you already own a machine with SSH access skip this step

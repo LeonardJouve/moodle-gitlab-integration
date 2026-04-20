@@ -65,7 +65,6 @@ if ($action === 'createrepository') {
             $moduleinstance->name . "_" . $USER->username . "_" . bin2hex(random_bytes(8)),
             $moduleinstance->group_id
         );
-        // $moduleinstance->group_id = $client->group()->create($moduleinstance->name)->id;
     } catch (RuntimeException $e) {
         echo html_writer::div(
             sprintf('failed to create repository: %s', $e->getMessage()),

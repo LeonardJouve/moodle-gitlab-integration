@@ -41,12 +41,14 @@ class Gitlab {
     private string $token;
     private Group $group;
     private Project $project;
+    private User $user;
 
     public function __construct(string $token) {
         $this->curl = new \curl();
         $this->token = $token;
         $this->group = new Group($this);
         $this->project = new Project($this);
+        $this->user = new User($this);
     }
 
     public function post(string $endpoint, $data) {
@@ -98,5 +100,9 @@ class Gitlab {
 
     public function group() {
         return $this->group;
+    }
+
+    public function user() {
+        return $this->user;
     }
 }
