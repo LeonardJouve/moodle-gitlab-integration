@@ -94,26 +94,26 @@ echo html_writer::link(
 
 try {
     $repositories = $client->project()->list($moduleinstance->group_id);
+
+    echo html_writer::start_tag('ul');
+
+    foreach ($repositories as $repository) {
+        echo html_writer::tag(
+            'li',
+            html_writer::link(
+                $repository->web_url,
+                format_string($repository->name),
+                ['target' => '_blank']
+            )
+        );
+    }
+
+    echo html_writer::end_tag('ul');
 } catch (RuntimeException $e) {
     echo html_writer::div(
         sprintf('failed to list repositories: %s', $e->getMessage()),
         'alert alert-danger'
     );
 }
-
-echo html_writer::start_tag('ul');
-
-foreach ($repositories as $repository) {
-    echo html_writer::tag(
-        'li',
-        html_writer::link(
-            $repository->web_url,
-            format_string($repository->name),
-            ['target' => '_blank']
-        )
-    );
-}
-
-echo html_writer::end_tag('ul');
 
 echo $OUTPUT->footer();
