@@ -18,7 +18,7 @@
  * The main mod_gitlab configuration form.
  *
  * @package     mod_gitlab
- * @copyright   2026 Léonard Jouve <leonard.jouve@gmail.com>
+ * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ require_once($CFG->dirroot . '/course/moodleform_mod.php');
  * Module instance settings form.
  *
  * @package     mod_gitlab
- * @copyright   2026 Léonard Jouve <leonard.jouve@gmail.com>
+ * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_gitlab_mod_form extends moodleform_mod {
@@ -57,18 +57,18 @@ class mod_gitlab_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('name', 'gitlabname', 'mod_gitlab');
-
-        // Adding the standard "intro" and "introformat" fields.
-        if ($CFG->branch >= 29) {
-            $this->standard_intro_elements();
-        } else {
-            $this->add_intro_editor();
-        }
+        
+        $this->standard_intro_elements();
 
         // Adding the rest of mod_gitlab settings, spreading all them into this fieldset
         // ... or adding more fieldsets ('header' elements) if needed for better logic.
-        $mform->addElement('static', 'label1', 'gitlabsettings', get_string('gitlabsettings', 'mod_gitlab'));
+        // $mform->addElement('static', 'label1', 'gitlabsettings', get_string('gitlabsettings', 'mod_gitlab'));
         $mform->addElement('header', 'gitlabfieldset', get_string('gitlabfieldset', 'mod_gitlab'));
+
+        $mform->addElement('text', 'token', get_string('token', 'mod_gitlab'), ['size' => '64']);
+        $mform->setType('token', PARAM_TEXT);
+        $mform->addRule('token', null, 'required', null, 'client');
+        $mform->addHelpButton('token', 'token', 'mod_gitlab');
 
         // Add standard elements.
         $this->standard_coursemodule_elements();

@@ -19,29 +19,29 @@
  *
  * @package     mod_gitlab
  * @category    string
- * @copyright   2026 Léonard Jouve <leonard.jouve@gmail.com>
+ * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-$capabilities = array(
-    'mod/gitlab:view' => array(
+$capabilities = [
+    'mod/gitlab:view' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
+        'archetypes' => [
             'guest' => CAP_ALLOW,
             'user' => CAP_ALLOW,
-        )
-    ),
-    'mod/gitlab:addinstance' => array(
+        ],
+    ],
+    'mod/gitlab:addinstance' => [
         'riskbitmask' => RISK_XSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
+        'archetypes' => [
             'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        ),
-        'clonepermissionsfrom' => 'moodle/course:manageactivities'
-    ),
-);
+            'manager' => CAP_ALLOW,
+        ],
+        'clonepermissionsfrom' => 'moodle/course:manageactivities',
+    ],
+];
