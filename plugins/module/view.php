@@ -92,7 +92,7 @@ echo html_writer::link(
 );
 
 try {
-    $repositories = $client->project()->list($moduleinstance->group_id);
+    $repositories = $client->group()->projects($moduleinstance->group_id);
 
     echo html_writer::start_tag('ul');
 

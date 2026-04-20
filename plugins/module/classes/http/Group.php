@@ -42,12 +42,26 @@ class Group {
         $this->client = $client;
     }
 
-    public function create(string $name) {
+    public function create(string $name, int $parent_id) {
         $data = [
             'name' => $name,
             'path' => strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '-', $name), '-')),
+            'parent_id' => $parent_id,
         ];
     
         return $this->client->post("/groups", $data);
+    }
+
+    public function list() {
+        // /groups
+    }
+
+    public function get(int $id) {
+        // /groups/:id
+    }
+
+    public function projects(int $id) {
+        // /groups/:id/projects
+        return $this->client->get("/groups/" . $id . "/projects");
     }
 }

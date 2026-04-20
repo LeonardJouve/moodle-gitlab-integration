@@ -51,7 +51,11 @@ class Project {
         return $this->client->post("/projects", $data);
     }
 
-    public function list(int $group_id) {
-        return $this->client->get("/groups/" . $group_id . "/projects");
+    public function get(int $id) {
+        // /projects/:id
+    }
+
+    public function members(int $id) {
+        // /projects/:id/users
     }
 }

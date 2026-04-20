@@ -53,5 +53,6 @@ class User {
 
     public function me() {
         // /user
+        return $this->client->get('/user');
     }
 }
