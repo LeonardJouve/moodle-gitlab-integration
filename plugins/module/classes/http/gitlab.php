@@ -35,55 +35,68 @@ require_once($CFG->libdir . '/filelib.php');
  * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class gitlab {
+class Gitlab {
     private const BASE_URL = 'https://gitlab.com/api/v4';
     private \curl $curl;
     private string $token;
+    private Group $group;
+    private Project $project;
 
     public function __construct(string $token) {
         $this->curl = new \curl();
         $this->token = $token;
+        $this->group = new Group($this);
+        $this->project = new Project($this);
     }
 
-    private function post(string $endpoint, $data) {
-        $this->curl->setHeader([
-            'Content-type: application/json',
+    public function post(string $endpoint, $data) {
+        $this->curl->setHeader(array_merge($this->get_headers(), ['Content-type: application/json']));
+
+        $result = $this->curl->post(gitlab::BASE_URL . $endpoint, json_encode($data));
+        $this->handle_exceptions();
+
+        return json_decode($result);
+    }
+
+    public function get(string $endpoint) {
+        $this->curl->setHeader($this->get_headers());
+
+        $result = $this->curl->get(gitlab::BASE_URL . $endpoint);
+        $this->handle_exceptions();
+
+        return json_decode($result);
+    }
+
+    private function handle_exceptions() {
+        $status = $this->curl->get_info()['http_code'];
+
+        if ($status >= 200 && $status < 300) {
+            return;
+        }
+
+        if (400 === $status || 422 === $status) {
+            throw new RuntimeException("validation failed");
+        }
+
+        if (429 === $status) {
+            throw new RuntimeException("limit exceeded");
+        }
+
+        throw new RuntimeException(sprintf("expection %d", $status));
+    }
+
+    private function get_headers() {
+        return [
             'Accept: application/json',
             'PRIVATE-TOKEN: ' . $this->token,
-        ]);
-
-        return @json_decode($this->curl->post(gitlab::BASE_URL . $endpoint, json_encode($data)));
-    }
-
-    private function get(string $endpoint) {
-        $this->curl->setHeader([
-            'Accept: application/json',
-            'PRIVATE-TOKEN: ' . $this->token,
-        ]);
-
-        return @json_decode($this->curl->get(gitlab::BASE_URL . $endpoint));
-    }
-
-
-    public function create_group(string $name) {
-        $data = [
-            'name' => $name,
-            'path' => strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '-', $name), '-')),
         ];
-    
-        return $this->post("/groups", $data);
     }
 
-    public function create_repository(string $name, int $group_id) {
-        $data = [
-            'name' => $name,
-            'namespace_id' => $group_id,
-        ];
-
-        return $this->post("/projects", $data);
+    public function project() {
+        return $this->project;
     }
 
-    public function list_repositories(int $group_id) {
-        return $this->get("/groups/" . $group_id . "/projects");
+    public function group() {
+        return $this->group;
     }
 }
