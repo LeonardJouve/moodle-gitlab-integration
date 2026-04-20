@@ -1,0 +1,27 @@
+- name: Deploy Traefik
+  hosts: dev
+  become: yes
+
+  vars:
+    traefik_dir: /opt/traefik
+
+  tasks:
+    - name: Create directory
+      file:
+        path: "{{ traefik_dir }}"
+        state: directory
+
+    - name: Copy compose file from local
+      copy:
+        src: docker/traefik.yaml
+        dest: "{{ traefik_dir }}/docker-compose.yml"
+
+    - name: Create proxy network
+      community.docker.docker_network:
+        name: proxy
+        state: present
+
+    - name: Start stack with Docker Compose
+      community.docker.docker_compose_v2:
+        project_src: "{{ traefik_dir }}"
+        state: present

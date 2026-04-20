@@ -1,0 +1,35 @@
+services:
+  webserver:
+    volumes:
+      - "./moodle-gitlab-integration/plugins/module:/var/www/html/public/mod/gitlab"
+    networks:
+      - proxy
+    environment:
+      MOODLE_DOCKER_WEB_PORT: ""
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.moodle.rule=Host(`${WEB_HOST}`)"
+      - "traefik.http.routers.moodle.entrypoints=web"
+      - "traefik.http.services.moodle.loadbalancer.server.port=80"
+
+      - "traefik.http.middlewares.authentik.forwardauth.address=http://authentik-server:9000/outpost.goauthentik.io/auth/traefik"
+      - "traefik.http.middlewares.authentik.forwardauth.trustForwardHeader=true"
+      - "traefik.http.middlewares.authentik.forwardauth.authResponseHeaders=X-authentik-username,X-authentik-email,X-authentik-groups"
+      - "traefik.http.routers.moodle.middlewares=authentik@docker"
+  db:
+    networks:
+      - proxy
+  mailpit:
+    networks:
+      - proxy
+  exttests:
+    networks:
+      - proxy
+  selenium:
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    external: true
