@@ -1,0 +1,74 @@
+moodle:
+  type: Web
+  title: Moodle
+  url: https://moodle.org
+
+gitlab_php_api_client:
+  type: Web
+  title: GitLab PHP API Client
+  url: https://github.com/GitLabPHP/Client
+
+gitlab_tools:
+  type: Web
+  title: GitLab Tools
+  url: https://gitlab.fhnw.ch/gitlab-tools/gitlab-tools
+
+gitlab_haskell:
+  type: Web
+  title: GitLab Haskell
+  url: https://gitlab.com/robstewart57/gitlab-haskell
+
+classmoji:
+  type: Web
+  title: Classmoji
+  url: https://github.com/classmoji/classmoji
+
+plugin_webhooks:
+  type: Web
+  title: Webhooks Plugin
+  url: https://moodle.org/plugins/local_webhooks
+
+plugin_board:
+  type: Web
+  title: Board Plugin
+  url: https://moodle.org/plugins/mod_board
+
+plugin_coursetocal:
+  type: Web
+  title: Course to Calendar Plugin
+  url: https://moodle.org/plugins/local_coursetocal
+
+plugin_githubrepo:
+  type: Web
+  title: GitHub Repository Plugin
+  url: https://moodle.org/plugins/repository_github
+
+zohoflow:
+  type: Web
+  title: Zohoflow
+  url: https://www.zohoflow.com/en-ca/apps/canvas-lms/integrations/gitlab
+
+canvas_gitLab_integration:
+  type: Web
+  title: Canvas GitLab Integration
+  url: https://figshare.com/articles/code/Canvas-GitLab_Integration_Framework_as_presented_in_b_Integrating_Canvas_and_GitLab_to_Enrich_Learning_Processes_b_/24916716)
+
+github_classroom:
+  type: Web
+  title: GitHub Classroom
+  url: https://classroom.github.com
+
+moodle_academy:
+  type: Web
+  title: Moodle Academy
+  url: https://moodle.academy
+
+canvas:
+  type: Web
+  title: Canvas
+  url: https://www.instructure.com/canvas
+
+gitlab:
+  type: Web
+  title: GitLab
+  url: https://about.gitlab.com
