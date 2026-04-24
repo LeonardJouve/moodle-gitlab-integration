@@ -42,5 +42,23 @@ class Pipeline {
         $this->client = $client;
     }
 
-    // /projects/:id/pipelines
+    public function latest(int $project_id, array $params = []) {
+        return $this->client->get("/projects/" . $project_id . "/pipelines/latest", $params);
+    }
+
+    public function get(int $project_id, int $pipeline_id, array $params = []) {
+        return $this->client->get("/projects/" . $project_id . "/pipelines/" . $pipeline_id, $params);
+    }
+
+    public function list(int $project_id, array $params = []) {
+        return $this->client->get("/projects/" . $project_id . "/pipelines", $params);
+    }
+
+    public function test_report(int $project_id, int $pipeline_id, array $params = []) {
+        return $this->client->get("/projects/" . $project_id . "/pipelines/" . $pipeline_id . "/test_report", $params);
+    }
+
+    public function test_report_summary(int $project_id, int $pipeline_id, array $params = []) {
+        return $this->client->get("/projects/" . $project_id . "/pipelines/" . $pipeline_id . "/test_report_summary", $params);
+    }
 }
