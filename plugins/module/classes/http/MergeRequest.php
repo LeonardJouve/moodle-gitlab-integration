@@ -42,5 +42,32 @@ class MergeRequest {
         $this->client = $client;
     }
 
-    // /projects/:id/merge_requests
+    public function list(int $project_id, array $params = []) {
+        return $this->client->get("/projects/" . $project_id . "/merge_requests", $params);
+    }
+
+    public function get(int $project_id, int $merge_request_id, array $params = []) {
+        return $this->client->get("/projects/" . $project_id . "/merge_requests/" . $merge_request_id, $params);
+    }
+
+    public function commits(int $project_id, int $merge_request_id, array $params = []) {
+        return $this->client->get("/projects/" . $project_id . "/merge_requests/" . $merge_request_id . "/commits", $params);
+    }
+
+    public function create(int $project_id, string $source_branch, string $target_branch, string $title, array $extra = []) {
+        $data = array_merge([
+            'id' => $project_id,
+            'source_branch' => $source_branch,
+            'target_branch' => $target_branch,
+            'title' => $title,
+        ], $extra);
+
+        return $this->client->post("/projects/" . $project_id . "/merge_requests", $data);
+    }
+
+    public function note(int $project_id, int $merge_request_id, string $body, array $extra) {
+        $data = array_merge(['body' => $body], $extra);
+
+        return $this->client->post("/projects/" . $project_id . "/merge_requests/" . $merge_request_id . "/notes", $data);
+    }
 }

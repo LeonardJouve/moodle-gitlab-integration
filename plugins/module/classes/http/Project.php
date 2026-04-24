@@ -42,11 +42,11 @@ class Project {
         $this->client = $client;
     }
 
-    public function create(string $name, int $group_id) {
-        $data = [
+    public function create(string $name, int $group_id, array $extra = []) {
+        $data = array_merge([
             'name' => $name,
             'namespace_id' => $group_id,
-        ];
+        ], $extra);
 
         return $this->client->post("/projects", $data);
     }
