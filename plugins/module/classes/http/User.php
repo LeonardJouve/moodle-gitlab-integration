@@ -42,17 +42,20 @@ class User {
         $this->client = $client;
     }
 
-    public function list() {
-        // /users
-        // username	string	no	Get a single user with a specific username.
+    // username / public_email => '' Get a single user
+    public function list(array $params = []) {
+        return $this->client->get("/users", $params);
     }
 
-    public function get(int $id) {
-        // /users/:id
+    public function get(int $id, array $params = []) {
+        return $this->client->get("/users" . $id, $params);
     }
 
     public function me() {
-        // /user
         return $this->client->get('/user');
+    }
+
+    public function membership(int $id, array $params = []) {
+        return $this->client->get("/users/" . $id . "/memberships", $params);
     }
 }
