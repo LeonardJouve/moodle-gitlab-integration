@@ -56,7 +56,6 @@ class MergeRequest {
 
     public function create(int $project_id, string $source_branch, string $target_branch, string $title, array $extra = []) {
         $data = array_merge([
-            'id' => $project_id,
             'source_branch' => $source_branch,
             'target_branch' => $target_branch,
             'title' => $title,

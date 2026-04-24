@@ -42,5 +42,26 @@ class Issue {
         $this->client = $client;
     }
 
-    // /projects/:id/issues
+    public function list(int $project_id, array $params = []) {
+        return $this->client->get("/projects/" . $project_id . "/issues", $params);
+    }
+
+    public function get(int $id, array $params = []) {
+        return $this->client->get("/issues/" . $id, $params);
+    }
+
+    public function create(int $project_id, string $title, string $description = '', array $extra = []) {
+        $data = array_merge([
+            'title' => $title,
+            'description' => $description,
+        ], $extra);
+
+        return $this->client->post("/projects/" . $project_id . "/issues", $data);
+    }
+
+    public function note(int $project_id, int $issue_id, string $body, array $extra = []) {
+        $data = array_merge(['body' => $body], $extra);
+
+        return $this->client->post("/projects/" . $project_id . "/issues/" . $issue_id . "/notes", $data);
+    }
 }
