@@ -43,7 +43,7 @@ class Gitlab {
     private Project $project;
     private User $user;
     private Branch $branch;
-    private Invitation $invitation;
+    private Member $member;
     private Issue $issue;
     private MergeRequest $merge_request;
     private Pipeline $pipeline;
@@ -55,7 +55,7 @@ class Gitlab {
         $this->project = new Project($this);
         $this->user = new User($this);
         $this->branch = new Branch($this);
-        $this->invitation = new Invitation($this);
+        $this->member = new Member($this);
         $this->issue = new Issue($this);
         $this->merge_request = new MergeRequest($this);
         $this->pipeline = new Pipeline($this);
@@ -80,6 +80,21 @@ class Gitlab {
         }
         
         $result = $this->curl->get($url);
+        $this->handle_exceptions();
+
+        return json_decode($result);
+    }
+
+    public function delete(string $endpoint, array $params = []) {
+        $this->curl->setHeader($this->get_headers());
+
+        $url = gitlab::BASE_URL . $endpoint;
+
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
+        
+        $result = $this->curl->delete($url);
         $this->handle_exceptions();
 
         return json_decode($result);
@@ -126,8 +141,8 @@ class Gitlab {
         return $this->branch;
     }
 
-    public function invitation() {
-        return $this->invitation;
+    public function member() {
+        return $this->member;
     }
 
     public function issue() {

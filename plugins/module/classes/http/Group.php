@@ -42,12 +42,12 @@ class Group {
         $this->client = $client;
     }
 
-    public function create(string $name, int $parent_id) {
-        $data = [
+    public function create(string $name, int $parent_id, array $extra = []) {
+        $data = array_merge([
             'name' => $name,
             'path' => strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '-', $name), '-')),
             'parent_id' => $parent_id,
-        ];
+        ], $extra);
     
         return $this->client->post("/groups", $data);
     }

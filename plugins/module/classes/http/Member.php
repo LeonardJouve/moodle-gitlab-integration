@@ -35,12 +35,36 @@ require_once($CFG->libdir . '/filelib.php');
  * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class Invitation {
+class Member {
     private Gitlab $client;
 
     public function __construct(Gitlab $client) {
         $this->client = $client;
     }
 
-    // /groups/:id/invitations
+    public function list(int $project_id, array $params = []) {
+        return $this->client->get("/projects/" . $project_id . "/members/all", $params);
+    }
+
+    public function get(int $project_id, int $user_id, array $params = []) {
+        return $this->client->get("/projects/" . $project_id . "/members/all/" . $user_id, $params);
+    }
+
+    public function add(int $project_id, int|string $user /* user_id or username*/, int $access_level, array $extra = []) {
+        $data = array_merge([
+            'access_level' => $access_level,
+        ], $extra);
+
+        if (is_int($user)) {
+            $data['user_id'] = $user;
+        } else {
+            $data['username'] = $user;
+        }
+
+        return $this->client->post("/projects/" . $project_id . "/members", $data);
+    }
+
+    public function remove(int $project_id, int $user_id) {
+        return $this->client->delete("/projects/" . $project_id . "/members/" . $user_id);
+    }
 }
