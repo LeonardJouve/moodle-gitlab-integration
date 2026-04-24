@@ -51,11 +51,11 @@ class Project {
         return $this->client->post("/projects", $data);
     }
 
-    public function get(int $id) {
-        // /projects/:id
+    public function get(int $id, array $params = []) {
+        return $this->client->get("/projects/" . $id, $params);
     }
 
-    public function members(int $id) {
-        // /projects/:id/users
+    public function members(int $id, array $params = []) {
+        return $this->client->get("/projects/" . $id . "/users", $params);
     }
 }
