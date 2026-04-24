@@ -42,5 +42,32 @@ class Branch {
         $this->client = $client;
     }
 
-    // /projects/:id/repository/branches
+    public function list(int $project_id, array $params = []) {
+        return $this->client->get("/projects/" . $project_id . "/repository/branches", $params);
+    }
+
+    public function get(int $project_id, string $branch, array $params = []) {
+        return $this->client->get("/projects/" . $project_id . "/repository/branches/" . urlencode($branch), $params);
+    }
+
+    public function create(int $project_id, string $branch, string $ref, array $extra = []) {
+        $data = array_merge([
+            'branch' => $branch,
+            'ref'    => $ref,
+        ], $extra);
+
+        return $this->client->post("/projects/" . $project_id . "/repository/branches", $data);
+    }
+
+    public function delete(int $project_id, string $branch) {
+        return $this->client->delete("/projects/" . $project_id . "/repository/branches/" . urlencode($branch));
+    }
+
+    public function protect(int $project_id, string $name, array $extra = []) {
+        $data = array_merge([
+            'name' => $name,
+        ], $extra);
+
+        return $this->client->post("/projects/" . $project_id . "/protected_branches", $data);
+    }
 }
