@@ -42,6 +42,11 @@ class Gitlab {
     private Group $group;
     private Project $project;
     private User $user;
+    private Branch $branch;
+    private Invitation $invitation;
+    private Issue $issue;
+    private MergeRequest $merge_request;
+    private Pipeline $pipeline;
 
     public function __construct(string $token) {
         $this->curl = new \curl();
@@ -49,6 +54,11 @@ class Gitlab {
         $this->group = new Group($this);
         $this->project = new Project($this);
         $this->user = new User($this);
+        $this->branch = new Branch($this);
+        $this->invitation = new Invitation($this);
+        $this->issue = new Issue($this);
+        $this->merge_request = new MergeRequest($this);
+        $this->pipeline = new Pipeline($this);
     }
 
     public function post(string $endpoint, $data) {
@@ -104,5 +114,25 @@ class Gitlab {
 
     public function user() {
         return $this->user;
+    }
+
+    public function branch() {
+        return $this->branch;
+    }
+
+    public function invitation() {
+        return $this->invitation;
+    }
+
+    public function issue() {
+        return $this->issue;
+    }
+
+    public function merge_request() {
+        return $this->merge_request;
+    }
+
+    public function pipeline() {
+        return $this->pipeline;
     }
 }
