@@ -52,16 +52,16 @@ class Group {
         return $this->client->post("/groups", $data);
     }
 
-    public function list() {
-        // /groups
+    // owned => true
+    public function list(array $params = []) {
+        return $this->client->get("/groups", $params);
     }
 
-    public function get(int $id) {
-        // /groups/:id
+    public function get(int $id, array $params = []) {
+        return $this->client->get("/groups/" . $id, $params);
     }
 
-    public function projects(int $id) {
-        // /groups/:id/projects
-        return $this->client->get("/groups/" . $id . "/projects");
+    public function projects(int $id, array $params = []) {
+        return $this->client->get("/groups/" . $id . "/projects", $params);
     }
 }
