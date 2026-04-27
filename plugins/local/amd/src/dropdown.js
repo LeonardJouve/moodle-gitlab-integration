@@ -22,71 +22,68 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import {getString} from 'core/str';
-import Prefetch from 'core/prefetch';
+import {getString} from "core/str";
+import Prefetch from "core/prefetch";
+import {call} from "core/ajax";
 
 export const init = () => {
     // Prefetch the string.
-    Prefetch.prefetchString('gitlab', 'pluginname');
+    Prefetch.prefetchStrings("gitlab", [
+        "pluginname",
+        "form_token_apply",
+        "form_token_loading",
+    ]);
 
     loadJSContent();
 };
 
-/**
- * Add content using JavaScript.
- */
-const loadJSContent = async() => {
-    const pluginName = await getString('gitlab', 'pluginname');
+const loadJSContent = async () => {
+    const pluginName = await getString("gitlab", "pluginname");
     console.log("Plugin name:", pluginName);
 
-    // const tokenField = $('input[name="customfield_gitlab_token"]');
-    // const dropdown = $('select[name="customfield_gitlab_groups"]');
+    const tokenField = document.querySelector("input[name='customfield_gitlab_token']");
+    const dropdown = document.querySelector("select[name='customfield_gitlab_groups']");
 
-    // if (!tokenField.length || !dropdown.length) {
-    //     return;
-    // }
+    if (!tokenField.length || !dropdown.length) {
+        console.error("element not found", tokenField, dropdown);
+        return;
+    }
 
-    // // Initial state
-    // dropdown.prop('disabled', true);
+    dropdown.disabled = true;
 
-    // // Create Apply button
-    // const button = $('<button type="button" class="btn btn-secondary">Apply</button>');
-    // tokenField.after(button);
+    const button = document.createElement("button");
+    button.className = "btn btn-secondary";
+    button.textContent = await getString("gitlab", "form_token_apply");
 
-    // button.on('click', function() {
+    tokenField.parentNode.insertBefore(button, tokenField.nextSibling);
 
-    //     const token = tokenField.val();
+    button.addEventListener("click", async () => {
+        const token = tokenField.value;
+        if (!token) {
+            return;
+        }
 
-    //     if (!token) {
-    //         return;
-    //     }
+        button.disabled = true;
+        button.textContent = await getString("gitlab", "form_token_loading");
 
-    //     button.prop('disabled', true).text('Loading...');
+        await call([{
+            methodname: "local_gitlab_get_groups",
+            args: {token: token}
+        }])[0].then((items) => {
+            dropdown.innerHTML = "";
+            items.forEach((item) => {
+                const option = document.createElement("option");
+                option.value = item.value;
+                option.textContent = item.label;
+                dropdown.appendChild(option);
+            });
 
-    //     Ajax.call([{
-    //         methodname: 'local_gitlab_get_groups',
-    //         args: {
-    //             token: token
-    //         }
-    //     }])[0].done(function(response) {
-
-    //         dropdown.empty();
-
-    //         response.forEach(function(item) {
-    //             dropdown.append(
-    //                 $('<option></option>')
-    //                     .val(item.value)
-    //                     .text(item.label)
-    //             );
-    //         });
-
-    //         dropdown.prop('disabled', false);
-
-    //     }).fail(function() {
-    //         alert('Failed to load GitLab groups');
-    //     }).always(function() {
-    //         button.prop('disabled', false).text('Apply');
-    //     });
-
-    // });
+            dropdown.disabled = false;
+        }).catch(() => {
+            console.error("unable retrieve gitlab groups");
+        }).finally(function() {
+            button.disabled = false;
+            button.textContent = "Apply";
+        });
+    });
 };

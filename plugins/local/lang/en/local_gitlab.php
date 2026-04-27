@@ -26,3 +26,5 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Local Gitlab';
+$string['form_token_apply'] = 'Apply';
+$string['form_token_loading'] = 'Loading';
