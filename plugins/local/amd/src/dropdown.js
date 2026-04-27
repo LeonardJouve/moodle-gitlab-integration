@@ -44,7 +44,7 @@ const loadJSContent = async () => {
     const tokenField = document.querySelector("input[name='customfield_gitlab_token']");
     const dropdown = document.querySelector("select[name='customfield_gitlab_groups']");
 
-    if (!tokenField.length || !dropdown.length) {
+    if (!tokenField || !dropdown) {
         console.error("element not found", tokenField, dropdown);
         return;
     }
