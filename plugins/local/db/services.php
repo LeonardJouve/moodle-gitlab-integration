@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
-    'local_gitlab_get_options' => [
+    'local_gitlab_get_groups' => [
         'classname'   => 'local_gitlab\\get_groups',
         'methodname'  => 'execute',
         'classpath'   => '',
