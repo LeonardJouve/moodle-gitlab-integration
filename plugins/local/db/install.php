@@ -44,7 +44,7 @@ function xmldb_local_gitlab_install() {
     $token->save();
 
     $groups = new \core_customfield\field(0, (object)[
-        'shortname' => 'gitlab_options',
+        'shortname' => 'gitlab_groups',
         'name' => 'GitLab Groups',
         'type' => 'select',
         'categoryid' => $category,
