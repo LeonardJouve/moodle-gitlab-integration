@@ -28,10 +28,10 @@
  *
  * @param int $oldversion Version number the plugin is being upgraded from.
  */
-function xmldb_local_gitlab_upgrade($oldversion) {
+function xmldb_gitlab_upgrade($oldversion) {
     global $DB;
 
-    if ($oldversion < 2026042701) {
+    if ($oldversion < 2026042702) {
         $category = $DB->get_record('customfield_category', [
             'component' => 'local_gitlab',
             'area' => 'course'
@@ -81,7 +81,7 @@ function xmldb_local_gitlab_upgrade($oldversion) {
             ]);
         }
 
-        upgrade_plugin_savepoint(true, 2026042701, 'local', 'gitlab');
+        upgrade_plugin_savepoint(true, 2026042702, 'local', 'gitlab');
     }
 
     return true;
