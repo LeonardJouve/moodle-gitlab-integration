@@ -23,7 +23,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_gitlab\external;
+namespace local_gitlab;
 
 defined('MOODLE_INTERNAL') || die();
 

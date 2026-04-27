@@ -36,6 +36,7 @@ function xmldb_local_gitlab_install() {
         'configdata' => json_encode([
             'required' => 0,
             'uniquevalues' => 0,
+            'ispassword' => 0,
             'displaysize' => 50,
             'maxlength' => 255
         ]),

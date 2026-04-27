@@ -15,19 +15,26 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Plugin strings are defined here.
  *
  * @package     local_gitlab
+ * @category    string
  * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_gitlab;
+
 defined('MOODLE_INTERNAL') || die();
 
-function local_gitlab_before_footer() {
-    global $PAGE;
+use core\hook\output\before_footer_html_generation;
 
-    if ($PAGE->pagetype === 'course-edit') {
-        $PAGE->requires->js_call_amd('local_gitlab/dropdown', 'init');
+class before_footer {
+    public static function callback(before_footer_html_generation $hook): void {
+        global $PAGE;
+
+        if ($PAGE->pagetype === 'course-edit') {
+            $PAGE->requires->js_call_amd('local_gitlab/dropdown', 'init');
+        }
     }
 }
