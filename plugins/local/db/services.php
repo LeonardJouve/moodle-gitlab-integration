@@ -15,19 +15,23 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Plugin strings are defined here.
  *
  * @package     local_gitlab
+ * @category    string
  * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-// function local_gitlab_before_footer() {
-//     global $PAGE;
-
-//     if ($PAGE->pagetype === 'course-edit') {
-//         $PAGE->requires->js_call_amd('local_gitlab/form', 'init');
-//     }
-// }
+$functions = [
+    'local_gitlab_get_options' => [
+        'classname'   => 'local_gitlab\\get_groups',
+        'methodname'  => 'execute',
+        'classpath'   => '',
+        'description' => 'Get user Gitlab groups',
+        'type'        => 'read',
+        'ajax'        => true,
+    ],
+];
