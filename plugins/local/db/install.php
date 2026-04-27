@@ -24,34 +24,35 @@
  */
 
 function xmldb_local_gitlab_install() {
-    // global $DB;
-
-    // $handler = \core_customfield\handler::get_handler('core_course', 'course');
-
-    // Category
-    $category = new \core_customfield\category(0, (object)[
-        'name' => 'GitLab',
-        'component' => 'local_gitlab',
-        'area' => 'course',
-        'itemid' => 0
-    ]);
-    $category->save();
-
-    $field = new \core_customfield\field(0, (object)[
+    $handler = \core_customfield\handler::get_handler('core_course', 'course');
+    
+    $category = $handler->create_category('GitLab');
+    
+    $token = new \core_customfield\field(0, (object)[
         'shortname' => 'gitlab_token',
         'name' => 'GitLab Token',
         'type' => 'text',
-        'categoryid' => $category->get('id'),
-        'configdata' => []
+        'categoryid' => $category,
+        'configdata' => json_encode([
+            'required' => 0,
+            'uniquevalues' => 0,
+            'displaysize' => 50,
+            'maxlength' => 255
+        ]),
     ]);
-    $field->save();
+    $token->save();
 
-    $field2 = new \core_customfield\field(0, (object)[
+    $groups = new \core_customfield\field(0, (object)[
         'shortname' => 'gitlab_options',
         'name' => 'GitLab Groups',
         'type' => 'select',
-        'categoryid' => $category->get('id'),
-        'configdata' => ['options' => "loading"]
+        'categoryid' => $category,
+        'configdata' => json_encode([
+            'options' => '',
+            'defaultvalue' => '',
+            'multiple' => 0,
+            'separator' => '\n'
+        ]),
     ]);
-    $field2->save();
+    $groups->save();
 }
