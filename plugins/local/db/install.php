@@ -52,6 +52,7 @@ function xmldb_local_gitlab_install() {
             'options' => '',
             'defaultvalue' => '',
             'multiple' => 0,
+            'ispassword' => 0,
             'separator' => '\n'
         ]),
     ]);
