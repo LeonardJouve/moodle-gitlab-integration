@@ -24,10 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// function local_gitlab_before_footer() {
-//     global $PAGE;
+function local_gitlab_before_footer() {
+    global $PAGE;
 
-//     if ($PAGE->pagetype === 'course-edit') {
-//         $PAGE->requires->js_call_amd('local_gitlab/form', 'init');
-//     }
-// }
+    if ($PAGE->pagetype === 'course-edit') {
+        $PAGE->requires->js_call_amd('local_gitlab/dropdown', 'init');
+    }
+}
