@@ -67,7 +67,7 @@ const loadJSContent = async () => {
         button.disabled = true;
         button.textContent = await getString("gitlab", "form_token_loading");
 
-        await call([{
+        call([{
             methodname: "local_gitlab_get_groups",
             args: {token: token}
         }])[0].then((items) => {
