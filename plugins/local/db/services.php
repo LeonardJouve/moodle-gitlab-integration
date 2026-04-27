@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $functions = [
     'local_gitlab_get_groups' => [
-        'classname'   => 'local_gitlab\\get_groups',
+        'classname'   => 'local_gitlab\\external\\get_groups',
         'methodname'  => 'execute',
         'classpath'   => '',
         'description' => 'Get user Gitlab groups',

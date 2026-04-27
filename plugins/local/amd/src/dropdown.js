@@ -66,25 +66,22 @@ const loadJSContent = async () => {
 
         button.disabled = true;
         button.textContent = await getString("gitlab", "form_token_loading");
-
-        call([{
+        
+        const items = await (call([{
             methodname: "local_gitlab_get_groups",
             args: {token: token}
-        }])[0].then((items) => {
-            dropdown.innerHTML = "";
-            items.forEach((item) => {
-                const option = document.createElement("option");
-                option.value = item.value;
-                option.textContent = item.label;
-                dropdown.appendChild(option);
-            });
-
-            dropdown.disabled = false;
-        }).catch(() => {
-            console.error("unable retrieve gitlab groups");
-        }).finally(() => {
-            button.disabled = false;
-            button.textContent = apply;
+        }])[0]);
+        
+        dropdown.innerHTML = "";
+        items.forEach((item) => {
+            const option = document.createElement("option");
+            option.value = item.value;
+            option.textContent = item.label;
+            dropdown.appendChild(option);
         });
+
+        dropdown.disabled = false;
+        button.disabled = false;
+        button.textContent = apply;
     });
 };
