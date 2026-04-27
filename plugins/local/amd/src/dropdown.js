@@ -53,7 +53,8 @@ const loadJSContent = async () => {
 
     const button = document.createElement("button");
     button.className = "btn btn-secondary";
-    button.textContent = await getString("gitlab", "form_token_apply");
+    const apply = await getString("gitlab", "form_token_apply");
+    button.textContent = apply;
 
     tokenField.parentNode.insertBefore(button, tokenField.nextSibling);
 
@@ -81,9 +82,9 @@ const loadJSContent = async () => {
             dropdown.disabled = false;
         }).catch(() => {
             console.error("unable retrieve gitlab groups");
-        }).finally(function() {
+        }).finally(() => {
             button.disabled = false;
-            button.textContent = "Apply";
+            button.textContent = apply;
         });
     });
 };
