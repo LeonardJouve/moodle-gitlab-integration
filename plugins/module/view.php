@@ -24,7 +24,8 @@
 
 use core\output\html_writer;
 use core\url;
-use mod_gitlab\http\gitlab;
+use mod_gitlab\http\Gitlab;
+use mod_gitlab\http\RuntimeException;
 
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
@@ -56,10 +57,20 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
-$client = new gitlab($moduleinstance->token);
+$client = new Gitlab($moduleinstance->token);
 
 if ($action === 'createrepository') {
-    $client->create_repository($moduleinstance->name . "_" . $USER->username . "_" . bin2hex(random_bytes(8)), $moduleinstance->group_id);
+    try {
+        $client->project()->create(
+            $moduleinstance->name . "_" . $USER->username . "_" . bin2hex(random_bytes(8)),
+            $moduleinstance->group_id
+        );
+    } catch (RuntimeException $e) {
+        echo html_writer::div(
+            sprintf('failed to create repository: %s', $e->getMessage()),
+            'alert alert-danger'
+        );
+    }
 
     redirect(
         new url('/mod/gitlab/view.php', ['id' => $cm->id]),
@@ -80,21 +91,28 @@ echo html_writer::link(
     ['class' => 'btn btn-primary']
 );
 
-$repositories = $client->list_repositories($moduleinstance->group_id);
+try {
+    $repositories = $client->group()->projects($moduleinstance->group_id);
 
-echo html_writer::start_tag('ul');
+    echo html_writer::start_tag('ul');
 
-foreach ($repositories as $repository) {
-    echo html_writer::tag(
-        'li',
-        html_writer::link(
-            $repository->web_url,
-            format_string($repository->name),
-            ['target' => '_blank']
-        )
+    foreach ($repositories as $repository) {
+        echo html_writer::tag(
+            'li',
+            html_writer::link(
+                $repository->web_url,
+                format_string($repository->name),
+                ['target' => '_blank']
+            )
+        );
+    }
+
+    echo html_writer::end_tag('ul');
+} catch (RuntimeException $e) {
+    echo html_writer::div(
+        sprintf('failed to list repositories: %s', $e->getMessage()),
+        'alert alert-danger'
     );
 }
-
-echo html_writer::end_tag('ul');
 
 echo $OUTPUT->footer();

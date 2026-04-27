@@ -29,61 +29,39 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/filelib.php');
 
 /**
- * HTTP Client for Gitlab
+ * Group Gitlab client
  *
  * @package     mod_gitlab
  * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class gitlab {
-    private const BASE_URL = 'https://gitlab.com/api/v4';
-    private \curl $curl;
-    private string $token;
-
-    public function __construct(string $token) {
-        $this->curl = new \curl();
-        $this->token = $token;
+class Group {
+    private Gitlab $client;
+    
+    public function __construct(Gitlab $client) {
+        $this->client = $client;
     }
 
-    private function post(string $endpoint, $data) {
-        $this->curl->setHeader([
-            'Content-type: application/json',
-            'Accept: application/json',
-            'PRIVATE-TOKEN: ' . $this->token,
-        ]);
-
-        return @json_decode($this->curl->post(gitlab::BASE_URL . $endpoint, json_encode($data)));
-    }
-
-    private function get(string $endpoint) {
-        $this->curl->setHeader([
-            'Accept: application/json',
-            'PRIVATE-TOKEN: ' . $this->token,
-        ]);
-
-        return @json_decode($this->curl->get(gitlab::BASE_URL . $endpoint));
-    }
-
-
-    public function create_group(string $name) {
-        $data = [
+    public function create(string $name, int $parent_id, array $extra = []) {
+        $data = array_merge([
             'name' => $name,
             'path' => strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '-', $name), '-')),
-        ];
+            'parent_id' => $parent_id,
+        ], $extra);
     
-        return $this->post("/groups", $data);
+        return $this->client->post("/groups", $data);
     }
 
-    public function create_repository(string $name, int $group_id) {
-        $data = [
-            'name' => $name,
-            'namespace_id' => $group_id,
-        ];
-
-        return $this->post("/projects", $data);
+    // owned => true
+    public function list(array $params = []) {
+        return $this->client->get("/groups", $params);
     }
 
-    public function list_repositories(int $group_id) {
-        return $this->get("/groups/" . $group_id . "/projects");
+    public function get(int $id, array $params = []) {
+        return $this->client->get("/groups/" . $id, $params);
+    }
+
+    public function projects(int $id, array $params = []) {
+        return $this->client->get("/groups/" . $id . "/projects", $params);
     }
 }

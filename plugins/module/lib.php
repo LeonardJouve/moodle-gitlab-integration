@@ -22,7 +22,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use mod_gitlab\http\gitlab;
+use mod_gitlab\http\Gitlab;
 
 /**
  * Return if the plugin supports $feature.
@@ -53,12 +53,12 @@ function gitlab_supports($feature) {
 function gitlab_add_instance($moduleinstance, $mform = null) {
     global $DB;
 
-    $client = new gitlab($moduleinstance->token);
+    $client = new Gitlab($moduleinstance->token);
 
     // $moduleinstance->group_id = $client->create_group($moduleinstance->name)->id;
     $moduleinstance->group_id = 128333288;
 
-    $client->create_repository($moduleinstance->name, $moduleinstance->group_id);
+    $client->project()->create($moduleinstance->name, $moduleinstance->group_id);
 
     $moduleinstance->timecreated = time();
 
