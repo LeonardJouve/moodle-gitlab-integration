@@ -72,3 +72,53 @@ gitlab:
   type: Web
   title: GitLab
   url: https://about.gitlab.com
+
+php:
+  type: Web
+  title: PHP
+  url: https://www.php.net
+
+moodle_docker:
+  type: Web
+  title: Moodle Docker Deployment
+  url: https://github.com/LeonardJouve/moodle-docker
+
+terraform:
+  type: Web
+  title: Terraform
+  url: https://developer.hashicorp.com/terraform
+
+ansible:
+  type: Web
+  title: Ansible
+  url: https://docs.ansible.com
+
+authentik:
+  type: Web
+  title: Authentik
+  url: https://goauthentik.io
+
+traefik:
+  type: Web
+  title: Traefik
+  url: https://traefik.io/traefik
+
+poc:
+  type: Web
+  title: POC
+  url: https://github.com/LeonardJouve/moodle-gitlab-integration/pull/14
+
+cd:
+  type: Web
+  title: CD
+  url: https://github.com/LeonardJouve/moodle-gitlab-integration/pull/16
+
+kanban:
+  type: Web
+  title: Kanban board
+  url: https://github.com/users/LeonardJouve/projects/3
+
+code:
+  type: Web
+  title: Repository
+  url: https://github.com/LeonardJouve/moodle-gitlab-integration

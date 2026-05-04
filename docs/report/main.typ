@@ -5,7 +5,7 @@
   doc-title: "Integrating GitLab with Moodle",
   author: "Jouve Léonard",
   affiliation: "HEIG-VD",
-  logo: image("images/heig.svg"),
+  logo: image("images/Heig.svg"),
   language: "en",
   compact-mode: false,
   it
@@ -35,8 +35,6 @@ The integration aims automate workflows involved in programming assignments. Thi
 
 From an architectural perspective, the solution is designed to be modular and extensible. While initially focused on GitLab, the system will be structured in a way that allows future support for other Git repository hosting services. This ensures long-term adaptability and encourages community contributions.
 
-#pagebreak()
-
 = Platforms
 
 == Moodle
@@ -56,6 +54,8 @@ Moodle most valuable strengths are:
 In many institutions, Moodle serves as the central hub for teaching activities, including document sharing, assessment, and student tracking. For example, platforms like Cyberlearn (used in HES-SO) are built on top of Moodle and extend its functionality for institutional needs.
 
 Moodle is one of the most widely adopted LMS platforms globally, used by thousands of universities and schools. Its open-source nature has contributed to a large ecosystem of plugins and integrations. However, its extensibility often requires custom development for advanced workflows.
+
+The Moodle core is written in PHP @php. Thus our Moodle plugin code must also be written in PHP.
 
 A well-known equivalent alternative is #underline[Canvas] @canvas.
 
@@ -78,14 +78,19 @@ The most used features are:
 
 GitLab is widely used in both industry and education due to its full DevOps lifecycle integration and strong automation capabilities. In academic contexts, it is commonly used for programming assignments, enabling students to collaborate and submit code while allowing teachers to review and evaluate contributions efficiently.
 
-A well-known alternative is GitHub, probably the most popular Git hosting platform.
+GitHub is probably the most popular Git hosting platform.
+
+== Moodle academy
+#underline[Moodle academy] is the academy platform of Moodle.
+It is used as the learning hub for the Moodle community.
+Several online courses and trainings are available for free.
+This will be our main resource with the Moodle documentation for creating the plugin.
 
 #pagebreak()
 
-= State of the art
+= State of the art <state_of_the_art>
 
-The project is an integration between Moodle and GitLab.
-Thus there are 2 faces:
+There are 2 faces of this project:
 - GitLab interactions through REST API
 - Moodle plugin creation for the UI
 
@@ -103,6 +108,8 @@ Some other notable implementations would be:
 - #underline[GitLab Tools] @gitlab_tools
 - #underline[GitLab Haskell] @gitlab_haskell
 - #underline[Classmoji] @classmoji
+
+Moodle plugins are also meant to be self contained. It should not depend on any external package. This is the main reason while we are going to implement our own GitLab client by taking inspiration on existent ones.
 
 == Moodle Plugin
 
@@ -149,37 +156,10 @@ Another drawback is that it is not directly integrated with the school LMS platf
 It adds another layer of complexity between LMS and Git hosting platform.
 The workflows teachers will be able to automate with our plugin will be heavily inspired by it.
 
-= Learning Resources
-
-== Moodle academy
-#underline[Moodle academy] is the academy platform of Moodle.
-It is used as the learning hub for the Moodle community.
-Several online courses and trainings are available for free.
-This will be our main resource with the Moodle documentation for creating the plugin.
-
 Existing solutions either lack deep LMS integration, are proprietary, or are limited to GitHub.
 There is currently no open-source, Moodle-native integration with GitLab supporting automated assignment workflows, which motivates this project. The goal of this project is to automate Git-based assignment workflows and centralize repository-related information directly within Moodle.
 
-= Specifications
-
-== Context
-
-Moodle is a LMS (Learning Management System) widely used and adopted as a e-learning platform.
-
-Cyberlearn is the official HES-SO deployment of Moodle. It is used to store course documents, create student work groups and serve as a calendar for due assignments.
-
-GitLab is an open source Git repository hosting service.
-In computer science, teachers widely use it to distribute assignments, review student work, and evaluate participation. It also helps students to manage code sources and helps with collaboration.
-
-For teachers, individually managing each repository, student group, and assessment workflows can quickly become time consuming and repetitive with a large amount of students.
-
-There is currently no way to integrate a Git repository hosting service like GitLab to Moodle.
-Having GitLab functionalities directly accessible from the main e-learning platform would greatly simplify, improve workflows and user experience for teachers and students.
-As a teachers, this would help with the setup of repositories for students, managing groups and giving feedbacks from a unique platform.
-As a student, this would centralize access to documents, informations such as due dates, grades and group creation.
-
-Although Moodle does not provide native GitLab integration, it allows extensibility through custom plugin creation. Such plugin can include custom UI and interact with Moodle through a REST API as well as a PHP API.
-GitLab also exposes a REST API and a GraphQL API for external usage.
+= Specifications <spec>
 
 == Objectives
 
@@ -312,9 +292,9 @@ Some custom integrations could be done with internal HES-SO tools `Gaps` and `Ev
 
 Another possible integration would be with a grade assessments platform such as `Gradescope` or `ANS`, but it means an integration with a proprietary platform which could diverge based on teachers preferences.
 
-== Features list
+== List
 
-Graded with priorities from *1* to *4*:
+Graded features list with priorities from *1* to *4*:
 - *1* = highest priority
 - *4* = lowest priority
 
@@ -362,12 +342,89 @@ Graded with priorities from *1* to *4*:
 - Include course calendar to Moodle calendar | *3*
 - Retrieve unit description from Gaps | *3*
 
-= Technologies
-
 = Progression
+
+So far, the bachelor thesis has started for about 3 months, with approximately 8 hours per week dedicated to it.
+The same workload will continue until mid-June. After that, I will work on the project full-time for about 2 months before the final presentation.
+
+These first months were mainly focused on establishing the requirements, the planning and the feasible features for the project.
+The upcoming time will focus more on the implementation and testing of the integration.
+
+My progression so far has made me work on the following:
+- defining the #underline[specifications] @spec for the project
+- setting a #underline[planning] @appendix_planning of the targeted advancement and due dates
+- research and evaluation of existing (partial) solutions / alternatives and writing a current #underline[state of the art] @state_of_the_art
+- familiarizing with the language (PHP) / the APIs (Moodle through the #underline[Moodle Academy] @moodle_academy platform among others and GitLab)
+- creating a simple #underline[docker deployment] @moodle_docker of Moodle available publicly on GitHub
+- developing a POC to demonstrate a simple integration of GitLab with Moodle
+- developing a GitLab REST API client in PHP inspired by existing alternatives like #underline[GitLab PHP API Client]@gitlab_php_api_client
+- writing the intermediary thesis report detailing my current advancement.
+
 
 == Proof Of Concept
 
+As a #underline[POC] @poc of integrating GitLab with Moodle, i decided to create a Moodle module plugin. A module plugin adds a new type of resource a teacher can add to a course.
+
+#figure(
+  image("images/poc_add_module.png"),
+  caption: [Modal for adding resources has a new *GitLab* type of module]
+)
+
+While editing this resource, the teacher must define a GitLab API token.
+This will be used to perform API calls and create / configure the GitLab resources like repositories.
+
+Once created, the students can open the module created and view a button which triggers the creating of a GitLab repository. They can also see a list of existing repositories in the GitLab group with a direct link to them.
+
+#figure(
+  image("images/poc_module.png"),
+  caption: [GitLab module view]
+)
+
+#figure(
+  image("images/poc_gitlab_repo.png"),
+  caption: [Resulting repository created on the selected GitLab group]
+)
+
+I added #underline[Continuous Deployment] @cd to provide a full featured reproducible development and testing environment.
+
+I created an Infrastructure as Code using #underline[Terraform] @terraform allowing to create an AWS EC2 instance.
+
+To setup the instance, I added Configuration as Code with #underline[Ansible] @ansible playbooks. It runs a Moodle instance and places it behind the #underline[Authentik] @authentik authenticity provider. It uses the #underline[Traefik] @traefik reverse proxy to manage communication between all applications and the ingress.
+
+I finally added a GitHub action to automate the updates after each push on the main branch of the project.
+
+== Workflow
+
+The development workflow is based on a structured Git feature branch strategy to ensure isolated and traceable changes. Each feature is implemented in a separate Git branch, allowing for review before integration into the main codebase.
+The task management is handled through a #underline[Kanban board] @kanban. Items are organized by priority and annotated with their dependencies. This ensures critical tasks are addressed first and visibility over blocking / blocked tasks.
+
 = Continuation
+
+This intermediary report summarizes the current progress of the project. The project has been successfully set up, and a consistent workflow has been established.
+
+The project is progressing as expected at this stage. The next phase will focus on the implementation of the solution.
+
+The continuation of the work is guided by the #underline[Kanban board] @appendix_board and the #underline[Gantt chart] @appendix_planning.
+
+The next feature to be implemented is the teacher’s course and module configuration pages.
+
+#pagebreak()
+
+= Appendices
+
+== Planning <appendix_planning>
+
+See #underline[gantt.xlsx]
+
+== Weekly meeting reports <appendix_reports>
+
+See #underline[planning.pdf]
+
+== Source code <appendix_code>
+#underline[GitHub Repository] @code
+
+== Kanban Board <appendix_board>
+#underline[Kanban Board] @kanban
+
 
 #bibliography("ref.yaml")
