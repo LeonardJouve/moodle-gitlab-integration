@@ -22,6 +22,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_gitlab\Helper;
 use mod_gitlab\http\Gitlab;
 use \mod_gitlab\http\RuntimeException;
 
@@ -45,7 +46,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
 
         $mform = $this->_form;
 
-        $token = $this->getGitLabToken();
+        $token = Helper::get_course_gitlab_token($this->get_course()->id);
         if ($token === null) {
             $mform->addElement(
                 'html',
@@ -177,7 +178,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
             $errors['due_date'] = get_string('form_due_date_past_err', 'mod_gitlab');
         }
 
-        $token = $this->getGitLabToken();
+        $token = Helper::get_course_gitlab_token($this->get_course()->id);
 
         // Token
         if ($token === null) {
@@ -216,19 +217,5 @@ class mod_gitlab_mod_form extends moodleform_mod {
         }
 
         return $errors;
-    }
-
-    private function getGitLabToken(): string|null {
-        $courseid = $this->get_course()->id;
-        $handler = \core_customfield\handler::get_handler('core_course', 'course');
-        $customfields = $handler->get_instance_data($courseid);
-
-        foreach ($customfields as $fielddata) {
-            if ($fielddata->get_field()->get('shortname') === 'gitlab_token') {
-                return $fielddata->get_value();
-            }
-        }
-
-        return null;
     }
 }
