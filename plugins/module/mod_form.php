@@ -110,6 +110,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
             get_string('form_due_date', 'mod_gitlab')
         );
         $mform->setType('due_date', PARAM_INT);
+        $mform->addRule('due_date', null, 'required', null, 'client');
         $mform->setDefault('due_date', time() + 7 * DAYSECS);
         $mform->addHelpButton('due_date', 'form_due_date', 'mod_gitlab');
 
