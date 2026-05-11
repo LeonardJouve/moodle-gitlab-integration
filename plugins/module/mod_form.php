@@ -22,6 +22,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_gitlab\http\Gitlab;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
@@ -41,6 +43,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
         global $CFG;
 
         $token = $this->getGitLabToken();
+        $client = new Gitlab($token);
 
         $mform = $this->_form;
 
@@ -63,14 +66,9 @@ class mod_gitlab_mod_form extends moodleform_mod {
             'select',
             'parent_group',
             get_string('form_parent_group', 'mod_gitlab'),
-            [
-                'gitlab.com' => 'GitLab.com',
-                'selfhosted' => $token,
-                'github' => 'GitHub'
-            ],
+            array_column($client->group()->list(), 'name', 'id'),
         );
         $mform->addRule('parent_group', null, 'required', null, 'client');
-        $mform->setDefault('parent_group', 'gitlab.com');
         $mform->addHelpButton('parent_group', 'form_parent_group', 'mod_gitlab');
 
         $this->standard_coursemodule_elements();
