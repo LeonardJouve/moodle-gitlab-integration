@@ -34,7 +34,6 @@ $string['form_parent_group_help'] = 'GitLab parent group containing created reso
 $string['form_reviewer'] = 'GitLab reviewer';
 $string['form_reviewer_help'] = 'GitLab username of a reviewer';
 $string['form_reviewer_repeats_add'] = 'Add a reviewer';
-$string['form_reviewer_repeats_delete'] = 'Delete';
 $string['gitlabfieldset'] = 'gitlab';
 $string['gitlabname'] = 'gitlab';
 $string['gitlabsettings'] = 'gitlab';
