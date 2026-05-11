@@ -181,8 +181,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
 
         // Token
         if ($token === null) {
-            $errors['parent_group'] =
-                get_string('form_no_token_err', 'mod_gitlab');
+            $errors['parent_group'] = get_string('form_no_token_err', 'mod_gitlab');
 
             return $errors;
         }
