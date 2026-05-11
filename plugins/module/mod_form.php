@@ -79,7 +79,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
     }
 
     private function getGitLabToken(): string|null {
-        $courseid = $this->get_course();
+        $courseid = $this->get_course()->id;
         $handler = \core_customfield\handler::get_handler('core_course', 'course');
         $customfields = $handler->get_instance_data($courseid);
 
