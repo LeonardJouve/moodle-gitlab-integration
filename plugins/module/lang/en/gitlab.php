@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['form_group_size'] = 'Group size';
+$string['form_group_size_help'] = 'Amount of students per group';
 $string['form_name'] = 'Name';
 $string['form_name_help'] = 'Name of the module';
 $string['form_parent_group'] = 'Parent group';

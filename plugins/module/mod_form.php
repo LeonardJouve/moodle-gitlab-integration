@@ -71,6 +71,21 @@ class mod_gitlab_mod_form extends moodleform_mod {
         $mform->addRule('parent_group', null, 'required', null, 'client');
         $mform->addHelpButton('parent_group', 'form_parent_group', 'mod_gitlab');
 
+        $mform->addElement(
+            'text',
+            'group_size',
+            get_string('form_group_size', 'mod_gitlab'),
+            [
+                'type' => 'number',
+                'min' => 1,
+                'step' => 1
+            ],
+        );
+        $mform->setType('group_size', PARAM_INT);
+        $mform->addRule('group_size', null, 'numeric', null, 'client');
+        $mform->addRule('group_size', null, 'required', null, 'client');
+        $mform->addHelpButton('group_size', 'form_group_size', 'mod_gitlab');
+
         $this->standard_coursemodule_elements();
 
         $this->add_action_buttons();
