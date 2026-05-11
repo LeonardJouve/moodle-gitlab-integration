@@ -27,6 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['form_name'] = 'Name';
 $string['form_name_help'] = 'Name of the module';
+$string['form_parent_group'] = 'Parent group';
+$string['form_parent_group_help'] = 'GitLab parent group containing created resources';
 $string['gitlabfieldset'] = 'gitlab';
 $string['gitlabname'] = 'gitlab';
 $string['gitlabsettings'] = 'gitlab';
@@ -34,5 +36,5 @@ $string['modulename'] = 'gitlab';
 $string['modulenameplural'] = 'gitlab';
 $string['pluginadministration'] = 'administration';
 $string['pluginname'] = 'gitlab';
-$string['token_help'] = 'Gitlab token';
+$string['token_help'] = 'GitLab token';
 $string['token'] = 'Token';

@@ -42,10 +42,8 @@ class mod_gitlab_mod_form extends moodleform_mod {
 
         $mform = $this->_form;
 
-        // Adding the "general" fieldset, where all the common settings are shown.
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
-        // Adding the standard "name" field.
         $mform->addElement('text', 'name', get_string('form_name', 'mod_gitlab'));
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
@@ -58,10 +56,23 @@ class mod_gitlab_mod_form extends moodleform_mod {
         
         $this->standard_intro_elements();
 
-        // Add standard elements.
+        // TODO
+        $mform->addElement(
+            'select',
+            'parent_group',
+            get_string('form_parent_group', 'mod_gitlab'),
+            [
+                'gitlab.com' => 'GitLab.com',
+                'selfhosted' => 'Self Hosted',
+                'github' => 'GitHub'
+            ],
+        );
+        $mform->addRule('parent_group', null, 'required', null, 'client');
+        $mform->setDefault('parent_group', 'gitlab.com');
+        $mform->addHelpButton('parent_group', 'form_parent_group', 'mod_gitlab');
+
         $this->standard_coursemodule_elements();
 
-        // Add standard buttons.
         $this->add_action_buttons();
     }
 }
