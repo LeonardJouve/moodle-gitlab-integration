@@ -84,7 +84,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
             'select',
             'parent_group',
             get_string('form_parent_group', 'mod_gitlab'),
-            array_column($groups, 'name', 'id'),
+            $groups,
         );
         $mform->addRule('parent_group', null, 'required', null, 'client');
         $mform->addHelpButton('parent_group', 'form_parent_group', 'mod_gitlab');
