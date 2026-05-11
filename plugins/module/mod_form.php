@@ -23,6 +23,7 @@
  */
 
 use mod_gitlab\http\Gitlab;
+use \mod_gitlab\http\RuntimeException;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -46,7 +47,15 @@ class mod_gitlab_mod_form extends moodleform_mod {
 
         $token = $this->getGitLabToken();
         if ($token === null) {
-            $mform->addElement('static', 'gitlab_error', '', get_string('form_no_token_err', 'mod_gitlab'));
+            $mform->addElement(
+                'html',
+                \html_writer::div(
+                    get_string('form_no_token_err', 'mod_gitlab'),
+                    'alert alert-danger'
+                )
+            );
+            $this->standard_coursemodule_elements();
+            
             return;
         }
         
@@ -55,13 +64,27 @@ class mod_gitlab_mod_form extends moodleform_mod {
             $client = new Gitlab($token);
             $groups = array_column($client->group()->list(['owned' => true]), 'name', 'id');
         } catch (RuntimeException $e) {
-            $mform->addElement('static', 'gitlab_error', '', get_string('form_invalid_token_err', 'mod_gitlab'));
+            $mform->addElement(
+                'html',
+                \html_writer::div(
+                    get_string('form_invalid_token_err', 'mod_gitlab'),
+                    'alert alert-danger'
+                )
+            );
+            $this->standard_coursemodule_elements();
 
             return;
         }
 
         if (count($groups) === 0) {
-            $mform->addElement('static', 'gitlab_error', '', get_string('form_no_groups_err', 'mod_gitlab'));
+            $mform->addElement(
+                'html',
+                \html_writer::div(
+                    get_string('form_no_groups_err', 'mod_gitlab'),
+                    'alert alert-danger'
+                )
+            );
+            $this->standard_coursemodule_elements();
 
             return;
         }
