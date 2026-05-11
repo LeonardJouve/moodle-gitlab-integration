@@ -42,11 +42,29 @@ class mod_gitlab_mod_form extends moodleform_mod {
     public function definition() {
         global $CFG;
 
-        // TODO check null + verify validity (ping)
-        $token = $this->getGitLabToken();
-        $client = new Gitlab($token);
-
         $mform = $this->_form;
+
+        $token = $this->getGitLabToken();
+        if ($token === null) {
+            $mform->addElement('static', 'gitlab_error', '', get_string('form_no_token_err', 'mod_gitlab'));
+            return;
+        }
+        
+        $groups = [];
+        try {
+            $client = new Gitlab($token);
+            $groups = array_column($client->group()->list(['owned' => true]), 'name', 'id');
+        } catch (RuntimeException $e) {
+            $mform->addElement('static', 'gitlab_error', '', get_string('form_invalid_token_err', 'mod_gitlab'));
+
+            return;
+        }
+
+        if (count($groups) === 0) {
+            $mform->addElement('static', 'gitlab_error', '', get_string('form_no_groups_err', 'mod_gitlab'));
+
+            return;
+        }
 
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
@@ -62,12 +80,11 @@ class mod_gitlab_mod_form extends moodleform_mod {
         
         $this->standard_intro_elements();
 
-        // TODO only owned groups
         $mform->addElement(
             'select',
             'parent_group',
             get_string('form_parent_group', 'mod_gitlab'),
-            array_column($client->group()->list(), 'name', 'id'),
+            array_column($groups, 'name', 'id'),
         );
         $mform->addRule('parent_group', null, 'required', null, 'client');
         $mform->addHelpButton('parent_group', 'form_parent_group', 'mod_gitlab');
