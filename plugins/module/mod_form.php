@@ -42,6 +42,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
     public function definition() {
         global $CFG;
 
+        // TODO check null + verify validity (ping)
         $token = $this->getGitLabToken();
         $client = new Gitlab($token);
 
@@ -61,7 +62,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
         
         $this->standard_intro_elements();
 
-        // TODO
+        // TODO only owned groups
         $mform->addElement(
             'select',
             'parent_group',
@@ -85,6 +86,23 @@ class mod_gitlab_mod_form extends moodleform_mod {
         $mform->addRule('group_size', null, 'numeric', null, 'client');
         $mform->addRule('group_size', null, 'required', null, 'client');
         $mform->addHelpButton('group_size', 'form_group_size', 'mod_gitlab');
+
+        $this->repeat_elements(
+            [$mform->createElement('text', 'reviewer', get_string('form_reviewer', 'mod_gitlab'))],
+            0,
+            [
+                'reviewer' => ['type' => PARAM_TEXT],
+            ],
+            'reviewer_repeats',
+            'group_name_add_fields',
+            1,
+            get_string('form_reviewer_repeats_add', 'mod_gitlab'),
+            true,
+            get_string('form_reviewer_repeats_delete', 'mod_gitlab'),
+        );
+        $mform->setType('reviewer', PARAM_TEXT);
+        $mform->addRule('reviewer', null, 'required', null, 'client');
+        $mform->addHelpButton('reviewer', 'form_reviewer', 'mod_gitlab');
 
         $this->standard_coursemodule_elements();
 
