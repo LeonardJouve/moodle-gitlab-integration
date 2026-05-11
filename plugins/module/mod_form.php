@@ -40,6 +40,8 @@ class mod_gitlab_mod_form extends moodleform_mod {
     public function definition() {
         global $CFG;
 
+        $token = $this->getGitLabToken();
+
         $mform = $this->_form;
 
         $mform->addElement('header', 'general', get_string('general', 'form'));
@@ -63,7 +65,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
             get_string('form_parent_group', 'mod_gitlab'),
             [
                 'gitlab.com' => 'GitLab.com',
-                'selfhosted' => 'Self Hosted',
+                'selfhosted' => $token,
                 'github' => 'GitHub'
             ],
         );
@@ -74,5 +76,19 @@ class mod_gitlab_mod_form extends moodleform_mod {
         $this->standard_coursemodule_elements();
 
         $this->add_action_buttons();
+    }
+
+    private function getGitLabToken(): string|null {
+        $courseid = $this->get_course();
+        $handler = \core_customfield\handler::get_handler('core_course', 'course');
+        $customfields = $handler->get_instance_data($courseid);
+
+        foreach ($customfields as $fielddata) {
+            if ($fielddata->get_field()->get('shortname') === 'gitlab_token') {
+                return $fielddata->get_value();
+            }
+        }
+
+        return null;
     }
 }
