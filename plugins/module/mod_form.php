@@ -159,6 +159,66 @@ class mod_gitlab_mod_form extends moodleform_mod {
         $this->add_action_buttons();
     }
 
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+
+        // Parent group
+        if (empty($data['parent_group'])) {
+            $errors['parent_group'] = get_string('required');
+        }
+        
+        // Group size
+        if (empty($data['group_size']) || (int)$data['group_size'] < 1) {
+            $errors['group_size'] = get_string('form_group_size_negative_err', 'mod_gitlab');
+        }
+
+        // Due date
+        if (empty($data['due_date']) || $data['due_date'] < time()) {
+            $errors['due_date'] = get_string('form_due_date_past_err', 'mod_gitlab');
+        }
+
+        $token = $this->getGitLabToken();
+
+        // Token
+        if ($token === null) {
+            $errors['parent_group'] =
+                get_string('form_no_token_err', 'mod_gitlab');
+
+            return $errors;
+        }
+
+        $client = new Gitlab($token);
+
+        try {
+            // Parent group
+            if (!empty($data['parent_group'])) {
+                $groups = array_column($client->group()->list(['owned' => true]), 'name', 'id');
+                if (!array_key_exists($data['parent_group'], $groups)) {
+                    $errors['parent_group'] = get_string('form_invalid_parent_group_err', 'mod_gitlab');
+                }
+            }
+            
+            // Reviewers
+            if (!empty($data['reviewer'])) {
+                foreach ($data['reviewer'] as $index => $reviewer) {
+                    $reviewer = trim($reviewer);
+                    if ($reviewer === '') {
+                        continue;
+                    }
+
+                    $users = $client->user()->list(['username' => $reviewer]);
+                    if (count($users) === 0) {
+                        $errors["reviewer[$index]"] = get_string('form_invalid_reviewer_err', 'mod_gitlab');
+                    }
+                }
+            }
+        } catch (RuntimeException $e) {
+            $errors['parent_group'] = get_string('form_invalid_token_err', 'mod_gitlab');
+        }
+
+        return $errors;
+    }
+
     private function getGitLabToken(): string|null {
         $courseid = $this->get_course()->id;
         $handler = \core_customfield\handler::get_handler('core_course', 'course');
