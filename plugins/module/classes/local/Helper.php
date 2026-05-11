@@ -22,7 +22,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_gitlab;
+namespace mod_gitlab\local;
 
 class Helper {
     public static function get_course_gitlab_token(int $courseid): ?string {

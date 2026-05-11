@@ -22,8 +22,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use mod_gitlab\Helper;
-use mod_gitlab\http\Gitlab;
+use \mod_gitlab\local\Helper;
+use \mod_gitlab\http\Gitlab;
 use \mod_gitlab\http\RuntimeException;
 
 defined('MOODLE_INTERNAL') || die();
