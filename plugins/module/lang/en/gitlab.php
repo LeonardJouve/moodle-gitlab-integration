@@ -25,9 +25,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['form_name'] = 'Name';
+$string['form_name_help'] = 'Name of the module';
 $string['gitlabfieldset'] = 'gitlab';
 $string['gitlabname'] = 'gitlab';
-$string['gitlabname_help'] = 'Help';
 $string['gitlabsettings'] = 'gitlab';
 $string['modulename'] = 'gitlab';
 $string['modulenameplural'] = 'gitlab';

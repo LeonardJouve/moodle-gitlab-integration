@@ -46,29 +46,17 @@ class mod_gitlab_mod_form extends moodleform_mod {
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         // Adding the standard "name" field.
-        $mform->addElement('text', 'name', get_string('gitlabname', 'mod_gitlab'), ['size' => '64']);
-
+        $mform->addElement('text', 'name', get_string('form_name', 'mod_gitlab'));
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
             $mform->setType('name', PARAM_CLEANHTML);
         }
-
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        $mform->addHelpButton('name', 'gitlabname', 'mod_gitlab');
+        $mform->addHelpButton('name', 'form_name', 'mod_gitlab');
         
         $this->standard_intro_elements();
-
-        // Adding the rest of mod_gitlab settings, spreading all them into this fieldset
-        // ... or adding more fieldsets ('header' elements) if needed for better logic.
-        // $mform->addElement('static', 'label1', 'gitlabsettings', get_string('gitlabsettings', 'mod_gitlab'));
-        $mform->addElement('header', 'gitlabfieldset', get_string('gitlabfieldset', 'mod_gitlab'));
-
-        $mform->addElement('text', 'token', get_string('token', 'mod_gitlab'), ['size' => '64']);
-        $mform->setType('token', PARAM_TEXT);
-        $mform->addRule('token', null, 'required', null, 'client');
-        $mform->addHelpButton('token', 'token', 'mod_gitlab');
 
         // Add standard elements.
         $this->standard_coursemodule_elements();
