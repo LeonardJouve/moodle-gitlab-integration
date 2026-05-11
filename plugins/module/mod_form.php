@@ -104,6 +104,15 @@ class mod_gitlab_mod_form extends moodleform_mod {
             true,
         );
 
+        $mform->addElement(
+            'date_time_selector',
+            'due_date',
+            get_string('form_due_date', 'mod_gitlab')
+        );
+        $mform->setType('due_date', PARAM_INT);
+        $mform->setDefault('due_date', time() + 7 * DAYSECS);
+        $mform->addHelpButton('due_date', 'form_due_date', 'mod_gitlab');
+
         $this->standard_coursemodule_elements();
 
         $this->add_action_buttons();
