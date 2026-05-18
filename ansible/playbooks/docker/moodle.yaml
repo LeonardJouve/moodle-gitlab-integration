@@ -2,6 +2,7 @@ services:
   webserver:
     volumes:
       - "./moodle-gitlab-integration/plugins/module:/var/www/html/public/mod/gitlab"
+      - "./moodle-gitlab-integration/plugins/local:/var/www/html/public/local/gitlab"
     networks:
       - proxy
     environment:

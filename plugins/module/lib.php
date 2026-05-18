@@ -22,6 +22,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_gitlab\local\Helper;
 use mod_gitlab\http\Gitlab;
 
 /**
@@ -53,18 +54,34 @@ function gitlab_supports($feature) {
 function gitlab_add_instance($moduleinstance, $mform = null) {
     global $DB;
 
-    $client = new Gitlab($moduleinstance->token);
+    $transaction = $DB->start_delegated_transaction();
 
-    // $moduleinstance->group_id = $client->create_group($moduleinstance->name)->id;
-    $moduleinstance->group_id = 128333288;
+    try {
+        $token = Helper::get_course_gitlab_token($moduleinstance->course);
+        $client = new Gitlab($token);
 
-    $client->project()->create($moduleinstance->name, $moduleinstance->group_id);
+        $group = $client->group()->create($moduleinstance->name, $moduleinstance->parent_group);
 
-    $moduleinstance->timecreated = time();
+        $reviewers = array_values(array_filter(
+            array_map('trim', $moduleinstance->reviewer ?? []),
+            function ($v) {
+                return $v !== '';
+            }
+        ));
 
-    $id = $DB->insert_record('gitlab', $moduleinstance);
+        $moduleinstance->reviewers = json_encode($reviewers ?: [], JSON_UNESCAPED_UNICODE);
+        $moduleinstance->timecreated = time();
+        $moduleinstance->group_id = $group->id;
 
-    return $id;
+        $id = $DB->insert_record('gitlab', $moduleinstance);
+
+        $transaction->allow_commit();
+
+        return $id;
+    } catch (\Exception $e) {
+        $transaction->rollback($e);
+        throw $e;
+    }
 }
 
 /**
@@ -80,6 +97,14 @@ function gitlab_add_instance($moduleinstance, $mform = null) {
 function gitlab_update_instance($moduleinstance, $mform = null) {
     global $DB;
 
+    $reviewers = array_values(array_filter(
+        array_map('trim', $moduleinstance->reviewer ?? []),
+        function ($v) {
+            return $v !== '';
+        }
+    ));
+    
+    $moduleinstance->reviewers = json_encode($reviewers ?: [], JSON_UNESCAPED_UNICODE);
     $moduleinstance->timemodified = time();
     $moduleinstance->id = $moduleinstance->instance;
 

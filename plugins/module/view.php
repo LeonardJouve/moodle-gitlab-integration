@@ -26,6 +26,7 @@ use core\output\html_writer;
 use core\url;
 use mod_gitlab\http\Gitlab;
 use mod_gitlab\http\RuntimeException;
+use mod_gitlab\local\Helper;
 
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
@@ -57,7 +58,8 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
-$client = new Gitlab($moduleinstance->token);
+$token = Helper::get_course_gitlab_token($moduleinstance->course);
+$client = new Gitlab($token);
 
 if ($action === 'createrepository') {
     try {

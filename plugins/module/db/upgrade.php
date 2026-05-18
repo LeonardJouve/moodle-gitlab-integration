@@ -32,33 +32,5 @@ function xmldb_gitlab_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2026033001) {
-        // Define field token to be added to gitlab.
-        $table = new xmldb_table('gitlab');
-        $field = new xmldb_field('token', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'introformat');
-
-        // Conditionally launch add field token.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // Gitlab savepoint reached.
-        upgrade_mod_savepoint(true, 2026033001, 'gitlab');
-    }
-
-    if ($oldversion < 2026033002) {
-         // Define field group_id to be added to gitlab.
-        $table = new xmldb_table('gitlab');
-        $field = new xmldb_field('group_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'token');
-
-        // Conditionally launch add field group_id.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // Gitlab savepoint reached.
-        upgrade_mod_savepoint(true, 2026033002, 'gitlab');
-    }
-
     return true;
 }

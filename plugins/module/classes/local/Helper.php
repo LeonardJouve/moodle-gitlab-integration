@@ -15,17 +15,26 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Display information about all the mod_gitlab modules in the requested course.
  *
  * @package     mod_gitlab
  * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace mod_gitlab\local;
 
-$plugin->component = 'mod_gitlab';
-$plugin->release = '0.1.0';
-$plugin->version = 2026033001;
-$plugin->requires = 2025100601;
-$plugin->maturity = MATURITY_ALPHA;
+class Helper {
+    public static function get_course_gitlab_token(int $courseid): ?string {
+        $handler = \core_customfield\handler::get_handler('core_course', 'course');
+        $customfields = $handler->get_instance_data($courseid);
+
+        foreach ($customfields as $fielddata) {
+            if ($fielddata->get_field()->get('shortname') === 'gitlab_token' && $fielddata->get_value() !== '') {
+                return $fielddata->get_value();
+            }
+        }
+
+        return null;
+    }
+}

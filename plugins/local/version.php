@@ -17,15 +17,15 @@
 /**
  * Plugin version and other meta-data are defined here.
  *
- * @package     mod_gitlab
+ * @package     local_gitlab
  * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'mod_gitlab';
+$plugin->component = 'local_gitlab';
 $plugin->release = '0.1.0';
-$plugin->version = 2026033001;
+$plugin->version = 2026042701;
 $plugin->requires = 2025100601;
 $plugin->maturity = MATURITY_ALPHA;

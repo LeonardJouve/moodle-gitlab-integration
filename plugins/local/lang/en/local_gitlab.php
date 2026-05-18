@@ -15,17 +15,14 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Plugin strings are defined here.
  *
- * @package     mod_gitlab
+ * @package     local_gitlab
+ * @category    string
  * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'mod_gitlab';
-$plugin->release = '0.1.0';
-$plugin->version = 2026033001;
-$plugin->requires = 2025100601;
-$plugin->maturity = MATURITY_ALPHA;
+$string['pluginname'] = 'Local Gitlab';
