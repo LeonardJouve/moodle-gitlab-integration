@@ -1,0 +1,150 @@
+moodle:
+  type: Web
+  title: Moodle
+  url: https://moodle.org
+
+gitlab_php_api_client:
+  type: Web
+  title: GitLab PHP API Client
+  url: https://github.com/GitLabPHP/Client
+
+gitlab_tools:
+  type: Web
+  title: GitLab Tools
+  url: https://gitlab.fhnw.ch/gitlab-tools/gitlab-tools
+
+gitlab_haskell:
+  type: Web
+  title: GitLab Haskell
+  url: https://gitlab.com/robstewart57/gitlab-haskell
+
+classmoji:
+  type: Web
+  title: Classmoji
+  url: https://github.com/classmoji/classmoji
+
+plugin_webhooks:
+  type: Web
+  title: Webhooks Plugin
+  url: https://moodle.org/plugins/local_webhooks
+
+plugin_board:
+  type: Web
+  title: Board Plugin
+  url: https://moodle.org/plugins/mod_board
+
+plugin_coursetocal:
+  type: Web
+  title: Course to Calendar Plugin
+  url: https://moodle.org/plugins/local_coursetocal
+
+plugin_githubrepo:
+  type: Web
+  title: GitHub Repository Plugin
+  url: https://moodle.org/plugins/repository_github
+
+zohoflow:
+  type: Web
+  title: Zohoflow
+  url: https://www.zohoflow.com/en-ca/apps/canvas-lms/integrations/gitlab
+
+canvas_gitLab_integration:
+  type: article
+  author:
+    - L. Schauer
+    - R. Stewart
+    - M. Maarek
+  title: Integrating Canvas and GitLab to Enrich Learning Processes
+  year: 2024
+  booktitle: "2024 IEEE/ACM 46th International Conference on Software Engineering: Software Engineering Education and Training (ICSE-SEET)"
+  address: Lisbon, Portugal
+  pages: 180-190
+  doi: 10.1145/3639474.3640056
+  url: https://doi.org/10.1145/3639474.3640056
+  keywords:
+    - Surveys
+    - Training
+    - Productivity
+    - Learning management systems
+    - Feedback loop
+    - Control systems
+    - User experience
+    - Git
+    - GitLab
+    - Version Control Systems
+    - Programming Education
+
+github_classroom:
+  type: Web
+  title: GitHub Classroom
+  url: https://classroom.github.com
+
+moodle_academy:
+  type: Web
+  title: Moodle Academy
+  url: https://moodle.academy
+
+canvas:
+  type: Web
+  title: Canvas
+  url: https://www.instructure.com/canvas
+
+gitlab:
+  type: Web
+  title: GitLab
+  url: https://about.gitlab.com
+
+php:
+  type: Web
+  title: PHP
+  url: https://www.php.net
+
+moodle_docker:
+  type: Web
+  title: Moodle Docker Deployment
+  url: https://github.com/LeonardJouve/moodle-docker
+
+terraform:
+  type: Web
+  title: Terraform
+  url: https://developer.hashicorp.com/terraform
+
+ansible:
+  type: Web
+  title: Ansible
+  url: https://docs.ansible.com
+
+authentik:
+  type: Web
+  title: Authentik
+  url: https://goauthentik.io
+
+traefik:
+  type: Web
+  title: Traefik
+  url: https://traefik.io/traefik
+
+poc:
+  type: Web
+  title: POC
+  url: https://github.com/LeonardJouve/moodle-gitlab-integration/pull/14
+
+cd:
+  type: Web
+  title: CD
+  url: https://github.com/LeonardJouve/moodle-gitlab-integration/pull/16
+
+kanban:
+  type: Web
+  title: Kanban board
+  url: https://github.com/users/LeonardJouve/projects/3
+
+code:
+  type: Web
+  title: Repository
+  url: https://github.com/LeonardJouve/moodle-gitlab-integration
+
+activity_module:
+  type: Web
+  title: Moodle activity module
+  url: https://docs.moodle.org/501/en/Activities
