@@ -9,3 +9,5 @@ terraform.tfvars
 
 inventory.ini
 all.yaml
+
+node_modules
