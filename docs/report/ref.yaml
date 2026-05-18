@@ -49,9 +49,30 @@ zohoflow:
   url: https://www.zohoflow.com/en-ca/apps/canvas-lms/integrations/gitlab
 
 canvas_gitLab_integration:
-  type: Web
-  title: Canvas GitLab Integration
-  url: https://figshare.com/articles/code/Canvas-GitLab_Integration_Framework_as_presented_in_b_Integrating_Canvas_and_GitLab_to_Enrich_Learning_Processes_b_/24916716)
+  type: article
+  author:
+    - L. Schauer
+    - R. Stewart
+    - M. Maarek
+  title: Integrating Canvas and GitLab to Enrich Learning Processes
+  year: 2024
+  booktitle: "2024 IEEE/ACM 46th International Conference on Software Engineering: Software Engineering Education and Training (ICSE-SEET)"
+  address: Lisbon, Portugal
+  pages: 180-190
+  doi: 10.1145/3639474.3640056
+  url: https://doi.org/10.1145/3639474.3640056
+  keywords:
+    - Surveys
+    - Training
+    - Productivity
+    - Learning management systems
+    - Feedback loop
+    - Control systems
+    - User experience
+    - Git
+    - GitLab
+    - Version Control Systems
+    - Programming Education
 
 github_classroom:
   type: Web
@@ -122,3 +143,8 @@ code:
   type: Web
   title: Repository
   url: https://github.com/LeonardJouve/moodle-gitlab-integration
+
+activity_module:
+  type: Web
+  title: Moodle activity module
+  url: https://docs.moodle.org/501/en/Activities

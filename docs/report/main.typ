@@ -35,7 +35,9 @@ The integration aims automate workflows involved in programming assignments. Thi
 
 From an architectural perspective, the solution is designed to be modular and extensible. While initially focused on GitLab, the system will be structured in a way that allows future support for other Git repository hosting services. This ensures long-term adaptability and encourages community contributions.
 
-= Platforms
+#pagebreak()
+
+= Context
 
 == Moodle
 
@@ -47,7 +49,7 @@ Moodle most valuable strengths are:
 - Extensive plugin ecosystem
 
 #figure(
-  image("images/moodle_course.png"),
+  image("images/moodle_course.png", width: 80%),
   caption: [Moodle course]
 )
 
@@ -72,7 +74,7 @@ The most used features are:
 - Extensibility through integration via Webhooks and REST/GraphQL APIs
 
 #figure(
-  image("images/gitlab_repo.png"),
+  image("images/gitlab_repo.png", width: 80%),
   caption: [GitLab repository]
 )
 
@@ -138,16 +140,6 @@ It is not widely adopted yet but is created with GitHub integration in the core.
 It claims to integrate GitHub Classroom with the LMS directly and add some additional features.
 This will be used as an example of integration between a LMS and Git repository hosting platform.
 
-=== Canvas GitLab Integration
-#underline[Canvas GitLab Integration] @canvas_gitLab_integration is a research project aiming to enrich learning processes.
-It is a project in 3 parts:
-- GitLab API
-- Moodle API
-- Moodle - GitLab integration API
-All 3 projects are open source and written in Haskell.
-There is also a report analyzing how this would improve the learning process.
-This work will be used for its analytical point of view on the subject and help with the structure of an integration between 2 modules.
-
 === GitHub Classroom
 #underline[GitHub Classroom] is an assignment management platform integrated with GitHub.
 It brings automation to the teachers grading assessments on code projects.
@@ -159,17 +151,30 @@ The workflows teachers will be able to automate with our plugin will be heavily 
 Existing solutions either lack deep LMS integration, are proprietary, or are limited to GitHub.
 There is currently no open-source, Moodle-native integration with GitLab supporting automated assignment workflows, which motivates this project. The goal of this project is to automate Git-based assignment workflows and centralize repository-related information directly within Moodle.
 
+== Academic work
+
+=== Canvas GitLab Integration
+#underline[Canvas GitLab Integration] @canvas_gitLab_integration is a research project aiming to enrich learning processes.
+
+The paper highlights that separating version control systems (VCS) from learning management systems (LMS) leads to a fragmented and inefficient user experience, as students and instructors must switch between platforms. To address this, the authors propose a high-level programming framework that integrates Canvas and GitLab to reduce fragmentation and improve the overall educational experience.
+
+It is a project in 3 parts:
+- GitLab API
+- Moodle API
+- Moodle - GitLab integration API
+All 3 projects are open source and written in Haskell.
+There is also a report analyzing how this would improve the learning process.
+This work will be used for its analytical point of view on the subject and help with the structure of an integration between 2 modules.
+
+#pagebreak()
+
 = Specifications <spec>
 
 == Objectives
 
-The goal of this project is to have an extensible integration between GitLab and Moodle.
-It would include an API automating all mentioned issues accessible from a Moodle integration plugin and thus improve teachers and students workflows.
-
-To achieve this, this project aims to:
-- Review the state of the art and identify the features and functionalities the project will include based on possibilities and limitations within the GitLab and Moodle APIs (for example: group management, project creation, feedbacks and grading)
-- Evaluate and identify most suitable architecture for the implementation:
-- The API should support multiple Git repository hosting services
+This project aims to:
+- Review the state of the art and identify the features and functionalities the project will include based on possibilities and limitations within the GitLab and Moodle APIs (for example: group management, project creation and feedbacks)
+- Evaluate and identify most suitable architecture for the implementation
 - The codebase should be modular, open to modifications and improvements
 - Implement, develop and deploy the integration between Moodle and GitLab by following the DevOps principles
 - Validate and test (optionally with representative users)
@@ -182,6 +187,9 @@ By the end of this work, we aim to have the following deliverables:
   - Specifications document
   - Gantt chart
   - State of the art
+- Work presentation
+  - PowerPoint
+  - Poster
 - Plugin code published as open source
   - Usage documentation
   - Code tests
@@ -190,7 +198,8 @@ By the end of this work, we aim to have the following deliverables:
 
 == Expected result
 
-This project should provide an integration between Moodle and GitLab and potentially any other Git repository hosting service.
+The goal of this project is to have an extensible integration between GitLab (potentially any other Git repository) and Moodle.
+It would include an API automating all mentioned issues accessible from a Moodle integration plugin and thus improve teachers and students workflows.
 
 The setup of the plugin should be easy and intuitive.
 
@@ -198,88 +207,91 @@ It should help teachers as well as students with their organization, documents /
 
 It should be released as open source to allow others to access, use, and build upon the work.
 
+#pagebreak()
+
+= System architecture
+
+The developed plugin(s) sit within the Moodle plugins layer and acts as the central bridge between the two platforms. It communicates with Moodle Core to read course data and create activity modules while a GitLab Client subcomponent handles all communication with GitLab. This client reaches GitLab REST API, through which it provisions and manages the GitLab resources to match the desired state. The REST API keeps both platforms fully decoupled: Moodle has no direct knowledge of GitLab internals, and GitLab requires no Moodle specific configuration.
+
+#figure(
+  image("images/integration.svg"),
+  caption: [Moodle with GitLab integration]
+)
+
+#pagebreak()
+
 = Features
 
 The integration will be made with a Moodle plugin.
-The plugin will add an [activity module](https://docs.moodle.org/501/en/Activities) named `GitLab`.
+The plugin will add an #underline[activity module]@activity_module named `GitLab`.
 
 #figure(
- image("images/module.svg"),
+  image("images/module.svg", width: 60%),
   caption: [GitLab module on Moodle course page]
 )
 
 == Teachers
 
-Teachers will be able to create such module and set different properties such as:
-- name
-- description
-- instructions
-- due date
-- group size
-- reviewer
+As a teacher, I want to:
 
-Once defined, the teacher have access to a GitLab repository used as a template for students repositories.
-
-Each students group will have its own GitLab repository.
-From Moodle, teachers will be able to:
-- see a list of students groups
-- manage groups
-- access each group repository
-- see last CI jobs results
-- see individual participation insights
-- download source code
-- see wether the group has already been graded
+_
+- define practical work properties such as name, description, instructions, due date, group size, reviewers
+- create a GitLab activity module in Moodle so that I can manage a practical work linked to GitLab repositories.
+- access a GitLab template repository so that I can prepare the initial project and solution.
+- view all student groups so that I can monitor participation and project progress.
+- create, edit, or remove student groups so that I can organize collaborative work.
+- access each group repository so that I can review submissions efficiently.
+- see the latest CI/CD pipeline results so that I can quickly identify failing projects.
+- view individual contribution statistics so that I can assess each student’s participation.
+- download repositories source code so that I can review projects locally.
+- know whether a group has already been graded so that I can avoid duplicate corrections.
+_
 
 #figure(
- image("images/teacher_dashboard.svg"),
+ image("images/teacher_dashboard.svg", width: 80%),
   caption: [Teacher dashboard scaffold]
 )
 
 == Students
 
-On the other side, students will be able to:
-- view groups list
-- join group
-- create group
+As a student, I want to:
+_
+- view the list of existing groups so that I can join a team.
+- join a group so that I can collaborate with other students.
+- create a new group so that I can start a project team.
+- access my group repository so that I can contribute to the practical work.
+- view grades and feedback on Moodle and GitLab merge requests so that I can understand my evaluation.
+- receive a notification when grading is completed so that I know when feedback is available.
+- see the assignment due date in the Moodle calendar so that I can manage my schedule.
+_
 
 #figure(
-  image("images/student_groups.svg"),
+  image("images/student_groups.svg", width: 70%),
   caption: [Student groups list scaffold]
 )
 
-Once a student has joined a group, he should be able to:
-- access his repository
-- see practical work instructions under the GitLab issues
-- see the grade / feedbacks on GitLab MR and on Moodle
-- receive a notification after grading
-- view the practical work due date in the Moodle calendar
-
 #figure(
-  image("images/student_group.svg"),
+  image("images/student_group.svg", width: 80%),
   caption: [Student group scaffold]
 )
 
 == Automation
 
-Once a `GitLab` module is created, a GitLab group as well as a GitLab repository will automatically be created.
+As a teacher, I want to:
 
-The group will contain all repositories related to the practical work.
+_
+- create a GitLab group automatically when a Moodle activity is created so that setup is simplified.
+- create a template repository automatically so that all student repositories share the same base project.
+- see updates to the template repository propagate to student repositories through merge requests so that projects stay synchronized.
+_
 
-The repository will be used as a template for students repositories and will only be accessible by teachers and reviewers.
+As a student, I want to:
 
-Teachers and reviewers will be able to commit the initial project to the `main` branch and the solution to the `solution` branch.
-
-Once a modification is made to the template repository, a merge request is created to update all the existent student repositories.
-
-For each student group creation, a repository is created with correct visibility and assignments.
-
-A merge request is created and will be used for grading.
-
-An issue is created as well with the practical work instructions.
-
-Grades and feedbacks are visible by students on Moodle after being published in the correction merge request by reviewers.
-
-After the practical work due date, the template `solution` branch is published with a merge request to all students.
+_
+- have a repository created automatically when my group is formed so that I can start working immediately.
+- see the practical work instructions to be automatically added as GitLab issues so that I can easily track requirements.
+- have a solution branch to become available after the deadline so that I can compare my work with the expected solution.
+_
 
 #figure(
   image("images/gitlab_workflow.svg"),
@@ -294,55 +306,72 @@ Another possible integration would be with a grade assessments platform such as 
 
 == List
 
-Graded features list with priorities from *1* to *4*:
+Features listed with priorities from *1* to *4*:
 - *1* = highest priority
 - *4* = lowest priority
 
-=== GitLab Group
-- GitLab template | *1*
-    - commits to the template trigger MR to all repositories => webhook | *1*
-    - solution branch => MR to all repo after due date | *2*
-- Sub repo (based on template) per team (correct visibility) | *1*
-- Create issue (instructions) + merge request | *1*
+*GitLab Group*
+#align(center, table(
+  columns: 2,
+  table.header([Feature], [Priority]),
+  
+  [Commits to template trigger MR to all repositories (webhook)], [1],
+  [Solution branch → MR to all repos after due date], [2],
+  [Sub-repo per team (correct visibility)], [1],
+  [Create issue (instructions) + merge request], [1],
+))
 
-=== Teacher Dashboard
-- Create new project | *1*
-    - name
-    - description
-    - instructions
-    - due date
-    - group size
-    - assign reviewer
-- Group list | *1*
-- Direct access to repo | *1*
-- CI jobs results | *1*
-- Commits participations / lines | *2*
-- Download source button | *2*
-- Status (graded / non-graded) | *1*
+*Teacher Dashboard*
+#align(center, table(
+  columns: 2,
+  table.header([Feature], [Priority]),
 
-=== Student Dashboard
-- Join group => init group repo | *1*
-    - Automatically add project due date to Moodle calendar | *1*
-- Link to repo | *1*
-- Grade / feedbacks (from MR) | *1*
-    - Notification after grading | *2*
+  [Create new resource], [1],
+  [Project name], [1],
+  [Project description], [1],
+  [Project instructions], [1],
+  [Project due date], [1],
+  [Project group size], [1],
+  [Project reviewers], [1],
+  [Group list], [1],
+  [Direct access to repo], [1],
+  [CI jobs results], [1],
+  [Commits participation / lines], [2],
+  [Download source button], [2],
+  [Status (graded / non-graded)], [1],
+))
 
-=== Support multiple Git hosting platform
-- GitLab | *1*
-- GitHub | *3*
-- Must use interfaces to allow other platforms in the future | *1*
+*Student Dashboard*
+#align(center, table(
+  columns: 2,
+  table.header([Feature], [Priority]),
 
-=== Eval
-- Activity module | *4*
-- Link | *4*
-- Grade | *4*
-- Solution / feedback after evaluation (link) | *4*
+  [Join group → init group repo], [1],
+  [Add practical work due date to Moodle calendar], [1],
+  [Link to repo], [1],
+  [Grade / feedbacks (from MR)], [1],
+  [Notification after grading], [2],
+))
 
-=== Gaps
-- Include course calendar to Moodle calendar | *3*
-- Retrieve unit description from Gaps | *3*
+*Miscellaneous*
+#align(center, table(
+  columns: 2,
+  table.header([Feature], [Priority]),
 
-= Progression
+  [VCS: GitLab support], [1],
+  [VCS: GitHub support], [3],
+  [VCS: Pluggable interface for future platforms], [1],
+  [Eval: Activity module], [4],
+  [Eval: Link], [4],
+  [Eval: Grade], [4],
+  [Eval: Solution / feedback after evaluation (link)], [4],
+  [Gaps: Include course calendar in Moodle calendar], [3],
+  [Gaps: Retrieve unit description from Gaps], [3],
+))
+
+#pagebreak()
+
+= Progress
 
 So far, the bachelor thesis has started for about 3 months, with approximately 8 hours per week dedicated to it.
 The same workload will continue until mid-June. After that, I will work on the project full-time for about 2 months before the final presentation.
@@ -350,7 +379,7 @@ The same workload will continue until mid-June. After that, I will work on the p
 These first months were mainly focused on establishing the requirements, the planning and the feasible features for the project.
 The upcoming time will focus more on the implementation and testing of the integration.
 
-My progression so far has made me work on the following:
+My progress so far has made me work on the following:
 - defining the #underline[specifications] @spec for the project
 - setting a #underline[planning] @appendix_planning of the targeted advancement and due dates
 - research and evaluation of existing (partial) solutions / alternatives and writing a current #underline[state of the art] @state_of_the_art
@@ -366,7 +395,7 @@ My progression so far has made me work on the following:
 As a #underline[POC] @poc of integrating GitLab with Moodle, i decided to create a Moodle module plugin. A module plugin adds a new type of resource a teacher can add to a course.
 
 #figure(
-  image("images/poc_add_module.png"),
+  image("images/poc_add_module.png", width: 70%),
   caption: [Modal for adding resources has a new *GitLab* type of module]
 )
 
@@ -376,7 +405,7 @@ This will be used to perform API calls and create / configure the GitLab resourc
 Once created, the students can open the module created and view a button which triggers the creating of a GitLab repository. They can also see a list of existing repositories in the GitLab group with a direct link to them.
 
 #figure(
-  image("images/poc_module.png"),
+  image("images/poc_module.png", width: 80%),
   caption: [GitLab module view]
 )
 
@@ -390,6 +419,11 @@ I added #underline[Continuous Deployment] @cd to provide a full featured reprodu
 I created an Infrastructure as Code using #underline[Terraform] @terraform allowing to create an AWS EC2 instance.
 
 To setup the instance, I added Configuration as Code with #underline[Ansible] @ansible playbooks. It runs a Moodle instance and places it behind the #underline[Authentik] @authentik authenticity provider. It uses the #underline[Traefik] @traefik reverse proxy to manage communication between all applications and the ingress.
+
+#figure(
+  image("images/iac.svg", width: 70%),
+  caption: [IaC architecture]
+)
 
 I finally added a GitHub action to automate the updates after each push on the main branch of the project.
 
@@ -418,13 +452,15 @@ See #underline[gantt.xlsx]
 
 == Weekly meeting reports <appendix_reports>
 
-See #underline[planning.pdf]
+See #underline[reports.pdf]
 
 == Source code <appendix_code>
 #underline[GitHub Repository] @code
 
 == Kanban Board <appendix_board>
 #underline[Kanban Board] @kanban
+
+#pagebreak()
 
 
 #bibliography("ref.yaml")
