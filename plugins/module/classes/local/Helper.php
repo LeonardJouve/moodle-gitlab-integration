@@ -30,7 +30,7 @@ class Helper {
         $customfields = $handler->get_instance_data($courseid);
 
         foreach ($customfields as $fielddata) {
-            if ($fielddata->get_field()->get('shortname') === 'gitlab_token') {
+            if ($fielddata->get_field()->get('shortname') === 'gitlab_token' && $fielddata->get_value() !== '') {
                 return $fielddata->get_value();
             }
         }

@@ -71,7 +71,7 @@ function gitlab_add_instance($moduleinstance, $mform = null) {
 
         $moduleinstance->reviewers = json_encode($reviewers ?: [], JSON_UNESCAPED_UNICODE);
         $moduleinstance->timecreated = time();
-        $moduleinstance->group_id = $group['id'];
+        $moduleinstance->group_id = $group->id;
 
         $id = $DB->insert_record('gitlab', $moduleinstance);
 
