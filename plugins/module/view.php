@@ -165,14 +165,17 @@ function list_groups(int $module_id) {
 
     echo $OUTPUT->render_from_template('mod_gitlab/groups', [
         'groups' => array_map(function($group) use ($module_id) {
+            $members = trim($group->members, '{}');
+            $members = $members !== '' ? explode(',', $members) : [];
+        
             $group->can_join_group = true; // TODO
             $group->join_group_url = new url('/mod/gitlab/view.php', [
                 'id' => $module_id,
                 'action' => 'joingroup',
                 'group_id' => $group->id,
             ]);
-            $group->name = 'Group of ' . implode(', ', $group->members);
-            $group->member_count = count($group->members);
+            $group->name = 'Group of ' . implode(', ', $members);
+            $group->member_count = count($members);
             return $group;
         }, Group::get_groups($module_id)),
         'has_group' => Group::has_group($module_id, $USER->id),
