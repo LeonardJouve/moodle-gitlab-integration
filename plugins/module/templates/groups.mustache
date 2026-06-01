@@ -25,13 +25,14 @@
 <h2>Groups</h2>
 {{#groups}}
     <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">{{name}}</h5>
-            <p class="card-text">Members: {{member_count}}</p>
-            {{#can_join_group}}
-                <a href={{join_group_url}} class="btn btn-primary">Join</a>
-            {{/can_join_group}}
-            <p>{{member_count}}/{{max_member}}</p>
+        <div class="card-body d-flex align-items-center">
+            <h5 class="card-title mb-0 flex-grow-1">{{name}}</h5>
+            <div class="d-flex align-items-center gap-3">
+                <p class="mb-0">{{member_count}}/{{max_member}}</p>
+                {{#can_join_group}}
+                    <a href={{join_group_url}} class="btn btn-primary">Join</a>
+                {{/can_join_group}}
+            </div>
         </div>
     </div>
 {{/groups}}
