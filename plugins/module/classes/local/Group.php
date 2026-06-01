@@ -27,11 +27,28 @@ namespace mod_gitlab\local;
 use stdClass;
 
 class Group {
-    public static function has_group(int $module_id, int $user_id): bool {
-        return Group::group($module_id, $user_id) !== null;
+    public static function group(int $group_id) {
+        global $DB;
+
+        return $DB->get_record_sql("
+            SELECT
+                g.id,
+                COUNT(m.user_id) AS member_count
+            FROM {gitlab_groups} g
+            LEFT JOIN {gitlab_group_members} m
+                ON m.group_id = g.id
+            WHERE g.id = :group_id
+            GROUP BY g.id
+        ", [
+            'group_id' => $group_id,
+        ]);
     }
 
-    public static function group(int $module_id, int $user_id): ?int {
+    public static function has_group(int $module_id, int $user_id): bool {
+        return Group::user_group($module_id, $user_id) !== null;
+    }
+
+    public static function user_group(int $module_id, int $user_id): ?int {
         global $DB;
 
         $group = $DB->get_record_sql("
@@ -73,7 +90,7 @@ class Group {
         return array_values($groups);
     }
 
-    public static function create_group(int $module_id, string $name, int $user_id): ?int {
+    public static function create_group(int $module_id, int $user_id, int $repository_id): ?int {
         global $DB;
 
         if (Group::has_group($module_id, $user_id)) {
@@ -82,17 +99,22 @@ class Group {
 
         $group = new stdClass();
         $group->module_id = $module_id;
-        $group->name = $name;
+        $group->repository_id = $repository_id;
 
         $group_id = $DB->insert_record('gitlab_groups', $group);
 
         return $group_id;
     }
 
-    public static function join_group(int $module_id, int $group_id, int $user_id): bool {
+    public static function join_group(int $module_id, int $group_id, int $user_id, int $max_member): bool {
         global $DB;
     
         if (Group::has_group($module_id, $user_id)) {
+            return false;
+        }
+
+        $group = Group::group($group_id);
+        if ($group->member_count >= $max_member) {
             return false;
         }
 
@@ -106,14 +128,24 @@ class Group {
     public static function leave_group(int $module_id, int $user_id): bool {
         global $DB;
 
-        $group = Group::group($module_id, $user_id);
-        if (!$group) {
+        $group_id = Group::user_group($module_id, $user_id);
+        if (!$group_id) {
             return false;
         }
 
-        return $DB->delete_records('gitlab_group_members', [
-            'group_id' => $group,
+        $ok = $DB->delete_records('gitlab_group_members', [
+            'group_id' => $group_id,
             'user_id'  => $user_id
         ]);
+
+        $group = Group::group($group_id);
+        if ($group->member_count == 0) {
+            $DB->delete_records('gitlab_groups', [
+                'id' => $group_id,
+            ]);
+        }
+
+
+        return $ok;
     }
 }

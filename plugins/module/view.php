@@ -90,7 +90,7 @@ case 'createrepository':
     break;
 case 'joingroup':
     $group_id = optional_param('group_id', '', PARAM_INT);
-    if (!$group_id || !Group::join_group($cm->id, $group_id, $USER->id)) {
+    if (!$group_id || !Group::join_group($cm->id, $group_id, $USER->id, $moduleinstance->group_size)) {
         error(get_string('message_error_join_group', 'mod_gitlab'));
         return;
     }
@@ -112,17 +112,27 @@ case 'leavegroup':
     );
     break;
 case 'creategroup':
-    $group = Group::create_group($cm->id, "test", $USER->id);
-    if (!$group) {
-        error(get_string('message_error_create_group', 'mod_gitlab'));
+    try {
+        $repository = $client->project()->create(
+            $moduleinstance->name . "_" . bin2hex(random_bytes(8)),
+            $moduleinstance->group_id,
+        );
+
+        $group = Group::create_group($cm->id, $USER->id, $repository->id);
+        if (!$group) {
+            error(get_string('message_error_create_group', 'mod_gitlab'));
+            return;
+        }
+        Group::join_group($cm->id, $group, $USER->id, $moduleinstance->group_size);
+
+        redirect(
+            new url('/mod/gitlab/view.php', ['id' => $cm->id]),
+            get_string('message_created_group', 'mod_gitlab'),
+        );
+    } catch (RuntimeException $e) {
+        error(get_string('message_error_create_repository', 'mod_gitlab', ['message' => $e->getMessage()]));
         return;
     }
-    Group::join_group($cm->id, $group, $USER->id);
-
-    redirect(
-        new url('/mod/gitlab/view.php', ['id' => $cm->id]),
-        get_string('message_created_group', 'mod_gitlab'),
-    );
     break;
 }
 
