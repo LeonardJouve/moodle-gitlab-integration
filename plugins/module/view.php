@@ -31,6 +31,8 @@ use mod_gitlab\local\Helper;
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 
+global $DB, $PAGE, $USER, $OUTPUT;
+
 // Course module id.
 $id = optional_param('id', 0, PARAM_INT);
 
@@ -61,7 +63,8 @@ $PAGE->set_context($modulecontext);
 $token = Helper::get_course_gitlab_token($moduleinstance->course);
 $client = new Gitlab($token);
 
-if ($action === 'createrepository') {
+switch ($action) {
+case 'createrepository':
     try {
         $client->project()->create(
             $moduleinstance->name . "_" . $USER->username . "_" . bin2hex(random_bytes(8)),
@@ -78,6 +81,19 @@ if ($action === 'createrepository') {
         new url('/mod/gitlab/view.php', ['id' => $cm->id]),
         'Repository created!'
     );
+    break;
+case 'leave_group':
+    redirect(
+        new url('/mod/gitlab/view.php', ['id' => $cm->id]),
+        'Left group'
+    );
+    break;
+case 'create_group':
+    redirect(
+        new url('/mod/gitlab/view.php', ['id' => $cm->id]),
+        'Created group'
+    );
+    break;
 }
 
 function list_repositories(Gitlab $client, int $group_id, int $module_id) {
@@ -117,9 +133,22 @@ function list_repositories(Gitlab $client, int $group_id, int $module_id) {
     }
 }
 
-function has_group(int $module_id, int $user_id) {
-    // TODO
-    return false;
+function has_group(int $module_id) {
+    global $DB, $USER;
+
+    return $DB->record_exists_sql("
+        SELECT 1
+        FROM {gitlab_group_members} m
+        JOIN {gitlab_groups} g
+            ON g.id = m.group_id
+        WHERE
+            g.module_id = :module_id
+            AND m.user_id = :user_id
+        LIMIT 1
+    ", [
+        'module_id' => $module_id,
+        'user_id' => $USER->id,
+    ]);
 }
 
 function list_groups(int $module_id) {
@@ -133,10 +162,32 @@ function list_groups(int $module_id) {
         FROM {gitlab_groups} g
         LEFT JOIN {gitlab_group_members} m
             ON m.group_id = g.id
-        WHERE g.module_id = {$module_id}
-        GROUP BY g.id");
+        WHERE g.module_id = :module_id
+        GROUP BY g.id", [
+            'module_id' => $module_id,
+        ]);
 
     echo $OUTPUT->render_from_template('mod_gitlab/groups', ['groups' => array_values($groups)]);
+
+    if (has_group($module_id)) {
+        echo html_writer::link(
+            new url('/mod/gitlab/view.php', [
+                'id' => $module_id,
+                'action' => 'leave_group'
+            ]),
+            'Leave',
+            ['class' => 'btn btn-primary']
+        );
+    } else {
+        echo html_writer::link(
+            new url('/mod/gitlab/view.php', [
+                'id' => $module_id,
+                'action' => 'create_group'
+            ]),
+            'Create',
+            ['class' => 'btn btn-primary']
+        );
+    }
 }
 
 echo $OUTPUT->header();
