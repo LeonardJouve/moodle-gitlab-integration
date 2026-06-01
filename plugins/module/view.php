@@ -27,6 +27,7 @@ use core\url;
 use mod_gitlab\http\Gitlab;
 use mod_gitlab\http\RuntimeException;
 use mod_gitlab\local\Helper;
+use mod_gitlab\local\Group;
 
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
@@ -51,6 +52,24 @@ if ($id) {
     $cm = get_coursemodule_from_instance('gitlab', $moduleinstance->id, $course->id, false, MUST_EXIST);
 }
 
+function action_button(int $module_id, string $action, string $message) {
+    echo html_writer::link(
+        new url('/mod/gitlab/view.php', [
+            'id' => $module_id,
+            'action' => $action,
+        ]),
+        $message,
+        ['class' => 'btn btn-primary']
+    );
+}
+
+function error(string $message) {
+    echo html_writer::div(
+        $message,
+        'alert alert-danger'
+    );
+}
+
 require_login($course, true, $cm);
 
 $modulecontext = context_module::instance($cm->id);
@@ -64,17 +83,15 @@ $token = Helper::get_course_gitlab_token($moduleinstance->course);
 $client = new Gitlab($token);
 
 switch ($action) {
-case 'createrepository':
+case 'create_repository':
     try {
         $client->project()->create(
             $moduleinstance->name . "_" . $USER->username . "_" . bin2hex(random_bytes(8)),
             $moduleinstance->group_id
         );
     } catch (RuntimeException $e) {
-        echo html_writer::div(
-            sprintf('failed to create repository: %s', $e->getMessage()),
-            'alert alert-danger'
-        );
+        error(sprintf('failed to create repository: %s', $e->getMessage()));
+        return;
     }
 
     redirect(
@@ -82,13 +99,34 @@ case 'createrepository':
         'Repository created!'
     );
     break;
+case 'join_group':
+    if (!Group::join_group($cm->id, 1, $USER->id)) {
+        error('unable to join group');
+        return;
+    }
+
+    redirect(
+        new url('/mod/gitlab/view.php', ['id' => $cm->id]),
+        'Joined group'
+    );
+    break;
 case 'leave_group':
+    if (!Group::leave_group($cm->id, $USER->id)) {
+        error('unable to leave group');
+        return;
+    }
+
     redirect(
         new url('/mod/gitlab/view.php', ['id' => $cm->id]),
         'Left group'
     );
     break;
 case 'create_group':
+    if (!Group::create_group($cm->id, "test", $USER->id)) {
+        error('unable to create group');
+        return;
+    }
+
     redirect(
         new url('/mod/gitlab/view.php', ['id' => $cm->id]),
         'Created group'
@@ -97,16 +135,7 @@ case 'create_group':
 }
 
 function list_repositories(Gitlab $client, int $group_id, int $module_id) {
-    $url = new url('/mod/gitlab/view.php', [
-        'id' => $module_id,
-        'action' => 'createrepository'
-    ]);
-
-    echo html_writer::link(
-        $url,
-        'Create GitLab Repository',
-        ['class' => 'btn btn-primary']
-    );
+    action_button($module_id, 'create_repository', 'Create GitLab Repository');
 
     try {
         $repositories = $client->group()->projects($group_id);
@@ -133,59 +162,15 @@ function list_repositories(Gitlab $client, int $group_id, int $module_id) {
     }
 }
 
-function has_group(int $module_id) {
-    global $DB, $USER;
-
-    return $DB->record_exists_sql("
-        SELECT 1
-        FROM {gitlab_group_members} m
-        JOIN {gitlab_groups} g
-            ON g.id = m.group_id
-        WHERE
-            g.module_id = :module_id
-            AND m.user_id = :user_id
-    ", [
-        'module_id' => $module_id,
-        'user_id' => $USER->id,
-    ]);
-}
-
 function list_groups(int $module_id) {
-    global $DB, $OUTPUT;
+    global $USER, $OUTPUT;
 
-    $groups = $DB->get_records_sql("
-        SELECT
-            g.id,
-            g.name,
-            COUNT(m.user_id) AS member_count
-        FROM {gitlab_groups} g
-        LEFT JOIN {gitlab_group_members} m
-            ON m.group_id = g.id
-        WHERE g.module_id = :module_id
-        GROUP BY g.id", [
-            'module_id' => $module_id,
-        ]);
+    echo $OUTPUT->render_from_template('mod_gitlab/groups', ['groups' => Group::get_groups($module_id)]);
 
-    echo $OUTPUT->render_from_template('mod_gitlab/groups', ['groups' => array_values($groups)]);
-
-    if (has_group($module_id)) {
-        echo html_writer::link(
-            new url('/mod/gitlab/view.php', [
-                'id' => $module_id,
-                'action' => 'leave_group'
-            ]),
-            'Leave',
-            ['class' => 'btn btn-primary']
-        );
+    if (Group::has_group($module_id, $USER->id)) {
+        action_button($module_id, 'leave_group', 'Leave');
     } else {
-        echo html_writer::link(
-            new url('/mod/gitlab/view.php', [
-                'id' => $module_id,
-                'action' => 'create_group'
-            ]),
-            'Create',
-            ['class' => 'btn btn-primary']
-        );
+        action_button($module_id, 'create_group', 'Create');
     }
 }
 
