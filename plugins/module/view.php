@@ -80,41 +80,68 @@ if ($action === 'createrepository') {
     );
 }
 
-echo $OUTPUT->header();
+function list_repositories(Gitlab $client, int $group_id, int $module_id) {
+    $url = new url('/mod/gitlab/view.php', [
+        'id' => $module_id,
+        'action' => 'createrepository'
+    ]);
 
-$url = new url('/mod/gitlab/view.php', [
-    'id' => $cm->id,
-    'action' => 'createrepository'
-]);
+    echo html_writer::link(
+        $url,
+        'Create GitLab Repository',
+        ['class' => 'btn btn-primary']
+    );
 
-echo html_writer::link(
-    $url,
-    'Create GitLab Repository',
-    ['class' => 'btn btn-primary']
-);
+    try {
+        $repositories = $client->group()->projects($group_id);
 
-try {
-    $repositories = $client->group()->projects($moduleinstance->group_id);
+        echo html_writer::start_tag('ul');
 
-    echo html_writer::start_tag('ul');
+        foreach ($repositories as $repository) {
+            echo html_writer::tag(
+                'li',
+                html_writer::link(
+                    $repository->web_url,
+                    format_string($repository->name),
+                    ['target' => '_blank']
+                )
+            );
+        }
 
-    foreach ($repositories as $repository) {
-        echo html_writer::tag(
-            'li',
-            html_writer::link(
-                $repository->web_url,
-                format_string($repository->name),
-                ['target' => '_blank']
-            )
+        echo html_writer::end_tag('ul');
+    } catch (RuntimeException $e) {
+        echo html_writer::div(
+            sprintf('failed to list repositories: %s', $e->getMessage()),
+            'alert alert-danger'
         );
     }
-
-    echo html_writer::end_tag('ul');
-} catch (RuntimeException $e) {
-    echo html_writer::div(
-        sprintf('failed to list repositories: %s', $e->getMessage()),
-        'alert alert-danger'
-    );
 }
+
+function has_group(int $module_id, int $user_id) {
+    // TODO
+    return false;
+}
+
+function list_groups(int $module_id) {
+    global $DB, $OUTPUT;
+
+    $groups = $DB->get_records_sql("
+        SELECT
+            g.id,
+            g.name,
+            COUNT(m.user_id) AS member_count
+        FROM {mod_gitlab_groups} g
+        LEFT JOIN {gitlab_group_members} m
+            ON m.group_id = g.id
+        WHERE g.module_id = {$module_id}
+        GROUP BY g.id");
+
+    echo $OUTPUT->render_from_template('mod_gitlab/groups', ['groups' => array_values($groups)]);
+}
+
+echo $OUTPUT->header();
+
+list_repositories($client, $moduleinstance->group_id, $cm->id);
+list_groups($cm->id);
 
 echo $OUTPUT->footer();
