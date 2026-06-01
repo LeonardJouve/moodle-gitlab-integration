@@ -89,7 +89,8 @@ case 'createrepository':
     );
     break;
 case 'joingroup':
-    if (!Group::join_group($cm->id, 1, $USER->id)) {
+    $group_id = optional_param('group_id', '', PARAM_INT);
+    if (!$group_id || !Group::join_group($cm->id, $group_id, $USER->id)) {
         error('unable to join group');
         return;
     }
@@ -163,31 +164,34 @@ function list_repositories(Gitlab $client, int $group_id, int $module_id) {
 function list_groups(int $module_id) {
     global $USER, $OUTPUT;
 
+    $max_member = 2; // TODO
+    $has_group = Group::has_group($module_id, $USER->id);
+
     echo $OUTPUT->render_from_template('mod_gitlab/groups', [
-        'groups' => array_map(function($group) use ($module_id) {
+        'groups' => array_map(function($group) use ($module_id, $max_member, $has_group) {
             $members = trim($group->members, '{}');
             $members = $members !== '' ? explode(',', $members) : [];
         
-            $group->can_join_group = true; // TODO
-            $group->join_group_url = new url('/mod/gitlab/view.php', [
+            $group->member_count = count($members);
+            $group->can_join_group = !$has_group && $group->member_count < $max_member; // TODO
+            $group->join_group_url = (new url('/mod/gitlab/view.php', [
                 'id' => $module_id,
                 'action' => 'joingroup',
                 'group_id' => $group->id,
-            ]);
+            ]))->out(false);
             $group->name = 'Group of ' . implode(', ', $members);
-            $group->member_count = count($members);
             return $group;
         }, Group::get_groups($module_id)),
-        'has_group' => Group::has_group($module_id, $USER->id),
-        'leave_group_url' => new url('/mod/gitlab/view.php', [
+        'has_group' => $has_group,
+        'leave_group_url' => (new url('/mod/gitlab/view.php', [
             'id' => $module_id,
             'action' => 'leavegroup',
-        ]),
-        'create_group_url' => new url('/mod/gitlab/view.php', [
+        ]))->out(false),
+        'create_group_url' => (new url('/mod/gitlab/view.php', [
             'id' => $module_id,
             'action' => 'creategroup',
-        ]),
-        'max_member' => 2, // TODO
+        ]))->out(false),
+        'max_member' => $max_member,
     ]);
 }
 
