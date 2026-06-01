@@ -130,7 +130,7 @@ function list_groups(int $module_id) {
             g.id,
             g.name,
             COUNT(m.user_id) AS member_count
-        FROM {mod_gitlab_groups} g
+        FROM {gitlab_groups} g
         LEFT JOIN {gitlab_group_members} m
             ON m.group_id = g.id
         WHERE g.module_id = {$module_id}
