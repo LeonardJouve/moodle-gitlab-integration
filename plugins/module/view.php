@@ -164,10 +164,15 @@ function list_groups(int $module_id) {
     global $USER, $OUTPUT;
 
     echo $OUTPUT->render_from_template('mod_gitlab/groups', [
-        'groups' => array_map(function($group) {
-            $group->can_join_group = true;
-            $group->join_group_url = 'test';
-            $group->name = 'a';
+        'groups' => array_map(function($group) use ($module_id) {
+            $group->can_join_group = true; // TODO
+            $group->join_group_url = new url('/mod/gitlab/view.php', [
+                'id' => $module_id,
+                'action' => 'joingroup',
+                'group_id' => $group->id,
+            ]);
+            $group->name = 'Group of ' . implode(', ', $group->members);
+            $group->member_count = count($group->members);
             return $group;
         }, Group::get_groups($module_id)),
         'has_group' => Group::has_group($module_id, $USER->id),
@@ -179,6 +184,7 @@ function list_groups(int $module_id) {
             'id' => $module_id,
             'action' => 'creategroup',
         ]),
+        'max_member' => 2, // TODO
     ]);
 }
 

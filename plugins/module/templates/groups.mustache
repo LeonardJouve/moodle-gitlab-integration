@@ -30,7 +30,8 @@
             <p class="card-text">Members: {{member_count}}</p>
             {{#can_join_group}}
                 <a href={{join_group_url}} class="btn btn-primary">Join</a>
-            {{/has_group}}
+            {{/can_join_group}}
+            <p>{{member_count}}/{{max_member}}</p>
         </div>
     </div>
 {{/groups}}

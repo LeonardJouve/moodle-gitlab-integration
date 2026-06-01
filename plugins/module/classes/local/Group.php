@@ -62,7 +62,7 @@ class Group {
             FROM {gitlab_groups} g
             LEFT JOIN {gitlab_group_members} m
                 ON m.group_id = g.id
-            LEFT JOIN {users} u
+            LEFT JOIN {user} u
                 ON u.id = m.user_id
             WHERE g.module_id = :module_id
             GROUP BY g.id, g.name
