@@ -27,9 +27,12 @@ use core\url;
 use mod_gitlab\http\Gitlab;
 use mod_gitlab\http\RuntimeException;
 use mod_gitlab\local\Helper;
+use mod_gitlab\local\Group;
 
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
+
+global $DB, $PAGE, $USER, $OUTPUT;
 
 // Course module id.
 $id = optional_param('id', 0, PARAM_INT);
@@ -49,6 +52,13 @@ if ($id) {
     $cm = get_coursemodule_from_instance('gitlab', $moduleinstance->id, $course->id, false, MUST_EXIST);
 }
 
+function error(string $message) {
+    echo html_writer::div(
+        $message,
+        'alert alert-danger'
+    );
+}
+
 require_login($course, true, $cm);
 
 $modulecontext = context_module::instance($cm->id);
@@ -61,60 +71,139 @@ $PAGE->set_context($modulecontext);
 $token = Helper::get_course_gitlab_token($moduleinstance->course);
 $client = new Gitlab($token);
 
-if ($action === 'createrepository') {
+switch ($action) {
+case 'createrepository':
     try {
         $client->project()->create(
             $moduleinstance->name . "_" . $USER->username . "_" . bin2hex(random_bytes(8)),
             $moduleinstance->group_id
         );
     } catch (RuntimeException $e) {
-        echo html_writer::div(
-            sprintf('failed to create repository: %s', $e->getMessage()),
-            'alert alert-danger'
-        );
+        error(get_string('message_error_create_repository', 'mod_gitlab', ['message' => $e->getMessage()]));
+        return;
     }
 
     redirect(
         new url('/mod/gitlab/view.php', ['id' => $cm->id]),
-        'Repository created!'
+        get_string('message_repository_created', 'mod_gitlab'),
     );
+    break;
+case 'joingroup':
+    $group_id = optional_param('group_id', '', PARAM_INT);
+    if (!$group_id || !Group::join_group($cm->id, $group_id, $USER->id, $moduleinstance->group_size)) {
+        error(get_string('message_error_join_group', 'mod_gitlab'));
+        return;
+    }
+
+    redirect(
+        new url('/mod/gitlab/view.php', ['id' => $cm->id]),
+        get_string('message_joined_group', 'mod_gitlab'),
+    );
+    break;
+case 'leavegroup':
+    if (!Group::leave_group($cm->id, $USER->id)) {
+        error(get_string('message_error_leave_group', 'mod_gitlab'));
+        return;
+    }
+
+    redirect(
+        new url('/mod/gitlab/view.php', ['id' => $cm->id]),
+        get_string('message_left_group', 'mod_gitlab'),
+    );
+    break;
+case 'creategroup':
+    try {
+        $repository = $client->project()->create(
+            $moduleinstance->name . "_" . bin2hex(random_bytes(8)),
+            $moduleinstance->group_id,
+        );
+
+        $group = Group::create_group($cm->id, $USER->id, $repository->id);
+        if (!$group) {
+            error(get_string('message_error_create_group', 'mod_gitlab'));
+            return;
+        }
+        Group::join_group($cm->id, $group, $USER->id, $moduleinstance->group_size);
+
+        redirect(
+            new url('/mod/gitlab/view.php', ['id' => $cm->id]),
+            get_string('message_created_group', 'mod_gitlab'),
+        );
+    } catch (RuntimeException $e) {
+        error(get_string('message_error_create_repository', 'mod_gitlab', ['message' => $e->getMessage()]));
+        return;
+    }
+    break;
+}
+
+function list_repositories(Gitlab $client, int $group_id, int $module_id) {
+    echo html_writer::link(
+        new url('/mod/gitlab/view.php', [
+            'id' => $module_id,
+            'action' => 'createrepository',
+        ]),
+        get_string('button_create_repository', 'mod_gitlab'),
+        ['class' => 'btn btn-primary']
+    );    
+
+    try {
+        $repositories = $client->group()->projects($group_id);
+
+        echo html_writer::start_tag('ul');
+
+        foreach ($repositories as $repository) {
+            echo html_writer::tag(
+                'li',
+                html_writer::link(
+                    $repository->web_url,
+                    format_string($repository->name),
+                    ['target' => '_blank']
+                )
+            );
+        }
+
+        echo html_writer::end_tag('ul');
+    } catch (RuntimeException $e) {
+        error(get_string('message_error_list_repositories', 'mod_gitlab', ['message' => $e->getMessage()]));
+    }
+}
+
+function list_groups(int $module_id, int $max_member) {
+    global $USER, $OUTPUT;
+
+    $has_group = Group::has_group($module_id, $USER->id);
+
+    echo $OUTPUT->render_from_template('mod_gitlab/groups', [
+        'groups' => array_map(function($group) use ($module_id, $max_member, $has_group) {
+            $members = trim($group->members, '{}');
+            $members = $members !== '' ? explode(',', $members) : [];
+        
+            $group->member_count = count($members);
+            $group->can_join_group = !$has_group && $group->member_count < $max_member;
+            $group->join_group_url = (new url('/mod/gitlab/view.php', [
+                'id' => $module_id,
+                'action' => 'joingroup',
+                'group_id' => $group->id,
+            ]))->out(false);
+            $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]);
+            return $group;
+        }, Group::get_groups($module_id)),
+        'has_group' => $has_group,
+        'leave_group_url' => (new url('/mod/gitlab/view.php', [
+            'id' => $module_id,
+            'action' => 'leavegroup',
+        ]))->out(false),
+        'create_group_url' => (new url('/mod/gitlab/view.php', [
+            'id' => $module_id,
+            'action' => 'creategroup',
+        ]))->out(false),
+        'max_member' => $max_member,
+    ]);
 }
 
 echo $OUTPUT->header();
 
-$url = new url('/mod/gitlab/view.php', [
-    'id' => $cm->id,
-    'action' => 'createrepository'
-]);
-
-echo html_writer::link(
-    $url,
-    'Create GitLab Repository',
-    ['class' => 'btn btn-primary']
-);
-
-try {
-    $repositories = $client->group()->projects($moduleinstance->group_id);
-
-    echo html_writer::start_tag('ul');
-
-    foreach ($repositories as $repository) {
-        echo html_writer::tag(
-            'li',
-            html_writer::link(
-                $repository->web_url,
-                format_string($repository->name),
-                ['target' => '_blank']
-            )
-        );
-    }
-
-    echo html_writer::end_tag('ul');
-} catch (RuntimeException $e) {
-    echo html_writer::div(
-        sprintf('failed to list repositories: %s', $e->getMessage()),
-        'alert alert-danger'
-    );
-}
+list_repositories($client, $moduleinstance->group_id, $cm->id);
+list_groups($cm->id, $moduleinstance->group_size);
 
 echo $OUTPUT->footer();
