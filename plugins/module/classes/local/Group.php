@@ -65,7 +65,7 @@ class Group {
             LEFT JOIN {user} u
                 ON u.id = m.user_id
             WHERE g.module_id = :module_id
-            GROUP BY g.id, g.name
+            GROUP BY g.id
         ", [
             'module_id' => $module_id,
         ]);
