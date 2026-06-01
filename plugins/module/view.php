@@ -144,7 +144,6 @@ function has_group(int $module_id) {
         WHERE
             g.module_id = :module_id
             AND m.user_id = :user_id
-        LIMIT 1
     ", [
         'module_id' => $module_id,
         'user_id' => $USER->id,
