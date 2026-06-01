@@ -52,17 +52,6 @@ if ($id) {
     $cm = get_coursemodule_from_instance('gitlab', $moduleinstance->id, $course->id, false, MUST_EXIST);
 }
 
-function action_button(int $module_id, string $action, string $message) {
-    echo html_writer::link(
-        new url('/mod/gitlab/view.php', [
-            'id' => $module_id,
-            'action' => $action,
-        ]),
-        $message,
-        ['class' => 'btn btn-primary']
-    );
-}
-
 function error(string $message) {
     echo html_writer::div(
         $message,
@@ -137,7 +126,14 @@ case 'creategroup':
 }
 
 function list_repositories(Gitlab $client, int $group_id, int $module_id) {
-    action_button($module_id, 'createrepository', 'Create GitLab Repository');
+    echo html_writer::link(
+        new url('/mod/gitlab/view.php', [
+            'id' => $module_id,
+            'action' => 'createrepository',
+        ]),
+        'Create GitLab Repository',
+        ['class' => 'btn btn-primary']
+    );    
 
     try {
         $repositories = $client->group()->projects($group_id);
@@ -167,13 +163,23 @@ function list_repositories(Gitlab $client, int $group_id, int $module_id) {
 function list_groups(int $module_id) {
     global $USER, $OUTPUT;
 
-    echo $OUTPUT->render_from_template('mod_gitlab/groups', ['groups' => Group::get_groups($module_id)]);
-
-    if (Group::has_group($module_id, $USER->id)) {
-        action_button($module_id, 'leavegroup', 'Leave');
-    } else {
-        action_button($module_id, 'creategroup', 'Create');
-    }
+    echo $OUTPUT->render_from_template('mod_gitlab/groups', [
+        'groups' => array_map(function($group) {
+            $group->can_join_group = true;
+            $group->join_group_url = 'test';
+            $group->name = 'a';
+            return $group;
+        }, Group::get_groups($module_id)),
+        'has_group' => Group::has_group($module_id, $USER->id),
+        'leave_group_url' => new url('/mod/gitlab/view.php', [
+            'id' => $module_id,
+            'action' => 'leavegroup',
+        ]),
+        'create_group_url' => new url('/mod/gitlab/view.php', [
+            'id' => $module_id,
+            'action' => 'creategroup',
+        ]),
+    ]);
 }
 
 echo $OUTPUT->header();

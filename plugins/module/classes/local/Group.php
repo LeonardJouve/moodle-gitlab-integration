@@ -58,13 +58,14 @@ class Group {
         $groups = $DB->get_records_sql("
             SELECT
                 g.id,
-                g.name,
-                COUNT(m.user_id) AS member_count
+                COALESCE(array_agg(u.username) FILTER (WHERE u.username IS NOT NULL), ARRAY[]::text[]) AS members
             FROM {gitlab_groups} g
             LEFT JOIN {gitlab_group_members} m
                 ON m.group_id = g.id
+            LEFT JOIN {users} u
+                ON u.id = m.user_id
             WHERE g.module_id = :module_id
-            GROUP BY g.id
+            GROUP BY g.id, g.name
         ", [
             'module_id' => $module_id,
         ]);

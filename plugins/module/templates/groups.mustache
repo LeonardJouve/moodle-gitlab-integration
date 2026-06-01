@@ -28,7 +28,16 @@
         <div class="card-body">
             <h5 class="card-title">{{name}}</h5>
             <p class="card-text">Members: {{member_count}}</p>
+            {{#can_join_group}}
+                <a href={{join_group_url}} class="btn btn-primary">Join</a>
+            {{/has_group}}
         </div>
     </div>
 {{/groups}}
+{{#has_group}}
+    <a href={{leave_group_url}} class="btn btn-primary">Leave</a>
+{{/has_group}}
+{{^has_group}}
+    <a href={{create_group_url}} class="btn btn-primary">Create</a>
+{{/has_group}}
 </div>
