@@ -79,49 +79,49 @@ case 'createrepository':
             $moduleinstance->group_id
         );
     } catch (RuntimeException $e) {
-        error(sprintf('failed to create repository: %s', $e->getMessage()));
+        error(get_string('message_error_create_repository', 'mod_gitlab', ['message' => $e->getMessage()]));
         return;
     }
 
     redirect(
         new url('/mod/gitlab/view.php', ['id' => $cm->id]),
-        'Repository created!'
+        get_string('message_repository_created', 'mod_gitlab'),
     );
     break;
 case 'joingroup':
     $group_id = optional_param('group_id', '', PARAM_INT);
     if (!$group_id || !Group::join_group($cm->id, $group_id, $USER->id)) {
-        error('unable to join group');
+        error(get_string('message_error_join_group', 'mod_gitlab'));
         return;
     }
 
     redirect(
         new url('/mod/gitlab/view.php', ['id' => $cm->id]),
-        'Joined group'
+        get_string('message_joined_group', 'mod_gitlab'),
     );
     break;
 case 'leavegroup':
     if (!Group::leave_group($cm->id, $USER->id)) {
-        error('unable to leave group');
+        error(get_string('message_error_leave_group', 'mod_gitlab'));
         return;
     }
 
     redirect(
         new url('/mod/gitlab/view.php', ['id' => $cm->id]),
-        'Left group'
+        get_string('message_left_group', 'mod_gitlab'),
     );
     break;
 case 'creategroup':
     $group = Group::create_group($cm->id, "test", $USER->id);
     if (!$group) {
-        error('unable to create group');
+        error(get_string('message_error_create_group', 'mod_gitlab'));
         return;
     }
     Group::join_group($cm->id, $group, $USER->id);
 
     redirect(
         new url('/mod/gitlab/view.php', ['id' => $cm->id]),
-        'Created group'
+        get_string('message_created_group', 'mod_gitlab'),
     );
     break;
 }
@@ -132,7 +132,7 @@ function list_repositories(Gitlab $client, int $group_id, int $module_id) {
             'id' => $module_id,
             'action' => 'createrepository',
         ]),
-        'Create GitLab Repository',
+        get_string('button_create_repository', 'mod_gitlab'),
         ['class' => 'btn btn-primary']
     );    
 
@@ -154,17 +154,13 @@ function list_repositories(Gitlab $client, int $group_id, int $module_id) {
 
         echo html_writer::end_tag('ul');
     } catch (RuntimeException $e) {
-        echo html_writer::div(
-            sprintf('failed to list repositories: %s', $e->getMessage()),
-            'alert alert-danger'
-        );
+        error(get_string('message_error_list_repositories', 'mod_gitlab', ['message' => $e->getMessage()]));
     }
 }
 
-function list_groups(int $module_id) {
+function list_groups(int $module_id, int $max_member) {
     global $USER, $OUTPUT;
 
-    $max_member = 2; // TODO
     $has_group = Group::has_group($module_id, $USER->id);
 
     echo $OUTPUT->render_from_template('mod_gitlab/groups', [
@@ -173,13 +169,13 @@ function list_groups(int $module_id) {
             $members = $members !== '' ? explode(',', $members) : [];
         
             $group->member_count = count($members);
-            $group->can_join_group = !$has_group && $group->member_count < $max_member; // TODO
+            $group->can_join_group = !$has_group && $group->member_count < $max_member;
             $group->join_group_url = (new url('/mod/gitlab/view.php', [
                 'id' => $module_id,
                 'action' => 'joingroup',
                 'group_id' => $group->id,
             ]))->out(false);
-            $group->name = 'Group of ' . implode(', ', $members);
+            $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]);
             return $group;
         }, Group::get_groups($module_id)),
         'has_group' => $has_group,
@@ -198,6 +194,6 @@ function list_groups(int $module_id) {
 echo $OUTPUT->header();
 
 list_repositories($client, $moduleinstance->group_id, $cm->id);
-list_groups($cm->id);
+list_groups($cm->id, $moduleinstance->group_size);
 
 echo $OUTPUT->footer();

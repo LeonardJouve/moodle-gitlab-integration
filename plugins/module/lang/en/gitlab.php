@@ -25,6 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['button_create_repository'] = 'Create GitLab Repository';
 $string['form_due_date'] = 'Due date';
 $string['form_due_date_help'] = 'Practical work due date and time';
 $string['form_group_size'] = 'Group size';
@@ -46,6 +47,16 @@ $string['form_reviewer_repeats_add'] = 'Add a reviewer';
 $string['gitlabfieldset'] = 'gitlab';
 $string['gitlabname'] = 'gitlab';
 $string['gitlabsettings'] = 'gitlab';
+$string['message_repository_created'] = 'Repository created!';
+$string['message_joined_group'] = 'Joined group!';
+$string['message_left_group'] = 'Left group!';
+$string['message_created_group'] = 'Created group!';
+$string['message_error_create_group'] = 'unable to create group';
+$string['message_error_leave_group'] = 'unable to leave group';
+$string['message_error_join_group'] = 'unable to join group';
+$string['message_error_create_repository'] = 'failed to create repository: {$a->message}';
+$string['message_error_list_repositories'] = 'failed to list repositories: {$a->message}';
+$string['message_group_name'] = 'Group of {$a->members}';
 $string['modulename'] = 'GitLab';
 $string['modulenameplural'] = 'gitlab';
 $string['pluginadministration'] = 'administration';
