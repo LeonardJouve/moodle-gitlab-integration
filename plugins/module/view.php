@@ -83,7 +83,7 @@ $token = Helper::get_course_gitlab_token($moduleinstance->course);
 $client = new Gitlab($token);
 
 switch ($action) {
-case 'create_repository':
+case 'createrepository':
     try {
         $client->project()->create(
             $moduleinstance->name . "_" . $USER->username . "_" . bin2hex(random_bytes(8)),
@@ -99,7 +99,7 @@ case 'create_repository':
         'Repository created!'
     );
     break;
-case 'join_group':
+case 'joingroup':
     if (!Group::join_group($cm->id, 1, $USER->id)) {
         error('unable to join group');
         return;
@@ -110,7 +110,7 @@ case 'join_group':
         'Joined group'
     );
     break;
-case 'leave_group':
+case 'leavegroup':
     if (!Group::leave_group($cm->id, $USER->id)) {
         error('unable to leave group');
         return;
@@ -121,11 +121,13 @@ case 'leave_group':
         'Left group'
     );
     break;
-case 'create_group':
-    if (!Group::create_group($cm->id, "test", $USER->id)) {
+case 'creategroup':
+    $group = Group::create_group($cm->id, "test", $USER->id);
+    if (!$group) {
         error('unable to create group');
         return;
     }
+    Group::join_group($cm->id, $group, $USER->id);
 
     redirect(
         new url('/mod/gitlab/view.php', ['id' => $cm->id]),
@@ -135,7 +137,7 @@ case 'create_group':
 }
 
 function list_repositories(Gitlab $client, int $group_id, int $module_id) {
-    action_button($module_id, 'create_repository', 'Create GitLab Repository');
+    action_button($module_id, 'createrepository', 'Create GitLab Repository');
 
     try {
         $repositories = $client->group()->projects($group_id);
@@ -168,9 +170,9 @@ function list_groups(int $module_id) {
     echo $OUTPUT->render_from_template('mod_gitlab/groups', ['groups' => Group::get_groups($module_id)]);
 
     if (Group::has_group($module_id, $USER->id)) {
-        action_button($module_id, 'leave_group', 'Leave');
+        action_button($module_id, 'leavegroup', 'Leave');
     } else {
-        action_button($module_id, 'create_group', 'Create');
+        action_button($module_id, 'creategroup', 'Create');
     }
 }
 
