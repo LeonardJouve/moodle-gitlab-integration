@@ -58,4 +58,8 @@ class Project {
     public function members(int $id, array $params = []) {
         return $this->client->get("/projects/" . $id . "/users", $params);
     }
+
+    public function archive(int $id, string $format = ".zip", array $params = []) {
+        return $this->client->get("/projects/" . $id . "/repository/archive" . $format);
+    }
 }

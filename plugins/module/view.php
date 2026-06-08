@@ -137,6 +137,14 @@ case 'creategroup':
         return;
     }
     break;
+case 'download':
+    try {
+        $client->project()->archive($moduleinstance->group_id);
+    } catch (RuntimeException $e) {
+        error(get_string('message_error_download', 'mod_gitlab', ['message' => $e->getMessage()]));
+        return;
+    }
+    break;
 }
 
 function list_repositories(Gitlab $client, int $group_id, int $module_id) {
@@ -212,10 +220,15 @@ function list_teacher_groups(int $module_id, int $max_member) {
     global $OUTPUT;
 
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_groups', [
-        'groups' => array_map(function($group) {
+        'groups' => array_map(function($group) use ($module_id) {
             $members = parse_group_members($group);
             $group->member_count = count($members);
             $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]);
+            $group->download_url = (new url('/mod/gitlab/view.php', [
+                'id' => $module_id,
+                'action' => 'download',
+                'group_id' => $group->id,
+            ]))->out(false);
             return $group;
         }, Group::get_groups($module_id)),
         'max_member' => $max_member,
