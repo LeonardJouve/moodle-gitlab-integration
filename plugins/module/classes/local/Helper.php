@@ -27,7 +27,7 @@ namespace mod_gitlab\local;
 class Helper {
     public static function get_course_gitlab_token(int $courseid): ?string {
         $handler = \core_customfield\handler::get_handler('core_course', 'course');
-        $customfields = $handler->get_instance_data($courseid);
+        $customfields = $handler->get_instance_data($courseid, true);
 
         foreach ($customfields as $fielddata) {
             if ($fielddata->get_field()->get('shortname') === 'gitlab_token' && $fielddata->get_value() !== '') {

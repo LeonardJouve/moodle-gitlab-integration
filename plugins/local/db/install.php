@@ -38,7 +38,8 @@ function xmldb_local_gitlab_install() {
             'uniquevalues' => 0,
             'ispassword' => 1,
             'displaysize' => 50,
-            'maxlength' => 255
+            'maxlength' => 255,
+            'visibility' => 0,
         ]),
     ]);
     $token->save();
