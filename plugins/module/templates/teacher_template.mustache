@@ -16,30 +16,17 @@
 }}
 
 {{!
-    @template mod_gitlab/groups
+    @template mod_gitlab/teacher_template
 
-    Template for groups
+    Template for teacher template
 }}
 
 <div class="box py-3 card-columns">
-<h2>Groups</h2>
-{{#groups}}
-    <div class="card">
-        <div class="card-body d-flex align-items-center">
-            <h5 class="card-title mb-0 flex-grow-1">{{name}}</h5>
-            <div class="d-flex align-items-center gap-3">
-                <p class="mb-0">{{member_count}}/{{max_member}}</p>
-                {{#can_join_group}}
-                    <a href={{join_group_url}} class="btn btn-primary">Join</a>
-                {{/can_join_group}}
-            </div>
-        </div>
+<h2>Template</h2>
+<div class="card">
+    <div class="card-body d-flex flex-column">
+        <h5 class="mb-0 flex-grow-1">
+            <a class="card-title" href={{url}} target="_blank">{{name}}</a>
+        </h5>
     </div>
-{{/groups}}
-{{#has_group}}
-    <a href={{leave_group_url}} class="btn btn-primary">Leave</a>
-{{/has_group}}
-{{^has_group}}
-    <a href={{create_group_url}} class="btn btn-primary">Create</a>
-{{/has_group}}
 </div>

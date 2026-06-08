@@ -29,37 +29,36 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/filelib.php');
 
 /**
- * Project Gitlab client
+ * Commit Gitlab client
  *
  * @package     mod_gitlab
  * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class Project {
+class Commit {
     private Gitlab $client;
-    
+
     public function __construct(Gitlab $client) {
         $this->client = $client;
     }
 
-    public function create(string $name, int $group_id, array $extra = []) {
-        $data = array_merge([
-            'name' => $name,
-            'namespace_id' => $group_id,
-        ], $extra);
-
-        return $this->client->post("/projects", $data);
+    public function list(int $project_id, array $params = []) {
+        return $this->client->get("/projects/" . $project_id . "/repository/commits", $params);
     }
 
-    public function get(int $id, array $params = []) {
-        return $this->client->get("/projects/" . $id, $params);
+    public function get_last_until(int $project_id, int $time, array $params = []) {
+        return $this->get_last($project_id, array_merge([
+            'until' => gmdate(DATE_ATOM, $time),
+        ], $params));
     }
 
-    public function members(int $id, array $params = []) {
-        return $this->client->get("/projects/" . $id . "/users", $params);
-    }
+    public function get_last(int $project_id, array $params = []) {
+        $commits = $this->list($project_id, $params);
 
-    public function archive(int $id, string $format = ".zip", array $params = []) {
-        return $this->client->url("/projects/" . $id . "/repository/archive" . $format, $params);
+        if (count($commits) == 0) {
+            return null;
+        }
+    
+        return $commits[0];
     }
 }
