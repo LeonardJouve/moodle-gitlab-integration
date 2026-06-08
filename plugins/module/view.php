@@ -225,7 +225,7 @@ function list_teacher_groups(int $module_id, int $max_member) {
 function template(int $module_id) {
     global $OUTPUT;
 
-    echo $OUTPUT->render_from_template('mod_gitlab/template', [
+    echo $OUTPUT->render_from_template('mod_gitlab/teacher_template', [
         'name' => '',
         'url' => '',
     ]);
