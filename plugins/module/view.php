@@ -62,6 +62,8 @@ function error(string $message) {
 require_login($course, true, $cm);
 
 $modulecontext = context_module::instance($cm->id);
+require_capability('mod/gitlab:view', $modulecontext);
+$is_teacher = has_capability('mod/gitlab:addinstance', $modulecontext);
 
 $PAGE->set_url('/mod/gitlab/view.php', ['id' => $cm->id]);
 $PAGE->set_title(format_string($moduleinstance->name));
@@ -71,6 +73,7 @@ $PAGE->set_context($modulecontext);
 $token = Helper::get_course_gitlab_token($moduleinstance->course);
 $client = new Gitlab($token);
 
+// TODO handle perm
 switch ($action) {
 case 'createrepository':
     try {
@@ -203,7 +206,10 @@ function list_groups(int $module_id, int $max_member) {
 
 echo $OUTPUT->header();
 
-list_repositories($client, $moduleinstance->group_id, $cm->id);
-list_groups($cm->id, $moduleinstance->group_size);
+if ($is_teacher) {
+    list_repositories($client, $moduleinstance->group_id, $cm->id);
+} else {
+    list_groups($cm->id, $moduleinstance->group_size);
+}
 
 echo $OUTPUT->footer();
