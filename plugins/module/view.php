@@ -222,10 +222,20 @@ function list_teacher_groups(int $module_id, int $max_member) {
     ]);
 }
 
+function template(int $module_id) {
+    global $OUTPUT;
+
+    echo $OUTPUT->render_from_template('mod_gitlab/template', [
+        'name' => '',
+        'url' => '',
+    ]);
+}
+
 echo $OUTPUT->header();
 
 if ($is_teacher) {
     list_repositories($client, $moduleinstance->group_id, $cm->id);
+    template($cm->id);
     list_teacher_groups($cm->id, $moduleinstance->group_size);
 } else {
     list_student_groups($cm->id, $moduleinstance->group_size);
