@@ -22,10 +22,15 @@
 }}
 
 <div class="d-flex flex-column">
-    <div class="d-flex flex-row">
-        <p>Download source code</p>
-        <a class="btn btn-primary" href={{download_url}} target="_blank">
-            <i class="icon fa fa-download"></i>
-        </a>
-    </div>
+    <span class="mb-0">Download source code</span>
+
+    <a class="btn btn-primary d-inline-flex align-items-center"
+       href="{{download_url}}"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="Download source code">
+
+        <i class="icon fa fa-download me-1"></i>
+        Download
+    </a>
 </div>
