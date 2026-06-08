@@ -69,9 +69,12 @@ function gitlab_add_instance($moduleinstance, $mform = null) {
             }
         ));
 
+        $template = $client->project()->create($moduleinstance->name . "_template", $group->id);
+
         $moduleinstance->reviewers = json_encode($reviewers ?: [], JSON_UNESCAPED_UNICODE);
         $moduleinstance->timecreated = time();
         $moduleinstance->group_id = $group->id;
+        $moduleinstance->template_id = $template->id;
 
         $id = $DB->insert_record('gitlab', $moduleinstance);
 

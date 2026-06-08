@@ -73,6 +73,13 @@ $PAGE->set_context($modulecontext);
 $token = Helper::get_course_gitlab_token($moduleinstance->course);
 $client = new Gitlab($token);
 
+try {
+    $template = $client->project()->get($moduleinstance->template_id);
+} catch (RuntimeException $e) {
+    error(get_string('message_error_create_repository', 'mod_gitlab', ['message' => $e->getMessage()]));
+    return;
+}
+
 // TODO handle perm
 switch ($action) {
 case 'createrepository':
@@ -222,12 +229,12 @@ function list_teacher_groups(int $module_id, int $max_member) {
     ]);
 }
 
-function template(int $module_id) {
+function template(stdClass $template) {
     global $OUTPUT;
 
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_template', [
-        'name' => '',
-        'url' => '',
+        'name' => $template->name,
+        'url' => $template->url,
     ]);
 }
 
@@ -235,7 +242,7 @@ echo $OUTPUT->header();
 
 if ($is_teacher) {
     list_repositories($client, $moduleinstance->group_id, $cm->id);
-    template($cm->id);
+    template($template);
     list_teacher_groups($cm->id, $moduleinstance->group_size);
 } else {
     list_student_groups($cm->id, $moduleinstance->group_size);
