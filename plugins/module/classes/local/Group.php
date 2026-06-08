@@ -76,6 +76,7 @@ class Group {
         $groups = $DB->get_records_sql("
             SELECT
                 g.id,
+                g.repository_id,
                 COALESCE(array_agg(u.username) FILTER (WHERE u.username IS NOT NULL), ARRAY[]::text[]) AS members
             FROM {gitlab_groups} g
             LEFT JOIN {gitlab_group_members} m
