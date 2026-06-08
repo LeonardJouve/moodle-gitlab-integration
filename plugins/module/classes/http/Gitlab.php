@@ -100,6 +100,10 @@ class Gitlab {
         return json_decode($result);
     }
 
+    public function url(string $endpoint) {
+        return gitlab::BASE_URL . $endpoint;
+    }
+
     private function handle_exceptions() {
         $status = $this->curl->get_info()['http_code'];
 
