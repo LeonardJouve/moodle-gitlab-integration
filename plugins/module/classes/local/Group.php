@@ -33,6 +33,7 @@ class Group {
         return $DB->get_record_sql("
             SELECT
                 g.id,
+                g.repository_id,
                 COUNT(m.user_id) AS member_count
             FROM {gitlab_groups} g
             LEFT JOIN {gitlab_group_members} m
