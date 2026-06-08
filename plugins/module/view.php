@@ -139,7 +139,9 @@ case 'creategroup':
     break;
 case 'download':
     try {
-        $client->project()->archive($moduleinstance->group_id);
+        $group_id = optional_param('group_id', '', PARAM_INT);
+        $group = Group::group($group_id);
+        $client->project()->archive($group->repository_id);
     } catch (RuntimeException $e) {
         error(get_string('message_error_download', 'mod_gitlab', ['message' => $e->getMessage()]));
         return;
