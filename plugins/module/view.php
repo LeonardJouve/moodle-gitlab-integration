@@ -171,15 +171,19 @@ function list_repositories(Gitlab $client, int $group_id, int $module_id) {
     }
 }
 
-function list_groups(int $module_id, int $max_member) {
+function parse_group_members(stdClass $group) {
+    $members = trim($group->members, '{}');
+    return $members !== '' ? explode(',', $members) : [];
+}
+
+function list_student_groups(int $module_id, int $max_member) {
     global $USER, $OUTPUT;
 
     $has_group = Group::has_group($module_id, $USER->id);
 
-    echo $OUTPUT->render_from_template('mod_gitlab/groups', [
+    echo $OUTPUT->render_from_template('mod_gitlab/student_groups', [
         'groups' => array_map(function($group) use ($module_id, $max_member, $has_group) {
-            $members = trim($group->members, '{}');
-            $members = $members !== '' ? explode(',', $members) : [];
+            $members = parse_group_members($group);
         
             $group->member_count = count($members);
             $group->can_join_group = !$has_group && $group->member_count < $max_member;
@@ -204,12 +208,27 @@ function list_groups(int $module_id, int $max_member) {
     ]);
 }
 
+function list_teacher_groups(int $module_id, int $max_member) {
+    global $OUTPUT;
+
+    echo $OUTPUT->render_from_template('mod_gitlab/teacher_groups', [
+        'groups' => array_map(function($group) {
+            $members = parse_group_members($group);
+            $group->member_count = count($members);
+            $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]);
+            return $group;
+        }, Group::get_groups($module_id)),
+        'max_member' => $max_member,
+    ]);
+}
+
 echo $OUTPUT->header();
 
 if ($is_teacher) {
     list_repositories($client, $moduleinstance->group_id, $cm->id);
+    list_teacher_groups($cm->id, $moduleinstance->group_size);
 } else {
-    list_groups($cm->id, $moduleinstance->group_size);
+    list_student_groups($cm->id, $moduleinstance->group_size);
 }
 
 echo $OUTPUT->footer();
