@@ -22,7 +22,7 @@
 }}
 
 <div class="d-flex flex-column">
-    <div class="d-grid gap-3 mt-3" style="grid-template-columns: repeat(3, max-content);">
+    <div class="d-grid gap-3 mt-3" style="grid-template-columns: auto 1fr auto;">
         <div class="d-flex align-items-center">
             <span class="mb-0">Members</span>
         </div>
@@ -31,7 +31,7 @@
                 <span class="mb-0">{{.}}</span>
             {{/members}}
         </div>
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-end">
             <button class="btn btn-primary d-inline-flex align-items-center">
                 <i class="icon fa fa-pen me-2"></i>
                 Edit
@@ -42,7 +42,7 @@
             <span class="mb-0">Repository</span>
         </div>
         <div></div>
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-end">
             <a class="btn btn-primary d-inline-flex align-items-center"
                 href="{{repository_url}}"
                 target="_blank"
@@ -65,7 +65,7 @@
                 <span class="mb-0 badge bg-danger">Not graded</span>
             {{/is_graded}}
         </div>
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-end">
             <a class="btn btn-primary d-inline-flex align-items-center"
                 href="{{feedback_url}}"
                 target="_blank"
@@ -88,7 +88,7 @@
                 <span class="d-inline-block rounded-circle border border-danger border-3" style="width: 1.5em; height: 1.5em; background-color: color-mix(in srgb, var(--bs-danger) 30%, white);"></span>
             {{/last_test_pass}}
         </div>
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-end">
             <a class="btn btn-primary d-inline-flex align-items-center"
                 href="{{test_url}}"
                 target="_blank"
@@ -111,7 +111,7 @@
                 <span class="mb-0 badge bg-success">On time</span>
             {{/is_delayed}}
         </div>
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-end">
             <a class="btn btn-primary d-inline-flex align-items-center"
                 href="{{download_url}}"
                 target="_blank"
