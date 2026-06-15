@@ -50,7 +50,7 @@
         </div>
         
         <div id="collapsetemplate" class="collapse">
-            <div class="d-grid gap-3 mt-3" style="grid-template-columns: auto auto;">
+            <div class="d-grid gap-3 mt-3" style="grid-template-columns: max-content max-content;">
                 <div class="d-flex align-items-center">
                     <span class="mb-0">Repository</span>
                 </div>
@@ -70,8 +70,54 @@
                     <span class="mb-0">Due date</span>
                 </div>
                 <div class="d-flex align-items-center">
+                    <span class="mb-0">{{due_date}}</span>
                 </div>
-            
+
+                <div class="d-flex align-items-center">
+                    <span class="mb-0">Skeleton</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <a class="btn btn-primary d-inline-flex align-items-center"
+                        href="{{skeleton_url}}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Skeleton"
+                    >
+                        <i class="icon fa fa-globe me-2"></i>
+                        Open
+                    </a>
+                </div>
+                
+                <div class="d-flex align-items-center">
+                    <span class="mb-0">Instructions</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <a class="btn btn-primary d-inline-flex align-items-center"
+                        href="{{instruction_url}}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Instructions"
+                    >
+                        <i class="icon fa fa-globe me-2"></i>
+                        Open
+                    </a>
+                </div>
+
+                <div class="d-flex align-items-center">
+                    <span class="mb-0">Solution</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <a class="btn btn-primary d-inline-flex align-items-center"
+                        href="{{solution_url}}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Solution"
+                    >
+                        <i class="icon fa fa-globe me-2"></i>
+                        Open
+                    </a>
+                </div>
+
                 <div class="d-flex align-items-center">
                     <span class="mb-0">Reviewers</span>
                 </div>
@@ -82,27 +128,18 @@
                 </div>
 
                 <div class="d-flex align-items-center">
-                    <span class="mb-0">Skeleton</span>
-                </div>
-                <div class="d-flex align-items-center">
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <span class="mb-0">Solution</span>
-                </div>
-                <div class="d-flex align-items-center">
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <span class="mb-0">Instructions</span>
-                </div>
-                <div class="d-flex align-items-center">
-                </div>
-
-                <div class="d-flex align-items-center">
                     <span class="mb-0">Tests</span>
                 </div>
                 <div class="d-flex align-items-center">
+                    <a class="btn btn-primary d-inline-flex align-items-center"
+                        href="{{test_url}}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Tests"
+                    >
+                        <i class="icon fa fa-globe me-2"></i>
+                        Open
+                    </a>
                 </div>
             </div>
         </div>
