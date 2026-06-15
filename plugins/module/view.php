@@ -260,7 +260,7 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
     ]);
 }
 
-function template(Gitlab $client, int $template_id, int $due_date) {
+function template(Gitlab $client, int $template_id, int $due_date, array $reviewers) {
     global $OUTPUT;
     
     try {
@@ -273,9 +273,9 @@ function template(Gitlab $client, int $template_id, int $due_date) {
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_template', [
         'name' => $template->name,
         'repository_url' => $template->web_url,
+        'reviewers' => $reviewers,
+        'due_date' => userdate($due_date, get_string('strftimedaydatetime', 'langconfig')),
         // TODO
-        'reviewers' => [],
-        'due_date' => userdate($due_date, get_string('strftimetime12', 'langconfig')),
         'test_url' => 'TODO_test',
         'solution_url' => 'TODO_solution',
         'instruction_url' => 'TODO_instruction',
@@ -287,7 +287,7 @@ echo $OUTPUT->header();
 
 if ($is_teacher) {
     list_repositories($client, $moduleinstance->group_id, $cm->id);
-    template($client, $moduleinstance->template_id, $moduleinstance->due_date);
+    template($client, $moduleinstance->template_id, $moduleinstance->due_date, json_decode($moduleinstance->reviewers, true) ?: []);
     list_teacher_groups($client, $cm->id, $moduleinstance->group_size, $moduleinstance->due_date);
 } else {
     list_student_groups($cm->id, $moduleinstance->group_size);
