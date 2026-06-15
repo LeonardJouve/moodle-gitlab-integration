@@ -115,8 +115,8 @@
             <div class="dropdown">
                 <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">Code</button>
 
-                <div class="dropdown-menu p-3 d-flex flex-column gap-2">
-                    <div>
+                <div class="dropdown-menu p-3">
+                    <div class="mb-2">
                         <span>Clone with SSH</span>
                         <div class="input-group input-group-sm">
                             <input class="form-control" value="{{ssh_url}}" readonly>
@@ -126,7 +126,7 @@
                         </div>
                     </div>
 
-                    <div>
+                    <div class="mb-2">
                         <span>Clone with HTTPS</span>
                         <div class="input-group input-group-sm">
                             <input class="form-control" value="{{https_url}}" readonly>
@@ -146,7 +146,7 @@
                         </div>
                     </div>
 
-                    <hr/>
+                    <hr>
 
                     <div>
                         <span>Download source code</span>
@@ -156,13 +156,17 @@
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label="At due date"
-                            >At due date</a>
+                            >
+                                At due date
+                            </a>
                             <a class="btn btn-outline-primary d-inline-flex align-items-center text-nowrap"
                                 href="{{download_latest_url}}"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label="Latest"
-                            >Latest</a>
+                            >
+                                Latest
+                            </a>
                         </div>
                     </div>
                 </div>
