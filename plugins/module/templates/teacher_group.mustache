@@ -26,7 +26,7 @@
         <div class="d-flex align-items-center">
             <span class="mb-0">Members</span>
         </div>
-        <div class="d-flex align-items-center gap-1">
+        <div class="d-flex align-items-center gap-2">
             {{#members}}
                 <i class="mb-0">{{.}}</i>
             {{/members}}
@@ -112,15 +112,31 @@
             {{/is_delayed}}
         </div>
         <div class="d-flex align-items-center justify-content-end">
-            <a class="btn btn-primary d-inline-flex align-items-center"
-                href="{{download_url}}"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Download source code"
-            >
-                <i class="icon fa fa-download me-2"></i>
-                Download
-            </a>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                    Code
+                </button>
+
+                <div class="dropdown-menu p-3">
+                    <div class="mb-2">
+                        <small class="text-muted">Clone with SSH</small>
+                        <div class="input-group input-group-sm">
+                            <input class="form-control" value="git@github.com:user/repo.git" readonly>
+                            <button class="btn btn-outline-secondary">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <small class="text-muted">Clone with HTTPS</small>
+                        <div class="input-group input-group-sm">
+                            <input class="form-control" value="https://github.com/user/repo.git" readonly>
+                            <button class="btn btn-outline-secondary">Copy</button>
+                        </div>
+                    </div>
+                    <hr>
+                    <a href="/repo/archive.zip" class="btn btn-sm btn-outline-primary w-100">Download ZIP</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
