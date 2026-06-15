@@ -210,9 +210,9 @@ function list_student_groups(int $module_id, int $max_member) {
 
 function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, int $due_date) {
     global $OUTPUT;
-
+    
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_groups', [
-        'groups' => array_map(function($group) use ($client) {
+        'groups' => array_map(function($group) use ($client, $due_date) {
             $group->members = parse_group_members($group);
             $group->member_count = count($group->members);
             $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $group->members)]);
