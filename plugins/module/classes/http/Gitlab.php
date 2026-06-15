@@ -47,6 +47,7 @@ class Gitlab {
     private Issue $issue;
     private MergeRequest $merge_request;
     private Pipeline $pipeline;
+    private Commit $commit;
 
     public function __construct(string $token) {
         $this->curl = new \curl();
@@ -59,6 +60,7 @@ class Gitlab {
         $this->issue = new Issue($this);
         $this->merge_request = new MergeRequest($this);
         $this->pipeline = new Pipeline($this);
+        $this->commit = new Commit($this);
     }
 
     public function post(string $endpoint, $data) {
@@ -159,5 +161,9 @@ class Gitlab {
 
     public function pipeline() {
         return $this->pipeline;
+    }
+
+    public function commit() {
+        return $this->commit;
     }
 }

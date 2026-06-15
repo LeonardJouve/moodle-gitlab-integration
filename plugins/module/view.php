@@ -228,17 +228,31 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
             $group->download_latest_url = $client->project()->archive($group->repository_id);
             $group->ssh_url = $repository->ssh_url_to_repo;
             $group->https_url = $repository->http_url_to_repo;
+
+            $last_in_time_commit = $client->commit()->get_last_until($group->repository_id, $due_date);
+            if ($last_in_time_commit == null) {
+                // TODO improve
+                return $group;
+            }
+            $group->checkout_due_date = 'git checkout ' . $last_in_time_commit->id;
+            $group->download_due_date_url = $client->project()->archive($group->repository_id, '.zip', [
+                'sha' => $last_in_time_commit->id,
+            ]);
+
+            $last_commit = $client->commit()->get_last($group->repository_id);
+            if ($last_commit == null) {
+                // TODO improve
+                return $group;
+            }
+            $time = strtotime($last_commit->committed_date);
+            $group->delay = format_time($time - $due_date);
+            $group->is_delayed = ($time - $due_date) > 0;
             
             // TODO
             $group->feedback_url = 'TODO_feedback';
             $group->test_url = 'TODO_test';
             $group->is_graded = false;
             $group->last_test_pass = true;
-            $time = \core\di::get(\core\clock::class)->time();
-            $group->delay = format_time($time - $due_date);
-            $group->is_delayed = ($time - $due_date) > 0;
-            $group->checkout_due_date = 'TODO_checkout';
-            $group->download_due_date_url = 'TODO_download_due_date';
             
             return $group;
         }, Group::get_groups($module_id)),
