@@ -226,6 +226,8 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member) {
             }
             
             $group->repository_url = $repository->web_url;
+            $group->feedback_url = 'TODO_feedback';
+            $group->test_url = 'TODO_test';
             
             return $group;
         }, Group::get_groups($module_id)),
