@@ -213,9 +213,9 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member) {
 
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_groups', [
         'groups' => array_map(function($group) use ($client) {
-            $members = parse_group_members($group);
-            $group->member_count = count($members);
-            $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]);
+            $group->members = parse_group_members($group);
+            $group->member_count = count($group->members);
+            $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $group->members)]);
             $group->download_url = $client->project()->archive($group->repository_id);
             
             try {
