@@ -56,6 +56,7 @@ $string['message_error_leave_group'] = 'unable to leave group';
 $string['message_error_join_group'] = 'unable to join group';
 $string['message_error_create_repository'] = 'failed to create repository: {$a->message}';
 $string['message_error_get_template'] = 'failed to get template repository: {$a->message}';
+$string['message_error_get_repository'] = 'failed to get group repository: {$a->message}';
 $string['message_error_download'] = 'failed to download repository code: {$a->message}';
 $string['message_error_list_repositories'] = 'failed to list repositories: {$a->message}';
 $string['message_group_name'] = 'Group of {$a->members}';

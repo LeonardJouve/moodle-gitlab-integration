@@ -217,6 +217,16 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member) {
             $group->member_count = count($members);
             $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]);
             $group->download_url = $client->project()->archive($group->repository_id);
+            
+            try {
+                $repository = $client->project()->get($group->repository_id);
+            } catch (RuntimeException $e) {
+                error(get_string('message_error_get_repository', 'mod_gitlab', ['message' => $e->getMessage()]));
+                return $group;
+            }
+            
+            $group->url = $repository->web_url;
+            
             return $group;
         }, Group::get_groups($module_id)),
         'max_member' => $max_member,
