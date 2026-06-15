@@ -1,13 +1,13 @@
-function copy(text) {
+async function copy(text) {
     if (navigator.clipboard) {
-        return navigator.clipboard.writeText(text);
+        await navigator.clipboard.writeText(text);
+        return;
     }
 
     const textarea = document.createElement("textarea");
     textarea.value = text;
     document.body.appendChild(textarea);
     textarea.select();
-    textarea.setSelectionRange(0, textarea.value.length)
     document.execCommand("copy");
     document.body.removeChild(textarea);
 }
@@ -24,11 +24,10 @@ define([], function() {
                     return;
                 }
 
-                button.addEventListener("click", () => {
-                    copy(input.value).then(() => {
-                        icon.classList.replace("fa-copy", "fa-check");
-                        setTimeout(() => icon.classList.replace("fa-check", "fa-copy"), 500);
-                    });
+                button.addEventListener("click", async () => {
+                    await copy(input.value);
+                    icon.classList.replace("fa-copy", "fa-check");
+                    setTimeout(() => icon.classList.replace("fa-check", "fa-copy"), 500);
                 });
             });
         },
