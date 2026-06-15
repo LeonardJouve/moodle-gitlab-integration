@@ -216,7 +216,6 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
             $group->members = parse_group_members($group);
             $group->member_count = count($group->members);
             $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $group->members)]);
-            $group->download_url = $client->project()->archive($group->repository_id);
             
             try {
                 $repository = $client->project()->get($group->repository_id);
@@ -226,6 +225,7 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
             }
             
             $group->repository_url = $repository->web_url;
+            $group->download_latest_url = $client->project()->archive($group->repository_id);
             
             // TODO
             $group->feedback_url = 'TODO_feedback';
@@ -235,6 +235,10 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
             $time = \core\di::get(\core\clock::class)->time();
             $group->delay = format_time($time - $due_date);
             $group->is_delayed = ($time - $due_date) > 0;
+            $group->ssh_url = 'TODO_ssh';
+            $group->https_url = 'TODO_https';
+            $group->checkout_due_date = 'TODO_checkout';
+            $group->download_due_date_url = 'TODO_download_due_date';
             
             return $group;
         }, Group::get_groups($module_id)),
