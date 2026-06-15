@@ -208,7 +208,7 @@ function list_student_groups(int $module_id, int $max_member) {
     ]);
 }
 
-function list_teacher_groups(Gitlab $client, int $module_id, int $max_member) {
+function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, int $due_date) {
     global $OUTPUT;
 
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_groups', [
@@ -226,8 +226,15 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member) {
             }
             
             $group->repository_url = $repository->web_url;
+            
+            // TODO
             $group->feedback_url = 'TODO_feedback';
             $group->test_url = 'TODO_test';
+            $group->is_graded = false;
+            $group->last_test_pass = true;
+            $time = \core\di::get(\core\clock::class)->time();
+            $group->delay = format_time($time - $due_date);
+            $group->is_delayed = ($time - $due_date) > 0;
             
             return $group;
         }, Group::get_groups($module_id)),
@@ -256,7 +263,7 @@ echo $OUTPUT->header();
 if ($is_teacher) {
     list_repositories($client, $moduleinstance->group_id, $cm->id);
     template($client, $moduleinstance->template_id);
-    list_teacher_groups($client, $cm->id, $moduleinstance->group_size);
+    list_teacher_groups($client, $cm->id, $moduleinstance->group_size, $moduleinstance->due_date);
 } else {
     list_student_groups($cm->id, $moduleinstance->group_size);
 }
