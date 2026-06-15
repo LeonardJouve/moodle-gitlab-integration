@@ -226,6 +226,8 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
             
             $group->repository_url = $repository->web_url;
             $group->download_latest_url = $client->project()->archive($group->repository_id);
+            $group->ssh_url = $repository->ssh_url_to_repo;
+            $group->https_url = $repository->http_url_to_repo;
             
             // TODO
             $group->feedback_url = 'TODO_feedback';
@@ -235,8 +237,6 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
             $time = \core\di::get(\core\clock::class)->time();
             $group->delay = format_time($time - $due_date);
             $group->is_delayed = ($time - $due_date) > 0;
-            $group->ssh_url = 'TODO_ssh';
-            $group->https_url = 'TODO_https';
             $group->checkout_due_date = 'TODO_checkout';
             $group->download_due_date_url = 'TODO_download_due_date';
             
