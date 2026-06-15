@@ -50,11 +50,11 @@
         </div>
         
         <div id="collapsetemplate" class="collapse">
-            <div class="d-grid gap-3 mt-3" style="grid-template-columns: max-content max-content;">
+            <div class="d-grid gap-3 mt-3" style="grid-template-columns: 1fr auto;">
                 <div class="d-flex align-items-center">
                     <span class="mb-0">Repository</span>
                 </div>
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center justify-content-end">
                     <a class="btn btn-primary d-inline-flex align-items-center"
                         href="{{repository_url}}"
                         target="_blank"
@@ -69,7 +69,7 @@
                 <div class="d-flex align-items-center">
                     <span class="mb-0">Reviewers</span>
                 </div>
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2 justify-content-end">
                     {{#reviewers}}
                         <i class="mb-0">{{.}}</i>
                     {{/reviewers}}
@@ -78,14 +78,14 @@
                 <div class="d-flex align-items-center">
                     <span class="mb-0">Due date</span>
                 </div>
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center justify-content-end">
                     <span class="mb-0">{{due_date}}</span>
                 </div>
 
                 <div class="d-flex align-items-center">
                     <span class="mb-0">Skeleton</span>
                 </div>
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center justify-content-end">
                     <a class="btn btn-primary d-inline-flex align-items-center"
                         href="{{skeleton_url}}"
                         target="_blank"
@@ -100,7 +100,7 @@
                 <div class="d-flex align-items-center">
                     <span class="mb-0">Instructions</span>
                 </div>
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center justify-content-end">
                     <a class="btn btn-primary d-inline-flex align-items-center"
                         href="{{instruction_url}}"
                         target="_blank"
@@ -115,7 +115,7 @@
                 <div class="d-flex align-items-center">
                     <span class="mb-0">Solution</span>
                 </div>
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center justify-content-end">
                     <a class="btn btn-primary d-inline-flex align-items-center"
                         href="{{solution_url}}"
                         target="_blank"
@@ -130,7 +130,7 @@
                 <div class="d-flex align-items-center">
                     <span class="mb-0">Tests</span>
                 </div>
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center justify-content-end">
                     <a class="btn btn-primary d-inline-flex align-items-center"
                         href="{{test_url}}"
                         target="_blank"
