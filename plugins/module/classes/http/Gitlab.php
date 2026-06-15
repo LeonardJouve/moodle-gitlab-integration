@@ -102,8 +102,14 @@ class Gitlab {
         return json_decode($result);
     }
 
-    public function url(string $endpoint) {
-        return gitlab::BASE_URL . $endpoint;
+    public function url(string $endpoint, array $params = []) {
+        $url = gitlab::BASE_URL . $endpoint;
+
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
+
+        return $url;
     }
 
     private function handle_exceptions() {

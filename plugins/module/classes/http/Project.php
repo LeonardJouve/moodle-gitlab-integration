@@ -60,6 +60,6 @@ class Project {
     }
 
     public function archive(int $id, string $format = ".zip", array $params = []) {
-        return $this->client->url("/projects/" . $id . "/repository/archive" . $format);
+        return $this->client->url("/projects/" . $id . "/repository/archive" . $format, $params);
     }
 }
