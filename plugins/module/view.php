@@ -272,7 +272,8 @@ function template(Gitlab $client, int $template_id) {
 
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_template', [
         'name' => $template->name,
-        'url' => $template->web_url,
+        'repository_url' => $template->web_url,
+        'reviewers' => [], // TODO
     ]);
 }
 
