@@ -4,12 +4,13 @@ import ModalEvents from "core/modal_events";
 import jQuery from "jquery";
 import ModalSaveCancel from "core/modal_save_cancel";
 import Prefetch from "core/prefetch";
+import Fragment from "core/fragment";
 
 const showModal = (id) => {
     return ModalSaveCancel.create({
         large: true,
         title: Str.get_string("mod_gitlab", "modal_manage_group_title"),
-        body: getBodyForContext(contextId),
+        body: Fragment.loadFragment("mod_gitlab", "manage_group_form", id, {}),
         buttons: {
             save: Str.get_string("mod_gitlab", "modal_manage_group_title"),
         },
