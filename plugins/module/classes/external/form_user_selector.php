@@ -40,15 +40,42 @@ class form_user_selector extends external_api {
         ]);
     }
 
-    public static function execute($courseid, $groupid, $search) {
-        // 'SELECT *
-        //     FROM {user} u
-        //     WHERE ue.id IS NULL';
-        $users = []; // TODO
+    public static function execute(int $courseid, int $groupid, int $search) {
+        global $DB;
+
+        $module_id = $DB->get_field_sql("
+            SELECT g.module_id
+            FROM {gitlab_groups} g
+            WHERE g.id = :group_id
+        ", [
+            'group_id' => $groupid,
+        ]);
+
+        $users = $DB->get_records_sql("
+            SELECT DISTINCT u.*
+            FROM {user} u
+            JOIN {user_enrolments} ue ON ue.userid = u.id
+            JOIN {enrol} e ON e.id = ue.enrolid
+            LEFT JOIN {gitlab_group_members} gm
+                ON gm.user_id = u.id
+            LEFT JOIN {gitlab_groups} g
+                ON g.id = gm.group_id AND g.module_id = :module_id
+            WHERE e.courseid = :course_id
+                AND g.id IS NULL
+                AND (
+                    u.firstname LIKE :search
+                    OR u.lastname LIKE :search
+                    OR u.email LIKE :search
+                )
+        ", [
+            'course_id' => $courseid,
+            'module_id' => $module_id,
+            'search' => '%' . $search . '%',
+        ], 0, 50);
+
         $course = get_course($courseid);
 
-
-        $requiredfields = ['fullname', 'profileimageurlsmall'];
+        $requiredfields = ['id', 'username', 'firstname', 'lastname', 'fullname', 'profileimageurlsmall'];
         
         $results = [];
         foreach ($users as $user) {
