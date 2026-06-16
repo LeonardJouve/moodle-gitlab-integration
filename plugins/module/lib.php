@@ -132,3 +132,27 @@ function gitlab_delete_instance($id) {
 
     return true;
 }
+
+
+/**
+ * Serve the manual enrol users form as a fragment.
+ *
+ * @param array $args List of named arguments for the fragment loader.
+ * @return string
+ */
+function mod_gitlab_output_fragment_manage_group_form($args) {
+    $args = (object) $args;
+    $context = $args->context;
+    $o = '';
+
+    require_capability('mod/gitlab:addinstance', $context);
+
+    $mform = new mod_gitlab_manage_group_form(null, $args);
+
+    ob_start();
+    $mform->display();
+    $o .= ob_get_contents();
+    ob_end_clean();
+
+    return $o;
+}
