@@ -60,7 +60,6 @@ class form_user_selector extends external_api {
     }
 
     public static function execute_returns() {
-        require_once($CFG->dirroot . '/user/externallib.php');
         return new external_multiple_structure(core_user_external::user_description());
     }
 }
