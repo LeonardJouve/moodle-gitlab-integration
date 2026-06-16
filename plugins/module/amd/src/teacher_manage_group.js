@@ -9,10 +9,10 @@ import Fragment from "core/fragment";
 const showModal = (contextId, groupId) => {
     return ModalSaveCancel.create({
         large: true,
-        title: Str.get_string("mod_gitlab", "modal_manage_group_title"),
+        title: Str.get_string("modal_manage_group_title", "mod_gitlab"),
         body: Fragment.loadFragment("mod_gitlab", "manage_group_form", contextId, {}),
         buttons: {
-            save: Str.get_string("mod_gitlab", "modal_manage_group_title"),
+            save: Str.get_string("modal_manage_group_title", "mod_gitlab"),
         },
         show: true,
     }).then((modal) => {

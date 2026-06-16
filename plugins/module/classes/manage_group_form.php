@@ -28,12 +28,9 @@ require_once($CFG->libdir.'/formslib.php');
 
 class mod_gitlab_manage_group_form extends moodleform {
     public function definition() {
-        global $DB;
-
-        $context = $this->_customdata->context;
 
         $mform = $this->_form;
-        $mform->addElement('text', 'name', get_string('form_name', 'mod_gitlab'));
+        $mform->addElement('text', 'name', 'yahouuuuu');
     }
 
     /**
