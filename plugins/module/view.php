@@ -212,7 +212,7 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
     global $OUTPUT;
     
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_groups', [
-        'groups' => array_map(function($group) use ($client, $due_date, $context_id) {
+        'groups' => array_map(function($group) use ($client, $due_date) {
             $group->members = parse_group_members($group);
             $group->member_count = count($group->members);
             $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $group->members)]);
@@ -247,7 +247,6 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
             $time = strtotime($last_commit->committed_date);
             $group->delay = format_time($time - $due_date);
             $group->is_delayed = ($time - $due_date) > 0;
-            $group->context_id = $context_id;
             
             // TODO
             $group->feedback_url = 'TODO_feedback';
@@ -258,6 +257,7 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
             return $group;
         }, Group::get_groups($module_id)),
         'max_member' => $max_member,
+        'context_id' => $context_id,
     ]);
 }
 
