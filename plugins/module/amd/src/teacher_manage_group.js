@@ -6,25 +6,25 @@ import ModalSaveCancel from "core/modal_save_cancel";
 import Prefetch from "core/prefetch";
 import Fragment from "core/fragment";
 
-const showModal = (id) => {
+const showModal = (contextId, groupId) => {
     return ModalSaveCancel.create({
         large: true,
         title: Str.get_string("mod_gitlab", "modal_manage_group_title"),
-        body: Fragment.loadFragment("mod_gitlab", "manage_group_form", id, {}),
+        body: Fragment.loadFragment("mod_gitlab", "manage_group_form", contextId, {}),
         buttons: {
             save: Str.get_string("mod_gitlab", "modal_manage_group_title"),
         },
         show: true,
     }).then((modal) => {
-        modal.getRoot().on(ModalEvents.save, e => {
+        modal.getRoot().on(ModalEvents.save, (e) => {
             e.preventDefault();
             modal.getRoot().find("form").submit();
         });
 
-        modal.getRoot().on("submit", "form", e => {
+        modal.getRoot().on("submit", "form", (e) => {
             e.preventDefault();
 
-            submitFormAjax(modal, id);
+            submitFormAjax(modal, contextId, groupId);
         });
 
         modal.getRoot().on(ModalEvents.hidden, () => {
@@ -33,26 +33,26 @@ const showModal = (id) => {
     });
 };
 
-const submitFormAjax = (modal, id) => {
+const submitFormAjax = (modal, contextId, groupId) => {
     modal.hide();
     modal.destroy();
 
-    jQuery.ajax(`${Config.wwwroot}/gitlab/ajax.php?id=${id}&action=test`, {
+    jQuery.ajax(`${Config.wwwroot}/gitlab/ajax.php?id=${contextId}&groupid=${groupId}&action=test`, {
         type: "GET",
         processData: false,
         contentType: "application/json",
     }).then(console.log);
 };
 
-export const init = (id) => {
+export const init = ({contextId, groupId}) => {
     Prefetch.prefetchStrings("mod_gitlab", [
         "modal_manage_group_title",
     ]);
 
-    const button = document.getElementById(`manage-group-members-${id}`);
+    const button = document.getElementById(`manage-group-members-${groupId}`);
     if (!button) {
         return;
     }
 
-    button.addEventListener("click", () => showModal(id));
+    button.addEventListener("click", () => showModal(contextId, groupId));
 };

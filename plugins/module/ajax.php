@@ -28,7 +28,8 @@ define('AJAX_SCRIPT', true);
 
 require('../../config.php');
 
-$group_id = required_param('id', PARAM_INT); // group id
+$context_id = required_param('id', PARAM_INT);
+$group_id = required_param('groupid', PARAM_INT);
 $action = required_param('action', PARAM_ALPHANUMEXT);
 
 $PAGE->set_url(new moodle_url('/gitlab/ajax.php', array('id'=>$group_id, 'action'=>$action)));
