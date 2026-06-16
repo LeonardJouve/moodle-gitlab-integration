@@ -10,7 +10,7 @@ const showModal = (contextId, groupId) => {
     return ModalSaveCancel.create({
         large: true,
         title: Str.get_string("modal_manage_group_title", "mod_gitlab"),
-        body: Fragment.loadFragment("mod_gitlab", "manage_group_form", contextId, {}),
+        body: Fragment.loadFragment("mod_gitlab", "manage_group_form", contextId, {groupid: groupId}),
         buttons: {
             save: Str.get_string("modal_manage_group_title", "mod_gitlab"),
         },

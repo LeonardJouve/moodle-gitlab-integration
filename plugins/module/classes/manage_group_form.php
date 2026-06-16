@@ -36,7 +36,7 @@ class mod_gitlab_manage_group_form extends moodleform {
             'ajax' => 'mod_gitlab/form_user_selector',
             'multiple' => true,
             'courseid' => $coursecontext->instanceid,
-            'groupid' => 1, // TODO
+            'groupid' => $this->_customdata->groupid,
         );
         $mform->addElement('autocomplete', 'userlist', 'TODO', array(), $options);
     }
