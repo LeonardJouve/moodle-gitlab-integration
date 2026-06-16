@@ -24,9 +24,9 @@ namespace mod_gitlab\external;
 
 defined('MOODLE_INTERNAL') || die();
 
-use external_api;
-use external_function_parameters;
-use external_value;
+use \core_external\external_api;
+use \core_external\external_function_parameters;
+use \core_external\external_value;
 
 class test extends external_api {
 
