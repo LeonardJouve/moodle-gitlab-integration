@@ -1,10 +1,10 @@
 import * as Str from "core/str";
 import Config from "core/config";
 import ModalEvents from "core/modal_events";
-import jQuery from "jquery";
 import ModalSaveCancel from "core/modal_save_cancel";
 import Prefetch from "core/prefetch";
 import Fragment from "core/fragment";
+import Ajax from "core/ajax";
 
 const showModal = (contextId, groupId) => {
     return ModalSaveCancel.create({
@@ -37,11 +37,11 @@ const submitFormAjax = (modal, contextId, groupId) => {
     modal.hide();
     modal.destroy();
 
-    jQuery.ajax(`${Config.wwwroot}/gitlab/ajax.php?id=${contextId}&groupid=${groupId}&action=test`, {
-        type: "GET",
-        processData: false,
-        contentType: "application/json",
-    }).then(console.log);
+
+    Ajax.call([{
+        methodname: 'mod_gitlab_test',
+        args: {id: 123}
+    }]).then(console.log);
 };
 
 export const init = ({contextId, groupId}) => {
