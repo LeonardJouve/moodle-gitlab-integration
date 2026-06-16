@@ -27,23 +27,40 @@ defined('MOODLE_INTERNAL') || die();
 use \core_external\external_api;
 use \core_external\external_function_parameters;
 use \core_external\external_value;
+use \core_external\external_multiple_structure;
+use core_user_external;
 
-class test extends external_api {
+class form_user_selector extends external_api {
     public static function execute_parameters() {
         return new external_function_parameters([
-            'id' => new external_value(PARAM_INT, 'id'),
+            'courseid' => new external_value(PARAM_INT, 'course id'),
+            'groupid' => new external_value(PARAM_INT, 'group id'),
+            'search' => new external_value(PARAM_RAW, 'query'),
         ]);
     }
 
-    public static function execute($id) {
-        return [
-            'result' => 'ok',
-        ];
+    public static function execute($courseid, $groupid, $search) {
+        // 'SELECT *
+        //     FROM {user} u
+        //     WHERE ue.id IS NULL';
+        $users = []; // TODO
+        $course = get_course($courseid);
+
+
+        $requiredfields = ['fullname', 'profileimageurlsmall'];
+        
+        $results = [];
+        foreach ($users as $user) {
+            if ($userdetails = user_get_user_details($user, $course, $requiredfields)) {
+                $results[] = $userdetails;
+            }
+        }
+
+        return $results;
     }
 
     public static function execute_returns() {
-        return new external_function_parameters([
-            'result' => new external_value(PARAM_TEXT, 'result'),
-        ]);
+        require_once($CFG->dirroot . '/user/externallib.php');
+        return new external_multiple_structure(core_user_external::user_description());
     }
 }

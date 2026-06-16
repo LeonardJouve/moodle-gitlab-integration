@@ -32,4 +32,12 @@ $functions = [
         'type'        => 'read',
         'ajax'        => true,
     ],
+    'mod_gitlab_form_user_selector' => [
+        'classname'   => 'mod_gitlab\external\form_user_selector',
+        'methodname'  => 'execute',
+        'classpath'   => '',
+        'description' => 'Select possible users',
+        'type'        => 'read',
+        'ajax'        => true,
+    ],
 ];

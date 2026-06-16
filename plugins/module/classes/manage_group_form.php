@@ -28,9 +28,17 @@ require_once($CFG->libdir.'/formslib.php');
 
 class mod_gitlab_manage_group_form extends moodleform {
     public function definition() {
-
         $mform = $this->_form;
-        $mform->addElement('text', 'name', 'yahouuuuu');
+        $context = $this->_customdata->context;
+        $coursecontext = $context->get_course_context();
+
+        $options = array(
+            'ajax' => 'mod_gitlab/form_user_selector',
+            'multiple' => true,
+            'courseid' => $coursecontext->instanceid,
+            'groupid' => 1, // TODO
+        );
+        $mform->addElement('autocomplete', 'userlist', 'TODO', array(), $options);
     }
 
     /**
