@@ -1,0 +1,57 @@
+import * as Str from "core/str";
+import Config from "core/config";
+import ModalEvents from "core/modal_events";
+import jQuery from "jquery";
+import ModalSaveCancel from "core/modal_save_cancel";
+import Prefetch from "core/prefetch";
+
+const showModal = (id) => {
+    return ModalSaveCancel.create({
+        large: true,
+        title: Str.get_string("mod_gitlab", "modal_manage_group_title"),
+        body: getBodyForContext(contextId),
+        buttons: {
+            save: Str.get_string("mod_gitlab", "modal_manage_group_title"),
+        },
+        show: true,
+    }).then((modal) => {
+        modal.getRoot().on(ModalEvents.save, e => {
+            e.preventDefault();
+            modal.getRoot().find("form").submit();
+        });
+
+        modal.getRoot().on("submit", "form", e => {
+            e.preventDefault();
+
+            submitFormAjax(modal, id);
+        });
+
+        modal.getRoot().on(ModalEvents.hidden, () => {
+            modal.destroy();
+        });
+    });
+};
+
+const submitFormAjax = (modal, id) => {
+    modal.hide();
+    modal.destroy();
+
+    jQuery.ajax(`${Config.wwwroot}/gitlab/ajax.php?id=${id}&action=test`, {
+        type: "GET",
+        processData: false,
+        contentType: "application/json",
+    }).then(console.log);
+};
+
+export const init = (id) => {
+    Prefetch.prefetchStrings("mod_gitlab", [
+        "modal_manage_group_title",
+    ]);
+
+    const button = document.getElementById(`manage-group-members-${id}`);
+    if (!button) {
+        return;
+    }
+
+    button.addEventListener("click", () => showModal(id));
+};

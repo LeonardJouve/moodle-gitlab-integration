@@ -60,6 +60,7 @@ $string['message_error_get_repository'] = 'failed to get group repository: {$a->
 $string['message_error_download'] = 'failed to download repository code: {$a->message}';
 $string['message_error_list_repositories'] = 'failed to list repositories: {$a->message}';
 $string['message_group_name'] = 'Group of {$a->members}';
+$string['modal_manage_group_title'] = 'Manage group';
 $string['modulename'] = 'GitLab';
 $string['modulenameplural'] = 'gitlab';
 $string['pluginadministration'] = 'administration';
