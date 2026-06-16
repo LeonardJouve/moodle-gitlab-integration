@@ -63,14 +63,16 @@ class form_user_selector extends external_api {
             WHERE e.courseid = :course_id
                 AND g.id IS NULL
                 AND (
-                    u.firstname LIKE :search
-                    OR u.lastname LIKE :search
-                    OR u.email LIKE :search
+                    u.firstname LIKE :search1
+                    OR u.lastname LIKE :search2
+                    OR u.email LIKE :search3
                 )
         ", [
             'course_id' => $courseid,
             'module_id' => $module_id,
-            'search' => '%' . $search . '%',
+            'search1'   => '%' . $search . '%',
+            'search2'   => '%' . $search . '%',
+            'search3'   => '%' . $search . '%',
         ], 0, 50);
 
         $course = get_course($courseid);
