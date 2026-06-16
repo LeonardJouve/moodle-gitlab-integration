@@ -40,7 +40,7 @@ class form_user_selector extends external_api {
         ]);
     }
 
-    public static function execute(int $courseid, int $groupid, int $search) {
+    public static function execute(int $courseid, int $groupid, string $search) {
         global $DB;
 
         $module_id = $DB->get_field_sql("
