@@ -25,6 +25,7 @@
 namespace mod_gitlab\local;
 
 use stdClass;
+use Throwable;
 
 class Group {
     public static function group(int $group_id) {
@@ -149,5 +150,60 @@ class Group {
 
 
         return $ok;
+    }
+
+    public static function set_group_members(array $members, int $max_member, int $group_id): bool {
+        global $DB;
+
+        if (count($members) > $max_member) {
+            return false;
+        }
+
+        $transaction = $DB->start_delegated_transaction();
+
+        try {
+            list($not_in_sql, $params) = $DB->get_in_or_equal($members, SQL_PARAMS_NAMED, '', false, NULL);
+
+            $params['group_id'] = $group_id;
+
+            $DB->delete_records_select(
+                'gitlab_group_members',
+                "group_id = :group_id AND user_id $not_in_sql",
+                $params,
+            );
+
+            foreach ($members as $user_id) {
+                $exists = $DB->record_exists('gitlab_group_members', [
+                    'group_id' => $group_id,
+                    'user_id'  => $user_id
+                ]);
+                if ($exists) {
+                    continue;
+                }
+
+                $member = new stdClass();
+                $member->group_id = $group_id;
+                $member->user_id  = $user_id;
+
+                $DB->insert_record('gitlab_group_members', $member);
+            }
+
+            $transaction->allow_commit();
+
+            return true;
+        } catch (Throwable $e) {
+            $transaction->rollback($e);
+
+            return false;
+        }
+    }
+
+    public static function delete_group(int $group_id): bool {
+        global $DB;
+    
+        $DB->delete_records('gitlab_group_members', ['group_id' => $group_id]);
+        $DB->delete_records('gitlab_groups', ['id' => $group_id]);
+
+        return true;
     }
 }

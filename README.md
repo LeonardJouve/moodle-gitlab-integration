@@ -34,7 +34,7 @@ ansible-playbook -i inventory.ini playbooks/moodle.yaml
 
 Setup authentik by browsing `http://<authentik_external_host>/if/flow/initial-setup/`
 
-If the authentik blueprint apply failed, run it once again after your authentil account creation
+If the authentik blueprint apply failed, run it once again after your authentik account creation
 ```
 ansible-playbook -i inventory.ini playbooks/authentik.yaml
 ```

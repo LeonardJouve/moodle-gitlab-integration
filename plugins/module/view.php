@@ -103,6 +103,18 @@ case 'joingroup':
         get_string('message_joined_group', 'mod_gitlab'),
     );
     break;
+case 'deletegroup':
+    $group_id = optional_param('group_id', '', PARAM_INT);
+    if (!$group_id || !Group::delete_group($group_id)) {
+        error(get_string('message_error_delete_group', 'mod_gitlab'));
+        return;
+    }
+
+    redirect(
+        new url('/mod/gitlab/view.php', ['id' => $cm->id]),
+        get_string('message_deleted_group', 'mod_gitlab'),
+    );
+    break;
 case 'leavegroup':
     if (!Group::leave_group($cm->id, $USER->id)) {
         error(get_string('message_error_leave_group', 'mod_gitlab'));
@@ -126,7 +138,10 @@ case 'creategroup':
             error(get_string('message_error_create_group', 'mod_gitlab'));
             return;
         }
-        Group::join_group($cm->id, $group, $USER->id, $moduleinstance->group_size);
+
+        if (!$is_teacher) {
+            Group::join_group($cm->id, $group, $USER->id, $moduleinstance->group_size);
+        }
 
         redirect(
             new url('/mod/gitlab/view.php', ['id' => $cm->id]),
@@ -208,11 +223,11 @@ function list_student_groups(int $module_id, int $max_member) {
     ]);
 }
 
-function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, int $due_date) {
+function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, int $due_date, int $context_id) {
     global $OUTPUT;
     
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_groups', [
-        'groups' => array_map(function($group) use ($client, $due_date) {
+        'groups' => array_map(function($group) use ($client, $module_id, $due_date) {
             $group->members = parse_group_members($group);
             $group->member_count = count($group->members);
             $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $group->members)]);
@@ -224,6 +239,11 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
                 return $group;
             }
             
+            $group->delete_url = (new url('/mod/gitlab/view.php', [
+                'id' => $module_id,
+                'action' => 'deletegroup',
+                'group_id' => $group->id,
+            ]))->out(false);
             $group->repository_url = $repository->web_url;
             $group->download_latest_url = $client->project()->archive($group->repository_id);
             $group->ssh_url = $repository->ssh_url_to_repo;
@@ -257,6 +277,11 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
             return $group;
         }, Group::get_groups($module_id)),
         'max_member' => $max_member,
+        'context_id' => $context_id,
+        'create_group_url' => (new url('/mod/gitlab/view.php', [
+            'id' => $module_id,
+            'action' => 'creategroup',
+        ]))->out(false),
     ]);
 }
 
@@ -288,7 +313,7 @@ echo $OUTPUT->header();
 if ($is_teacher) {
     list_repositories($client, $moduleinstance->group_id, $cm->id);
     template($client, $moduleinstance->template_id, $moduleinstance->due_date, json_decode($moduleinstance->reviewers, true) ?: []);
-    list_teacher_groups($client, $cm->id, $moduleinstance->group_size, $moduleinstance->due_date);
+    list_teacher_groups($client, $cm->id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
 } else {
     list_student_groups($cm->id, $moduleinstance->group_size);
 }
