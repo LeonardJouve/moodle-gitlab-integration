@@ -28,7 +28,8 @@ use \core_external\external_api;
 use \core_external\external_function_parameters;
 use \core_external\external_value;
 use \core_external\external_multiple_structure;
-use core_user_external;
+use \core_external\external_single_structure;
+use core_user;
 
 class form_user_selector extends external_api {
     public static function execute_parameters() {
@@ -60,6 +61,13 @@ class form_user_selector extends external_api {
     }
 
     public static function execute_returns() {
-        return new external_multiple_structure(core_user_external::user_description());
+        return new external_multiple_structure(new external_single_structure([
+            'id' => new external_value(core_user::get_property_type('id'), 'ID of the user'),
+            'username' => new external_value(core_user::get_property_type('username'), 'The username', VALUE_OPTIONAL),
+            'firstname' => new external_value(core_user::get_property_type('firstname'), 'The first name(s) of the user', VALUE_OPTIONAL),
+            'lastname' => new external_value(core_user::get_property_type('lastname'), 'The family name of the user', VALUE_OPTIONAL),
+            'fullname' => new external_value(core_user::get_property_type('firstname'), 'The fullname of the user'),
+            'profileimageurlsmall' => new external_value(PARAM_URL, 'User image profile URL - small version'),
+        ]));
     }
 }
