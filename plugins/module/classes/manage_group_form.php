@@ -47,7 +47,7 @@ class mod_gitlab_manage_group_form extends moodleform {
 
         $existants = [];
         foreach ($users as $user) {
-            $result[$user->id] = $PAGE->get_renderer('core')->render_from_template('mod_gitlab/form_user_selector', $user);
+            $existants[$user->id] = $PAGE->get_renderer('core')->render_from_template('mod_gitlab/form_user_selector', $user);
         }
         $options = array(
             'ajax' => 'mod_gitlab/form_user_selector',
