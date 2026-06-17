@@ -51,28 +51,25 @@ class form_user_selector extends external_api {
             'group_id' => $groupid,
         ]);
 
+        $sql_search = '%' . $search . '%';
         $users = $DB->get_records_sql("
             SELECT DISTINCT u.*
             FROM {user} u
             JOIN {user_enrolments} ue ON ue.userid = u.id
-            JOIN {enrol} e ON e.id = ue.enrolid
-            LEFT JOIN {gitlab_group_members} gm
-                ON gm.user_id = u.id
-            LEFT JOIN {gitlab_groups} g
-                ON g.id = gm.group_id AND g.module_id = :module_id
-            WHERE e.courseid = :course_id
-                AND g.id IS NULL
-                AND (
-                    u.firstname LIKE :search1
-                    OR u.lastname LIKE :search2
-                    OR u.username LIKE :search3
-                )
+            JOIN {enrol} e ON (e.id = ue.enrolid AND e.courseid = :course_id)
+            WHERE (u.firstname LIKE :search1 OR u.lastname LIKE :search2 OR u.username LIKE :search3) AND NOT EXISTS (
+                SELECT 1
+                FROM {gitlab_groups} g
+                JOIN {gitlab_group_members} gm ON gm.group_id = g.id
+                WHERE g.module_id = :module_id
+                    AND gm.user_id = u.id
+            )
         ", [
             'course_id' => $courseid,
             'module_id' => $module_id,
-            'search1'   => '%' . $search . '%',
-            'search2'   => '%' . $search . '%',
-            'search3'   => '%' . $search . '%',
+            'search1'   => $sql_search,
+            'search2'   => $sql_search,
+            'search3'   => $sql_search,
         ], 0, 50);
 
         $course = get_course($courseid);
