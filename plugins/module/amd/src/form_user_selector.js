@@ -6,8 +6,8 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/str'], function($, Ajax, 
             }
 
             return results.map((result) => ({
-                value: "value",
-                label: "label",
+                value: result.id,
+                label: result.label,
             }));
         },
         transport: function(selector, search, success, failure) {
@@ -22,7 +22,10 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/str'], function($, Ajax, 
                     search,
                 },
             }])[0].then(async (results) => {
-                const users = await Promise.all(results.map((result) => Templates.render('mod_gitlab/form_user_selector', result)));
+                const users = await Promise.all(results.map(async (result) => ({
+                    ...result,
+                    label: await Templates.render('mod_gitlab/form_user_selector', result),
+                })));
                 success(users);
             }).fail(failure);
         },
