@@ -40,6 +40,27 @@ const submitFormAjax = (modal, contextId, groupId) => {
 
     console.log(modal.getRoot().find('form').serialize());
 
+    const form = modal.getRoot().find('form');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    const userlist = formData.getAll('userlist[]');
+    console.log(data, userlist);
+
+    const data = {};
+    form.serializeArray().forEach(item => {
+        if (data[item.name]) {
+            // handle multiple values (like userlist[])
+            if (!Array.isArray(data[item.name])) {
+                data[item.name] = [data[item.name]];
+            }
+            data[item.name].push(item.value);
+        } else {
+            data[item.name] = item.value;
+        }
+    });
+
+    console.log(data);
+
     Ajax.call([{
         methodname: 'mod_gitlab_test',
         args: {id: 123}
