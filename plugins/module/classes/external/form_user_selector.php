@@ -43,7 +43,7 @@ class form_user_selector extends external_api {
     public static function execute(int $courseid, int $groupid, string $search) {
         global $DB;
 
-        require_once("/user/lib.php");
+        require_once($CFG->dirroot . '/public/user/lib.php');
 
         $module_id = $DB->get_field_sql("
             SELECT g.module_id
