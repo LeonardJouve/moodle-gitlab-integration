@@ -24,6 +24,8 @@ namespace mod_gitlab\external;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once(__DIR__ . '/../../../../config.php');
+
 use \core_external\external_api;
 use \core_external\external_function_parameters;
 use \core_external\external_value;
@@ -41,9 +43,9 @@ class form_user_selector extends external_api {
     }
 
     public static function execute(int $courseid, int $groupid, string $search) {
-        global $DB;
+        global $DB, $CFG;
 
-        require_once($CFG->dirroot . '/public/user/lib.php');
+        require_once($CFG->dirroot . '/user/lib.php');
 
         $module_id = $DB->get_field_sql("
             SELECT g.module_id
