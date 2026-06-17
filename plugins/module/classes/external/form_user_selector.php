@@ -24,15 +24,13 @@ namespace mod_gitlab\external;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__ . '/../../../../config.php');
-require_once(__DIR__ . '/../../lib.php');
-
 use \core_external\external_api;
 use \core_external\external_function_parameters;
 use \core_external\external_value;
 use \core_external\external_multiple_structure;
 use \core_external\external_single_structure;
 use core_user;
+use user_picture;
 
 class form_user_selector extends external_api {
     public static function execute_parameters() {
@@ -44,9 +42,7 @@ class form_user_selector extends external_api {
     }
 
     public static function execute(int $courseid, int $groupid, string $search) {
-        global $DB, $CFG;
-
-        require_once($CFG->dirroot . '/user/lib.php');
+        global $DB;
 
         $module_id = $DB->get_field_sql("
             SELECT g.module_id
@@ -77,13 +73,24 @@ class form_user_selector extends external_api {
             'module_id' => $module_id,
         ], 0, 50);
 
-        $course = get_course($courseid);
+        // $course = get_course($courseid);
 
         $results = [];
         foreach ($users as $user) {
-            if ($userdetails = user_get_user_details($user, $course, ['id', 'fullname', 'profileimageurlsmall'])) {
-                $results[] = $userdetails;
-            }
+            $results[] = [
+                'id' => $user->id,
+                'fullname' => $user->firstname . ' ' . $user->lastname,
+                'profileimageurlsmall' => 'https://via.placeholder.com/35'
+            ];
+
+            // $canviewfullnames = has_capability('moodle/site:viewfullnames', $context);
+            // fullname($user, $canviewfullnames);
+            // $userpicture = new user_picture($user);
+            // $userpicture->size = 0;
+            // $userdetails['profileimageurlsmall'] = $userpicture->get_url($PAGE)->out(false);
+            // if ($userdetails = user_get_user_details($user, $course, ['id', 'fullname', 'profileimageurlsmall'])) {
+            //     $results[] = $userdetails;
+            // }
         }
 
         return $results;
