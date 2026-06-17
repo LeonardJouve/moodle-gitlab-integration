@@ -42,7 +42,7 @@ class form_user_selector extends external_api {
     }
 
     public static function execute(int $courseid, int $groupid, string $search) {
-        global $DB;
+        global $DB, $PAGE;
 
         $module_id = $DB->get_field_sql("
             SELECT g.module_id
@@ -77,17 +77,18 @@ class form_user_selector extends external_api {
 
         $results = [];
         foreach ($users as $user) {
+            $userpicture = new user_picture($user);
+            $userpicture->size = 0;
+
+            // TODO handle capabilities with user_get_user_details
             $results[] = [
                 'id' => $user->id,
                 'fullname' => $user->firstname . ' ' . $user->lastname,
-                'profileimageurlsmall' => 'https://via.placeholder.com/35'
+                'profileimageurlsmall' => $userpicture->get_url($PAGE)->out(false),//'https://via.placeholder.com/35'
             ];
 
             // $canviewfullnames = has_capability('moodle/site:viewfullnames', $context);
             // fullname($user, $canviewfullnames);
-            // $userpicture = new user_picture($user);
-            // $userpicture->size = 0;
-            // $userdetails['profileimageurlsmall'] = $userpicture->get_url($PAGE)->out(false);
             // if ($userdetails = user_get_user_details($user, $course, ['id', 'fullname', 'profileimageurlsmall'])) {
             //     $results[] = $userdetails;
             // }
