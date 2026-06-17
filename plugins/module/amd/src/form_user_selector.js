@@ -1,4 +1,4 @@
-define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
+define(['jquery', 'core/ajax', 'core/templates', 'core/str'], function($, Ajax, Templates, Str) {
     return {
         processResults: function(selector, results) {
             if (!$.isArray(results)) {
