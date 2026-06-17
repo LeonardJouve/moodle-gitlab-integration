@@ -40,7 +40,7 @@ const submitFormAjax = (modal, contextId, groupId) => {
 
     console.log(modal.getRoot().find('form').serialize());
 
-    const form = modal.getRoot().find('form');
+    const form = modal.getRoot().find('form')[0];
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
     const userlist = formData.getAll('userlist[]');
