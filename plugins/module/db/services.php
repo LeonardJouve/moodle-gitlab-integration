@@ -24,7 +24,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
-    'mod_gitlab_test' => [
+    'mod_gitlab_set_group_members' => [
         'classname'   => 'mod_gitlab\external\set_group_members',
         'methodname'  => 'execute',
         'classpath'   => '',
