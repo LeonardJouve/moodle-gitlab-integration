@@ -53,7 +53,7 @@ class form_user_selector extends external_api {
 
         $sql_search = '%' . $search . '%';
         $users = $DB->get_records_sql("
-            SELECT DISTINCT u.*
+            SELECT DISTINCT u.id, u.firstname, u.lastname
             FROM {user} u
             JOIN {user_enrolments} ue ON ue.userid = u.id
             JOIN {enrol} e ON (e.id = ue.enrolid AND e.courseid = :course_id)
@@ -72,17 +72,7 @@ class form_user_selector extends external_api {
             'module_id' => $module_id,
         ], 0, 50);
 
-        $results = [];
-        foreach ($users as $user) {
-            // TODO handle capabilities with user_get_user_details
-            $results[] = [
-                'id' => $user->id,
-                'firstname' => $user->firstname,
-                'lastname' => $user->lastname,
-            ];
-        }
-
-        return $results;
+        return $users;
     }
 
     public static function execute_returns() {

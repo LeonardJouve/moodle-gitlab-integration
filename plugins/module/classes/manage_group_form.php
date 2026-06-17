@@ -28,13 +28,27 @@ require_once($CFG->libdir.'/formslib.php');
 
 class mod_gitlab_manage_group_form extends moodleform {
     public function definition() {
+        global $DB, $PAGE;
+    
         $mform = $this->_form;
         $context = $this->_customdata->context;
         $coursecontext = $context->get_course_context();
 
-        $existants = [
-            1 => 'tom',
-        ];
+        // $PAGE->set_context(context_system::instance());
+
+        $users = $DB->get_records_sql("
+            SELECT DISTINCT u.id, u.firstname, u.lastname
+            FROM {user} u
+            JOIN {gitlab_group_members} gm ON gm.user_id = u.id
+            WHERE gm.group_id = :group_id
+        ", [
+            'group_id' => $this->_customdata->groupid,
+        ]);
+
+        $existants = [];
+        foreach ($users as $user) {
+            $result[$user->id] = $PAGE->get_renderer('mod_gitlab')->render_from_template('mod_gitlab/form_user_selector', $user);
+        }
         $options = array(
             'ajax' => 'mod_gitlab/form_user_selector',
             'multiple' => true,
@@ -42,7 +56,7 @@ class mod_gitlab_manage_group_form extends moodleform {
             'groupid' => $this->_customdata->groupid,
         );
         $mform->addElement('autocomplete', 'userlist', 'TODO', $existants, $options);
-        $mform->setDefault('userlist', [1]);
+        $mform->setDefault('userlist', array_keys($existants));
     }
 
     /**
