@@ -1,5 +1,4 @@
 import * as Str from "core/str";
-import Config from "core/config";
 import ModalEvents from "core/modal_events";
 import ModalSaveCancel from "core/modal_save_cancel";
 import Prefetch from "core/prefetch";
@@ -24,6 +23,8 @@ const showModal = (contextId, groupId) => {
         modal.getRoot().on("submit", "form", (e) => {
             e.preventDefault();
 
+            console.log(e);
+
             submitFormAjax(modal, contextId, groupId);
         });
 
@@ -37,6 +38,7 @@ const submitFormAjax = (modal, contextId, groupId) => {
     modal.hide();
     modal.destroy();
 
+    console.log(modal.getRoot().find('form').serialize());
 
     Ajax.call([{
         methodname: 'mod_gitlab_test',
