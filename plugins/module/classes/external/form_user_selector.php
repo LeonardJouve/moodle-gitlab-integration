@@ -24,15 +24,12 @@ namespace mod_gitlab\external;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once("$CFG->libdir/formslib.php");
-
 use \core_external\external_api;
 use \core_external\external_function_parameters;
 use \core_external\external_value;
 use \core_external\external_multiple_structure;
 use \core_external\external_single_structure;
 use core_user;
-use user_picture;
 
 class form_user_selector extends external_api {
     public static function execute_parameters() {
@@ -44,7 +41,7 @@ class form_user_selector extends external_api {
     }
 
     public static function execute(int $courseid, int $groupid, string $search) {
-        global $DB, $PAGE;
+        global $DB;
 
         $module_id = $DB->get_field_sql("
             SELECT g.module_id
@@ -75,25 +72,14 @@ class form_user_selector extends external_api {
             'module_id' => $module_id,
         ], 0, 50);
 
-        // $course = get_course($courseid);
-
         $results = [];
         foreach ($users as $user) {
-            $userpicture = new user_picture($user);
-            $userpicture->size = 0;
-
             // TODO handle capabilities with user_get_user_details
             $results[] = [
                 'id' => $user->id,
-                'fullname' => $user->firstname . ' ' . $user->lastname,
-                'profileimageurlsmall' => $userpicture->get_url($PAGE)->out(false),//'https://via.placeholder.com/35'
+                'firstname' => $user->firstname,
+                'lastname' => $user->lastname,
             ];
-
-            // $canviewfullnames = has_capability('moodle/site:viewfullnames', $context);
-            // fullname($user, $canviewfullnames);
-            // if ($userdetails = user_get_user_details($user, $course, ['id', 'fullname', 'profileimageurlsmall'])) {
-            //     $results[] = $userdetails;
-            // }
         }
 
         return $results;
@@ -102,11 +88,8 @@ class form_user_selector extends external_api {
     public static function execute_returns() {
         return new external_multiple_structure(new external_single_structure([
             'id' => new external_value(core_user::get_property_type('id'), 'ID of the user'),
-            // 'username' => new external_value(core_user::get_property_type('username'), 'The username', VALUE_OPTIONAL),
-            // 'firstname' => new external_value(core_user::get_property_type('firstname'), 'The first name(s) of the user', VALUE_OPTIONAL),
-            // 'lastname' => new external_value(core_user::get_property_type('lastname'), 'The family name of the user', VALUE_OPTIONAL),
-            'fullname' => new external_value(core_user::get_property_type('firstname'), 'The fullname of the user'),
-            'profileimageurlsmall' => new external_value(PARAM_URL, 'User image profile URL - small version'),
+            'firstname' => new external_value(core_user::get_property_type('firstname'), 'The first name(s) of the user', VALUE_OPTIONAL),
+            'lastname' => new external_value(core_user::get_property_type('lastname'), 'The family name of the user', VALUE_OPTIONAL),
         ]));
     }
 }
