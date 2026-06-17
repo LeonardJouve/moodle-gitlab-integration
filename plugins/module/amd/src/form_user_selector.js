@@ -21,7 +21,10 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
                     groupid,
                     search,
                 },
-            }]).then(success).fail(failure);
+            }])[0].then(async (results) => {
+                const users = await Promise.all(results.map((result) => Templates.render('mod_gitlab/form_user_selector', result)));
+                success(users);
+            }).fail(failure);
         },
     };
 });
