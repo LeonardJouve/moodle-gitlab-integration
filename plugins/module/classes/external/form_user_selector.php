@@ -25,6 +25,7 @@ namespace mod_gitlab\external;
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../../../../config.php');
+require_once(__DIR__ . '/../../lib.php');
 
 use \core_external\external_api;
 use \core_external\external_function_parameters;
