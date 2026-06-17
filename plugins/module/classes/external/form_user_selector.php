@@ -72,7 +72,16 @@ class form_user_selector extends external_api {
             'module_id' => $module_id,
         ], 0, 50);
 
-        return $users;
+        $in = $DB->get_records_sql("
+            SELECT DISTINCT u.id, u.firstname, u.lastname
+            FROM {user} u
+            JOIN {gitlab_group_members} gm ON gm.user_id = u.id
+            WHERE gm.group_id = :group_id
+        ", [
+            'group_id' => $groupid,
+        ]);
+
+        return array_merge($users, $in);
     }
 
     public static function execute_returns() {
