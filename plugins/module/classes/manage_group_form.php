@@ -32,16 +32,16 @@ class mod_gitlab_manage_group_form extends moodleform {
         $context = $this->_customdata->context;
         $coursecontext = $context->get_course_context();
 
+        $existants = [
+            1 => 'tom',
+        ];
         $options = array(
             'ajax' => 'mod_gitlab/form_user_selector',
             'multiple' => true,
             'courseid' => $coursecontext->instanceid,
             'groupid' => $this->_customdata->groupid,
         );
-        $mform->addElement('autocomplete', 'userlist', 'TODO', array(), $options);
-        $mform->setDefault('userlist', [
-            '2' => '1',
-        ]);
+        $mform->addElement('autocomplete', 'userlist', 'TODO', $existants, $options);
     }
 
     /**

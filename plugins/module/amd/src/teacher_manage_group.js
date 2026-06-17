@@ -43,7 +43,7 @@ const submitFormAjax = (modal, contextId, groupId) => {
     Ajax.call([{
         methodname: 'mod_gitlab_test',
         args: {id: 123}
-    }]).then(console.log);
+    }])[0].then(console.log);
 };
 
 export const init = ({contextId, groupId}) => {
