@@ -43,7 +43,7 @@ class form_user_selector extends external_api {
     public static function execute(int $courseid, int $groupid, string $search) {
         global $DB;
 
-        require_once($CFG->dirroot . "/user/lib.php");
+        require_once("/user/lib.php");
 
         $module_id = $DB->get_field_sql("
             SELECT g.module_id
@@ -68,19 +68,17 @@ class form_user_selector extends external_api {
             )
         ", [
             'course_id' => $courseid,
-            'module_id' => $module_id,
             'search1'   => $sql_search,
             'search2'   => $sql_search,
             'search3'   => $sql_search,
+            'module_id' => $module_id,
         ], 0, 50);
 
         $course = get_course($courseid);
 
-        $requiredfields = ['id', 'fullname', 'profileimageurlsmall'];
-        
         $results = [];
         foreach ($users as $user) {
-            if ($userdetails = user_get_user_details($user, $course, $requiredfields)) {
+            if ($userdetails = user_get_user_details($user, $course, ['id', 'fullname', 'profileimageurlsmall'])) {
                 $results[] = $userdetails;
             }
         }
