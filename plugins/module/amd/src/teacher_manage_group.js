@@ -23,8 +23,6 @@ const showModal = (contextId, groupId) => {
         modal.getRoot().on("submit", "form", (e) => {
             e.preventDefault();
 
-            console.log(e);
-
             submitFormAjax(modal, contextId, groupId);
         });
 
@@ -38,33 +36,17 @@ const submitFormAjax = (modal, contextId, groupId) => {
     modal.hide();
     modal.destroy();
 
-    console.log(modal.getRoot().find('form').serialize());
-
-    const form = modal.getRoot().find('form')[0];
+    const form = modal.getRoot().find("form")[0];
     const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-    const userlist = formData.getAll('userlist[]');
-    console.log(data, userlist);
-
-    const data = {};
-    form.serializeArray().forEach(item => {
-        if (data[item.name]) {
-            // handle multiple values (like userlist[])
-            if (!Array.isArray(data[item.name])) {
-                data[item.name] = [data[item.name]];
-            }
-            data[item.name].push(item.value);
-        } else {
-            data[item.name] = item.value;
-        }
-    });
-
-    console.log(data);
+    const members = formData.getAll("userlist[]").map(Number);
 
     Ajax.call([{
-        methodname: 'mod_gitlab_test',
-        args: {id: 123}
-    }])[0].then(console.log);
+        methodname: 'mod_gitlab_set_group_members',
+        args: {
+            members,
+            groupid: groupId,
+        }
+    }]);
 };
 
 export const init = ({contextId, groupId}) => {

@@ -26,19 +26,42 @@ defined('MOODLE_INTERNAL') || die();
 
 use \core_external\external_api;
 use \core_external\external_function_parameters;
+use \core_external\external_multiple_structure;
 use \core_external\external_value;
+use context_course;
+use moodle_exception;
 
-class test extends external_api {
+class set_group_members extends external_api {
     public static function execute_parameters() {
         return new external_function_parameters([
-            'id' => new external_value(PARAM_INT, 'id'),
+            'groupid' => new external_value(PARAM_INT, 'id'),
+            'members' => new external_multiple_structure(
+                new external_value(PARAM_INT, 'id'),
+            ),
         ]);
     }
 
-    public static function execute($id) {
-        return [
-            'result' => 'ok',
-        ];
+    public static function execute(int $groupid, array $members) {
+        global $DB;
+    
+        $module_id = $DB->get_field_sql("
+            SELECT g.module_id
+            FROM {gitlab_groups} g
+            WHERE g.id = :group_id
+        ", [
+            'group_id' => $groupid,
+        ]);
+
+        $cm = get_coursemodule_from_id('gitlab', $module_id, 0, false, MUST_EXIST);
+        $coursecontext = context_course::instance($cm->course);
+
+        foreach ($members as $user_id) {
+            if (!is_enrolled($coursecontext, $user_id)) {
+                throw new moodle_exception('usernotenrolled', 'mod_gitlab', '', $user_id);
+            }
+        }
+
+        return ['result' => 'ok'];
     }
 
     public static function execute_returns() {

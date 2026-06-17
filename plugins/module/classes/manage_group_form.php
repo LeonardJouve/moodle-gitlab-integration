@@ -34,8 +34,6 @@ class mod_gitlab_manage_group_form extends moodleform {
         $context = $this->_customdata->context;
         $coursecontext = $context->get_course_context();
 
-        // $PAGE->set_context(context_system::instance());
-
         $users = $DB->get_records_sql("
             SELECT DISTINCT u.id, u.firstname, u.lastname
             FROM {user} u

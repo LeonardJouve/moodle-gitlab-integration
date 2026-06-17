@@ -25,10 +25,10 @@ defined('MOODLE_INTERNAL') || die();
 
 $functions = [
     'mod_gitlab_test' => [
-        'classname'   => 'mod_gitlab\external\test',
+        'classname'   => 'mod_gitlab\external\set_group_members',
         'methodname'  => 'execute',
         'classpath'   => '',
-        'description' => 'Test ajax',
+        'description' => 'Set gitlab group members',
         'type'        => 'read',
         'ajax'        => true,
     ],
