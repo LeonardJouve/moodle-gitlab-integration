@@ -43,6 +43,8 @@ class form_user_selector extends external_api {
     public static function execute(int $courseid, int $groupid, string $search) {
         global $DB;
 
+        require_once($CFG->dirroot . "/user/lib.php");
+
         $module_id = $DB->get_field_sql("
             SELECT g.module_id
             FROM {gitlab_groups} g
