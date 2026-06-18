@@ -162,15 +162,19 @@ class Group {
         $transaction = $DB->start_delegated_transaction();
 
         try {
-            list($not_in_sql, $params) = $DB->get_in_or_equal($members, SQL_PARAMS_NAMED, 'user_id', true);
+            if (empty($members)) {
+                $DB->delete_records('gitlab_group_members', ['group_id' => $group_id]);
+            } else {
+                list($not_in_sql, $params) = $DB->get_in_or_equal($members, SQL_PARAMS_NAMED, 'user_id', true);
 
-            $DB->delete_records_select(
-                'gitlab_group_members',
-                "group_id = :group_id AND user_id $not_in_sql",
-                array_merge([
-                    'group_id' => $group_id,
-                ], $params),
-            );
+                $params['group_id'] = $group_id;
+
+                $DB->delete_records_select(
+                    'gitlab_group_members',
+                    "group_id = :group_id AND user_id $not_in_sql",
+                    $params,
+                );
+            }
 
             foreach ($members as $user_id) {
                 $exists = $DB->record_exists('gitlab_group_members', [
