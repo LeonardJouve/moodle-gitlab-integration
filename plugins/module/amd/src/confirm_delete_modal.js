@@ -8,7 +8,7 @@ const showModal = async (groupId) => {
     const modal = await ModalFactory.create({
         title: Str.get_string("modal_delete_group_title", "mod_gitlab"),
         body: Str.get_string("modal_delete_group_help", "mod_gitlab"),
-        type: ModalFactory.types.SAVE_CANCEL,
+        type: ModalFactory.types.DELETE_CANCEL,
     });
 
     modal.getRoot().on(ModalEvents.save, () => {
