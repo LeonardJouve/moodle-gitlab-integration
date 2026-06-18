@@ -69,9 +69,12 @@ function gitlab_add_instance($moduleinstance, $mform = null) {
             }
         ));
 
+        $template = $client->project()->create($moduleinstance->name . "_template", $group->id);
+
         $moduleinstance->reviewers = json_encode($reviewers ?: [], JSON_UNESCAPED_UNICODE);
         $moduleinstance->timecreated = time();
         $moduleinstance->group_id = $group->id;
+        $moduleinstance->template_id = $template->id;
 
         $id = $DB->insert_record('gitlab', $moduleinstance);
 
@@ -128,4 +131,28 @@ function gitlab_delete_instance($id) {
     $DB->delete_records('gitlab', ['id' => $id]);
 
     return true;
+}
+
+
+/**
+ * Serve the manual enrol users form as a fragment.
+ *
+ * @param array $args List of named arguments for the fragment loader.
+ * @return string
+ */
+function mod_gitlab_output_fragment_manage_group_form($args) {
+    $args = (object) $args;
+    $context = $args->context;
+    $o = '';
+
+    require_capability('mod/gitlab:addinstance', $context);
+
+    $mform = new mod_gitlab_manage_group_form(null, $args);
+
+    ob_start();
+    $mform->display();
+    $o .= ob_get_contents();
+    ob_end_clean();
+
+    return $o;
 }

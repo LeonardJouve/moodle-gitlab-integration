@@ -1,0 +1,64 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>;.
+}}
+
+{{!
+    @template mod_gitlab/teacher_groups
+
+    Template for teacher groups
+}}
+
+<div class="box py-3 card-columns d-flex flex-column gap-2">
+<h2>Groups</h2>
+{{#groups}}
+    <div class="card">
+        <div class="card-body d-flex flex-column">
+            <div class="d-flex align-items-center">
+                <a
+                    role="button"
+                    data-bs-toggle="collapse"
+                    data-for="sectiontoggler"
+                    href="#collapsegroup{{id}}"
+                    aria-controls="collapsegroup{{id}}"
+                    aria-expanded="false"
+                    class="btn btn-icon me-3 icons-collapse-expand collapsed"
+                >
+                    <span class="expanded-icon icon-no-margin p-2" title="Collapse">
+                        <i class="icon fa fa-chevron-down fa-fw"></i>
+                        <span class="visually-hidden">Collapse</span>
+                    </span>
+                    <span class="collapsed-icon icon-no-margin p-2" title="Expand">
+                        <i class="icon fa fa-chevron-right fa-fw"></i>
+                        <span class="visually-hidden">Expand</span>
+                    </span>
+                </a>
+                <h5 class="mb-0 flex-grow-1">
+                    <a class="card-title" href={{repository_url}} target="_blank">{{name}}</a>
+                </h5>
+                <div class="d-flex align-items-center gap-3">
+                    <p class="mb-0">{{member_count}}/{{max_member}}</p>
+                </div>
+            </div>
+            <div id="collapsegroup{{id}}" class="collapse">
+                {{> mod_gitlab/teacher_group }}
+            </div>
+        </div>
+    </div>
+{{/groups}}
+<div>
+    <a href={{create_group_url}} class="btn btn-primary">Create</a>
+</div>
+</div>

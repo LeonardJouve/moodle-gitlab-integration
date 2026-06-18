@@ -1,0 +1,199 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>;.
+}}
+
+{{!
+    @template mod_gitlab/teacher_group
+
+    Template for teacher group
+}}
+
+<div class="d-flex flex-column">
+    <div class="d-grid gap-3 mt-3" style="grid-template-columns: auto 1fr auto;">
+        {{#js}}
+            require(['mod_gitlab/teacher_manage_group'], (module) => module.init({contextId: {{context_id}}, groupId: {{id}}}));
+        {{/js}}
+        
+        <div class="d-flex align-items-center">
+            <span class="mb-0">Members</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            {{#members}}
+                <i class="mb-0">{{.}}</i>
+            {{/members}}
+        </div>
+        <div class="d-flex align-items-center justify-content-end">
+            <button id="manage-group-members-{{id}}" class="btn btn-primary d-inline-flex align-items-center">
+                <i class="icon fa fa-pen me-2"></i>
+                Edit
+            </button>
+        </div>
+
+        <div class="d-flex align-items-center">
+            <span class="mb-0">Repository</span>
+        </div>
+        <div></div>
+        <div class="d-flex align-items-center justify-content-end">
+            <a class="btn btn-primary d-inline-flex align-items-center"
+                href="{{repository_url}}"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Repository"
+            >
+                <i class="icon fa fa-globe me-2"></i>
+                Open
+            </a>
+        </div>
+
+        <div class="d-flex align-items-center">
+            <span class="mb-0">Feedbacks</span>
+        </div>
+        <div class="d-flex align-items-center">
+            {{#is_graded}}
+                <span class="mb-0 badge bg-success">Graded</span>
+            {{/is_graded}}
+            {{^is_graded}}
+                <span class="mb-0 badge bg-danger">Not graded</span>
+            {{/is_graded}}
+        </div>
+        <div class="d-flex align-items-center justify-content-end">
+            <a class="btn btn-primary d-inline-flex align-items-center"
+                href="{{feedback_url}}"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Feedbacks"
+            >
+                <i class="icon fa fa-globe me-2"></i>
+                Open
+            </a>
+        </div>
+
+        <div class="d-flex align-items-center">
+            <span class="mb-0">Tests</span>
+        </div>
+        <div class="d-flex align-items-center">
+            {{#last_test_pass}}
+                <span class="d-inline-block rounded-circle border border-success border-3" style="width: 1.5em; height: 1.5em; background-color: color-mix(in srgb, var(--bs-success) 30%, white);"></span>
+            {{/last_test_pass}}
+            {{^last_test_pass}}
+                <span class="d-inline-block rounded-circle border border-danger border-3" style="width: 1.5em; height: 1.5em; background-color: color-mix(in srgb, var(--bs-danger) 30%, white);"></span>
+            {{/last_test_pass}}
+        </div>
+        <div class="d-flex align-items-center justify-content-end">
+            <a class="btn btn-primary d-inline-flex align-items-center"
+                href="{{test_url}}"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Tests"
+            >
+                <i class="icon fa fa-globe me-2"></i>
+                Open
+            </a>
+        </div>
+        
+        <div class="d-flex align-items-center">
+            <span class="mb-0">Get source code</span>
+        </div>
+        <div class="d-flex align-items-center">
+            {{#is_delayed}}
+                <span class="mb-0 badge bg-danger">Overdue ({{delay}})</span>
+            {{/is_delayed}}
+            {{^is_delayed}}
+                <span class="mb-0 badge bg-success">On time</span>
+            {{/is_delayed}}
+        </div>
+        <div class="d-flex align-items-center justify-content-end">
+            {{#js}}
+                require(['mod_gitlab/teacher_group'], (module) => module.init("{{id}}"));
+            {{/js}}
+            
+            <div id="code-dropdown-{{id}}" class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside">Code</button>
+
+                <div class="dropdown-menu p-3">
+                    <div class="mb-2">
+                        <span>Clone with SSH</span>
+                        <div class="input-group input-group-sm">
+                            <input class="form-control ssh-input" value="{{ssh_url}}" readonly>
+                            <button class="btn btn-outline-primary ssh-button">
+                                <i class="icon fa fa-copy me-0"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <span>Clone with HTTPS</span>
+                        <div class="input-group input-group-sm">
+                            <input class="form-control https-input" value="{{https_url}}" readonly>
+                            <button class="btn btn-outline-primary https-button">
+                                <i class="icon fa fa-copy me-0"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span>Checkout version at due date</span>
+                        <div class="input-group input-group-sm">
+                            <input class="form-control checkout-input" value="{{checkout_due_date}}" readonly>
+                            <button class="btn btn-outline-primary checkout-button">
+                                <i class="icon fa fa-copy me-0"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div>
+                        <span>Download source code</span>
+                        <div class="d-flex gap-2 mt-1">
+                            <a class="btn btn-outline-primary d-inline-flex align-items-center text-nowrap"
+                                href="{{download_due_date_url}}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="At due date"
+                            >
+                                At due date
+                            </a>
+                            <a class="btn btn-outline-primary d-inline-flex align-items-center text-nowrap"
+                                href="{{download_latest_url}}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Latest"
+                            >
+                                Latest
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center">
+            <span class="mb-0">Delete</span>
+        </div>
+        <div></div>
+        <div class="d-flex align-items-center justify-content-end">
+            {{#js}}
+                require(['mod_gitlab/confirm_delete_modal'], (module) => module.init({groupId: {{id}}}));
+            {{/js}}
+
+            <button id="delete-group-{{id}}" class="btn btn-primary btn-danger d-inline-flex align-items-center">
+                <i class="icon fa fa-trash me-2"></i>
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
