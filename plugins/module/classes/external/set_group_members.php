@@ -54,6 +54,7 @@ class set_group_members extends external_api {
         ]);
 
         $cm = get_coursemodule_from_id('gitlab', $module_id, 0, false, MUST_EXIST);
+        $moduleinstance = $DB->get_record('gitlab', ['id' => $cm->instance], '*', MUST_EXIST);
         $coursecontext = context_course::instance($cm->course);
 
         foreach ($members as $user_id) {
@@ -62,7 +63,7 @@ class set_group_members extends external_api {
             }
         }
 
-        $ok = Group::set_group_members($module_id, $members, $cm->group_size, $groupid);
+        $ok = Group::set_group_members($module_id, $members, $moduleinstance->group_size, $groupid);
         
         return ['result' => $ok ? 'ok' : 'failed'];
     }
