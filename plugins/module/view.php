@@ -283,11 +283,6 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
             'action' => 'creategroup',
         ]))->out(false),
     ]);
-
-    echo html_writer::label((new url('/mod/gitlab/view.php', [
-                'id' => $module_id,
-                'action' => 'deletegroup',
-            ]))->out(false), NULL);
 }
 
 function template(Gitlab $client, int $template_id, int $due_date, array $reviewers) {

@@ -46,7 +46,7 @@ const submitFormAjax = (modal, contextId, groupId) => {
             members,
             groupid: groupId,
         }
-    }]);
+    }])[0].then(() => window.location.reload());
 };
 
 export const init = ({contextId, groupId}) => {

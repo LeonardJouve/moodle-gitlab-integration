@@ -40,4 +40,12 @@ $functions = [
         'type'        => 'read',
         'ajax'        => true,
     ],
+    'mod_gitlab_delete_group' => [
+        'classname'   => 'mod_gitlab\external\delete_group',
+        'methodname'  => 'execute',
+        'classpath'   => '',
+        'description' => 'Delete group',
+        'type'        => 'read',
+        'ajax'        => true,
+    ]
 ];
