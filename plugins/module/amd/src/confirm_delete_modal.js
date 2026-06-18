@@ -11,7 +11,7 @@ const showModal = async (groupId) => {
         type: ModalFactory.types.DELETE_CANCEL,
     });
 
-    modal.getRoot().on(ModalEvents.save, () => {
+    modal.getRoot().on(ModalEvents.delete, () => {
         Ajax.call([{
             methodname: "mod_gitlab_delete_group",
             args: {groupid: groupId}
