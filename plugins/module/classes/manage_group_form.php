@@ -53,7 +53,7 @@ class mod_gitlab_manage_group_form extends moodleform {
             'courseid' => $coursecontext->instanceid,
             'groupid' => $this->_customdata->groupid,
         );
-        $mform->addElement('autocomplete', 'userlist', 'TODO', $existants, $options);
+        $mform->addElement('autocomplete', 'userlist', get_string('modal_group_members_field', 'mod_gitlab'), $existants, $options);
         $mform->setDefault('userlist', array_keys($existants));
     }
 

@@ -8,10 +8,10 @@ import Ajax from "core/ajax";
 const showModal = (contextId, groupId) => {
     return ModalSaveCancel.create({
         large: true,
-        title: Str.get_string("modal_manage_group_title", "mod_gitlab"),
+        title: Str.get_string("modal_group_members_title", "mod_gitlab"),
         body: Fragment.loadFragment("mod_gitlab", "manage_group_form", contextId, {groupid: groupId}),
         buttons: {
-            save: Str.get_string("modal_manage_group_title", "mod_gitlab"),
+            save: Str.get_string("modal_group_members_update", "mod_gitlab"),
         },
         show: true,
     }).then((modal) => {
@@ -51,7 +51,8 @@ const submitFormAjax = (modal, contextId, groupId) => {
 
 export const init = ({contextId, groupId}) => {
     Prefetch.prefetchStrings("mod_gitlab", [
-        "modal_manage_group_title",
+        "modal_group_members_title",
+        "modal_group_members_update",
     ]);
 
     const button = document.getElementById(`manage-group-members-${groupId}`);

@@ -81,7 +81,7 @@ class form_user_selector extends external_api {
             'group_id' => $groupid,
         ]);
 
-        return array_merge($users, $in);
+        return array_merge($in, $users);
     }
 
     public static function execute_returns() {
