@@ -278,7 +278,7 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
         }, Group::get_groups($module_id)),
         'max_member' => $max_member,
         'context_id' => $context_id,
-        'create_group_url' => 'test' . (new url('/mod/gitlab/view.php', [
+        'create_group_url' => (new url('/mod/gitlab/view.php', [
             'id' => $module_id,
             'action' => 'creategroup',
         ]))->out(false),
