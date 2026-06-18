@@ -259,6 +259,17 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
         'max_member' => $max_member,
         'context_id' => $context_id,
     ]);
+
+    echo $OUTPUT->confirm(
+        get_string('modal_delete_group_help', 'mod_gitlab'),
+        new single_button(
+            new moodle_url('/mod/gitlab/view.php', ['action' => 'test']),
+            get_string('modal_delete_group_confirm', 'mod_gitlab'),
+            'get',
+            single_button::BUTTON_DANGER,
+        ),
+        new url('/mod/gitlab/view.php'),
+    );
 }
 
 function template(Gitlab $client, int $template_id, int $due_date, array $reviewers) {
