@@ -103,6 +103,18 @@ case 'joingroup':
         get_string('message_joined_group', 'mod_gitlab'),
     );
     break;
+case 'deletegroup':
+    $group_id = optional_param('group_id', '', PARAM_INT);
+    if (!$group_id || !Group::delete_group($group_id)) {
+        error(get_string('message_error_delete_group', 'mod_gitlab'));
+        return;
+    }
+
+    redirect(
+        new url('/mod/gitlab/view.php', ['id' => $cm->id]),
+        get_string('message_deleted_group', 'mod_gitlab'),
+    );
+    break;
 case 'leavegroup':
     if (!Group::leave_group($cm->id, $USER->id)) {
         error(get_string('message_error_leave_group', 'mod_gitlab'));
@@ -212,7 +224,7 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
     global $OUTPUT;
     
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_groups', [
-        'groups' => array_map(function($group) use ($client, $due_date) {
+        'groups' => array_map(function($group) use ($client, $module_id, $due_date) {
             $group->members = parse_group_members($group);
             $group->member_count = count($group->members);
             $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $group->members)]);
@@ -247,6 +259,11 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
             $time = strtotime($last_commit->committed_date);
             $group->delay = format_time($time - $due_date);
             $group->is_delayed = ($time - $due_date) > 0;
+            $group->delete_url = (new url('/mod/gitlab/view.php', [
+                'id' => $module_id,
+                'action' => 'deletegroup',
+                'group_id' => $group->id,
+            ]))->out(false);
             
             // TODO
             $group->feedback_url = 'TODO_feedback';
@@ -259,17 +276,6 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
         'max_member' => $max_member,
         'context_id' => $context_id,
     ]);
-
-    echo $OUTPUT->confirm(
-        get_string('modal_delete_group_help', 'mod_gitlab'),
-        new single_button(
-            new moodle_url('/mod/gitlab/view.php', ['action' => 'test']),
-            get_string('modal_delete_group_confirm', 'mod_gitlab'),
-            'get',
-            single_button::BUTTON_DANGER,
-        ),
-        new url('/mod/gitlab/view.php'),
-    );
 }
 
 function template(Gitlab $client, int $template_id, int $due_date, array $reviewers) {
