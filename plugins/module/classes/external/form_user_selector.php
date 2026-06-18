@@ -63,6 +63,7 @@ class form_user_selector extends external_api {
                 JOIN {gitlab_group_members} gm ON gm.group_id = g.id
                 WHERE g.module_id = :module_id
                     AND gm.user_id = u.id
+                    AND gm.group_id != :group_id
             )
         ", [
             'course_id' => $courseid,
@@ -70,18 +71,11 @@ class form_user_selector extends external_api {
             'search2'   => $sql_search,
             'search3'   => $sql_search,
             'module_id' => $module_id,
+            'group_id' => $groupid,
         ], 0, 50);
 
-        $in = $DB->get_records_sql("
-            SELECT DISTINCT u.id, u.firstname, u.lastname
-            FROM {user} u
-            JOIN {gitlab_group_members} gm ON gm.user_id = u.id
-            WHERE gm.group_id = :group_id
-        ", [
-            'group_id' => $groupid,
-        ]);
 
-        return array_merge($in, $users);
+        return $users;
     }
 
     public static function execute_returns() {
