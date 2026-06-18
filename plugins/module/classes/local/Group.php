@@ -24,6 +24,8 @@
 
 namespace mod_gitlab\local;
 
+use Exception;
+use moodle_exception;
 use stdClass;
 
 class Group {
@@ -149,5 +151,43 @@ class Group {
 
 
         return $ok;
+    }
+
+    public static function set_group_members(int $module_id, array $members, int $max_member, int $group_id): bool {
+        global $DB;
+
+        if (count($members) > $max_member) {
+            return false;
+        }
+
+        $transaction = $DB->start_delegated_transaction();
+
+        try {
+            foreach ($members as $user_id) {
+                $user_group_id = Group::user_group($module_id, $user_id);
+
+                if ($user_group_id != null) {
+                    if ($user_group_id == $group_id) {
+                        continue;
+                    } else {
+                        throw new moodle_exception('toomanymembers', 'mod_gitlab', '', $max_member);
+                    }
+                }
+
+                $member = new stdClass();
+                $member->group_id = $group_id;
+                $member->user_id  = $user_id;
+
+                $DB->insert_record('gitlab_group_members', $member);
+            }
+
+            $transaction->allow_commit();
+
+            return true;
+        } catch (Exception $e) {
+            $transaction->rollback($e);
+
+            return false;
+        }
     }
 }

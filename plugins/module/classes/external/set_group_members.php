@@ -29,6 +29,7 @@ use \core_external\external_function_parameters;
 use \core_external\external_multiple_structure;
 use \core_external\external_value;
 use context_course;
+use mod_gitlab\local\Group;
 use moodle_exception;
 
 class set_group_members extends external_api {
@@ -61,7 +62,9 @@ class set_group_members extends external_api {
             }
         }
 
-        return ['result' => 'ok'];
+        $ok = Group::set_group_members($module_id, $members, $cm->group_size, $groupid);
+        
+        return ['result' => $ok ? 'ok' : 'failed'];
     }
 
     public static function execute_returns() {
