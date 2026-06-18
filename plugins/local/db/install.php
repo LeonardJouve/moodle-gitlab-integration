@@ -14,16 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/**
- * Plugin strings are defined here.
- *
- * @package     local_gitlab
- * @category    string
- * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-function xmldb_local_gitlab_install() {
+function create_course_field() {
     $handler = \core_customfield\handler::get_handler('core_course', 'course');
     
     $category = $handler->create_category('GitLab');
@@ -43,4 +34,32 @@ function xmldb_local_gitlab_install() {
         ]),
     ]);
     $token->save();
+}
+
+function create_user_field() {
+    global $DB;
+
+    $category = $DB->insert_record('user_info_category', (object)[
+        'name' => 'GitLab',
+        'sortorder' => 1,
+    ]);
+
+    $DB->insert_record('user_info_field', (object)[
+        'shortname' => 'gitlab_username',
+        'name' => 'GitLab Username',
+        'datatype' => 'text',
+        'categoryid' => $category,
+    ]);
+}
+
+/**
+ * @package     local_gitlab
+ * @category    string
+ * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+function xmldb_local_gitlab_install() {
+    create_course_field();
+    create_user_field();
 }
