@@ -162,7 +162,7 @@ class Group {
         $transaction = $DB->start_delegated_transaction();
 
         try {
-            list($not_in_sql, $params) = $DB->get_in_or_equal($members, SQL_PARAMS_QM, '', false, NULL);
+            list($not_in_sql, $params) = $DB->get_in_or_equal($members, SQL_PARAMS_NAMED, '', false, NULL);
 
             $params['group_id'] = $group_id;
 
