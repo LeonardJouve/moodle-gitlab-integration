@@ -138,7 +138,10 @@ case 'creategroup':
             error(get_string('message_error_create_group', 'mod_gitlab'));
             return;
         }
-        Group::join_group($cm->id, $group, $USER->id, $moduleinstance->group_size);
+
+        if (!$is_teacher) {
+            Group::join_group($cm->id, $group, $USER->id, $moduleinstance->group_size);
+        }
 
         redirect(
             new url('/mod/gitlab/view.php', ['id' => $cm->id]),
@@ -280,6 +283,11 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
             'action' => 'creategroup',
         ]))->out(false),
     ]);
+
+    echo html_writer::label((new url('/mod/gitlab/view.php', [
+                'id' => $module_id,
+                'action' => 'deletegroup',
+            ]))->out(false), NULL);
 }
 
 function template(Gitlab $client, int $template_id, int $due_date, array $reviewers) {
