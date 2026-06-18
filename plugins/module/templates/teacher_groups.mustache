@@ -21,7 +21,7 @@
     Template for teacher groups
 }}
 
-<div class="box py-3 card-columns">
+<div class="box py-3 card-columns d-flex flex-column gap-2">
 <h2>Groups</h2>
 {{#groups}}
     <div class="card">
@@ -58,4 +58,5 @@
         </div>
     </div>
 {{/groups}}
+<a href={{create_group_url}} class="btn btn-primary">Create</a>
 </div>
