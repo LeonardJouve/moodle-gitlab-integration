@@ -63,11 +63,9 @@ class set_group_members extends external_api {
             }
         }
 
-        $ok = Group::set_group_members($module_id, $members, $moduleinstance->group_size, $groupid);
+        $ok = Group::set_group_members($members, $moduleinstance->group_size, $groupid);
         
-        list($not_in_sql, $params) = $DB->get_in_or_equal($members, SQL_PARAMS_NAMED, '', false, NULL);
-        return ['result' => $not_in_sql . implode(',', array_values($params))];
-        // return ['result' => $ok ? 'ok' : 'failed'];
+        return ['result' => $ok ? 'ok' : 'failed'];
     }
 
     public static function execute_returns() {

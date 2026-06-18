@@ -152,7 +152,7 @@ class Group {
         return $ok;
     }
 
-    public static function set_group_members(int $module_id, array $members, int $max_member, int $group_id): bool {
+    public static function set_group_members(array $members, int $max_member, int $group_id): bool {
         global $DB;
 
         if (count($members) > $max_member) {
