@@ -65,7 +65,8 @@ class set_group_members extends external_api {
 
         $ok = Group::set_group_members($module_id, $members, $moduleinstance->group_size, $groupid);
         
-        return ['result' => $ok ? 'ok' : 'failed'];
+        return ['result' => $DB->get_in_or_equal($members, SQL_PARAMS_NAMED, 'user_id', true)];
+        // return ['result' => $ok ? 'ok' : 'failed'];
     }
 
     public static function execute_returns() {
