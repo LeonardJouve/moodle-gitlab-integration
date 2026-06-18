@@ -165,7 +165,7 @@ class Group {
             if (empty($members)) {
                 $DB->delete_records('gitlab_group_members', ['group_id' => $group_id]);
             } else {
-                list($not_in_sql, $params) = $DB->get_in_or_equal($members, SQL_PARAMS_NAMED, 'user_id', true);
+                list($not_in_sql, $params) = $DB->get_in_or_equal($members, SQL_PARAMS_QM, 'user_id', false);
 
                 $params['group_id'] = $group_id;
 
