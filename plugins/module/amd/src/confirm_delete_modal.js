@@ -1,9 +1,8 @@
 import * as Str from "core/str";
-import ModalEvents from "core/modal_events";
-import ModalSaveCancel from "core/modal_save_cancel";
 import Prefetch from "core/prefetch";
-import Fragment from "core/fragment";
-import Ajax from "core/ajax";
+import ModalFactory from 'core/modal_factory';
+import ModalEvents from 'core/modal_events';
+import Ajax from 'core/ajax';
 
 const showModal = async (groupId) => {
     const modal = await ModalFactory.create({
