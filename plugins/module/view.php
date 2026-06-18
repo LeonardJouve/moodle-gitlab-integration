@@ -239,6 +239,11 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
                 return $group;
             }
             
+            $group->delete_url = (new url('/mod/gitlab/view.php', [
+                'id' => $module_id,
+                'action' => 'deletegroup',
+                'group_id' => $group->id,
+            ]))->out(false);
             $group->repository_url = $repository->web_url;
             $group->download_latest_url = $client->project()->archive($group->repository_id);
             $group->ssh_url = $repository->ssh_url_to_repo;
@@ -262,11 +267,6 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
             $time = strtotime($last_commit->committed_date);
             $group->delay = format_time($time - $due_date);
             $group->is_delayed = ($time - $due_date) > 0;
-            $group->delete_url = (new url('/mod/gitlab/view.php', [
-                'id' => $module_id,
-                'action' => 'deletegroup',
-                'group_id' => $group->id,
-            ]))->out(false);
             
             // TODO
             $group->feedback_url = 'TODO_feedback';
