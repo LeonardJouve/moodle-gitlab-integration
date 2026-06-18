@@ -128,22 +128,12 @@ class mod_gitlab_mod_form extends moodleform_mod {
         $mform->addRule('group_size', null, 'required', null, 'client');
         $mform->addHelpButton('group_size', 'form_group_size', 'mod_gitlab');
 
-        $repeat = [];
-        $repeat[] = $mform->createElement(
-            'text',
-            'reviewer',
-            get_string('form_reviewer', 'mod_gitlab'),
+        $options = array(
+            'ajax' => 'mod_gitlab/reviewer_selector',
+            'multiple' => true,
+            'courseid' => $this->get_course()->id,
         );
-        $this->repeat_elements(
-            $repeat,
-            1,
-            ['reviewer' => ['type' => PARAM_TEXT]],
-            'reviewer_repeats',
-            'group_name_add_fields',
-            1,
-            get_string('form_reviewer_repeats_add', 'mod_gitlab'),
-            true,
-        );
+        $mform->addElement('autocomplete', 'reviewer', get_string('form_reviewer', 'mod_gitlab'), [], $options);
 
         $mform->addElement(
             'date_time_selector',
@@ -200,17 +190,8 @@ class mod_gitlab_mod_form extends moodleform_mod {
             
             // Reviewers
             if (!empty($data['reviewer'])) {
-                foreach ($data['reviewer'] as $index => $reviewer) {
-                    $reviewer = trim($reviewer);
-                    if ($reviewer === '') {
-                        continue;
-                    }
-
-                    $users = $client->user()->list(['username' => $reviewer]);
-                    if (count($users) === 0) {
-                        $errors["reviewer[$index]"] = get_string('form_invalid_reviewer_err', 'mod_gitlab');
-                    }
-                }
+                // foreach ($data['reviewer'] as $index => $reviewer) {
+                // }
             }
         } catch (RuntimeException $e) {
             $errors['parent_group'] = get_string('form_invalid_token_err', 'mod_gitlab');

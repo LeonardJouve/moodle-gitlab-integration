@@ -298,7 +298,7 @@ function template(Gitlab $client, int $template_id, int $due_date, array $review
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_template', [
         'name' => $template->name,
         'repository_url' => $template->web_url,
-        'reviewers' => $reviewers,
+        'reviewers' => [], // TODO MAP $reviewers,
         'due_date' => userdate($due_date, get_string('strftimedaydatetime', 'langconfig')),
         // TODO
         'test_url' => 'TODO_test',

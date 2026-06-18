@@ -62,16 +62,9 @@ function gitlab_add_instance($moduleinstance, $mform = null) {
 
         $group = $client->group()->create($moduleinstance->name, $moduleinstance->parent_group);
 
-        $reviewers = array_values(array_filter(
-            array_map('trim', $moduleinstance->reviewer ?? []),
-            function ($v) {
-                return $v !== '';
-            }
-        ));
-
         $template = $client->project()->create($moduleinstance->name . "_template", $group->id);
 
-        $moduleinstance->reviewers = json_encode($reviewers ?: [], JSON_UNESCAPED_UNICODE);
+        $moduleinstance->reviewers = json_encode($moduleinstance->reviewer ?: [], JSON_UNESCAPED_UNICODE);
         $moduleinstance->timecreated = time();
         $moduleinstance->group_id = $group->id;
         $moduleinstance->template_id = $template->id;
@@ -100,14 +93,7 @@ function gitlab_add_instance($moduleinstance, $mform = null) {
 function gitlab_update_instance($moduleinstance, $mform = null) {
     global $DB;
 
-    $reviewers = array_values(array_filter(
-        array_map('trim', $moduleinstance->reviewer ?? []),
-        function ($v) {
-            return $v !== '';
-        }
-    ));
-    
-    $moduleinstance->reviewers = json_encode($reviewers ?: [], JSON_UNESCAPED_UNICODE);
+    $moduleinstance->reviewers = json_encode($moduleinstance->reviewer ?: [], JSON_UNESCAPED_UNICODE);
     $moduleinstance->timemodified = time();
     $moduleinstance->id = $moduleinstance->instance;
 
