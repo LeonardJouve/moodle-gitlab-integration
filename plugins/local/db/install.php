@@ -37,24 +37,20 @@ function create_course_field() {
 }
 
 function create_user_field() {
-    $handler = \core_customfield\handler::get_handler('core_user', 'user');
+    global $DB;
 
-    $category = $handler->create_category('GitLab');
+    $category = $DB->insert_record('user_info_category', (object)['name' => 'GitLab']);
 
-    $field = new \core_customfield\field(0, (object) [
+    $DB->insert_record('user_info_field', (object)[
         'shortname' => 'gitlab_username',
         'name' => 'GitLab Username',
-        'type' => 'text',
+        'datatype' => 'text',
         'categoryid' => $category,
         'configdata' => json_encode([
-            'required' => 0,
-            'uniquevalues' => 0,
             'displaysize' => 50,
             'maxlength' => 255,
         ]),
     ]);
-
-    $field->save();
 }
 
 /**
