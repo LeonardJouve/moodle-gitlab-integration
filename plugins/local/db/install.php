@@ -39,17 +39,16 @@ function create_course_field() {
 function create_user_field() {
     global $DB;
 
-    $category = $DB->insert_record('user_info_category', (object)['name' => 'GitLab']);
+    $category = $DB->insert_record('user_info_category', (object)[
+        'name' => 'GitLab',
+        'sortorder' => 1,
+    ]);
 
     $DB->insert_record('user_info_field', (object)[
         'shortname' => 'gitlab_username',
         'name' => 'GitLab Username',
         'datatype' => 'text',
         'categoryid' => $category,
-        'configdata' => json_encode([
-            'displaysize' => 50,
-            'maxlength' => 255,
-        ]),
     ]);
 }
 
