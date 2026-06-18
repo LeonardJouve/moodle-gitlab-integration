@@ -24,9 +24,8 @@
 
 namespace mod_gitlab\local;
 
-use Exception;
-use moodle_exception;
 use stdClass;
+use Throwable;
 
 class Group {
     public static function group(int $group_id) {
@@ -163,15 +162,23 @@ class Group {
         $transaction = $DB->start_delegated_transaction();
 
         try {
-            foreach ($members as $user_id) {
-                $user_group_id = Group::user_group($module_id, $user_id);
+            list($not_in_sql, $params) = $DB->get_in_or_equal($members, SQL_PARAMS_NAMED, 'user_id', true);
 
-                if ($user_group_id != null) {
-                    if ($user_group_id == $group_id) {
-                        continue;
-                    } else {
-                        throw new moodle_exception('toomanymembers', 'mod_gitlab', '', $max_member);
-                    }
+            $DB->delete_records_select(
+                'gitlab_group_members',
+                "group_id = :group_id AND user_id $not_in_sql",
+                array_merge([
+                    'group_id' => $group_id,
+                ], $params),
+            );
+
+            foreach ($members as $user_id) {
+                $exists = $DB->record_exists('gitlab_group_members', [
+                    'group_id' => $group_id,
+                    'user_id'  => $user_id
+                ]);
+                if ($exists) {
+                    continue;
                 }
 
                 $member = new stdClass();
@@ -184,7 +191,7 @@ class Group {
             $transaction->allow_commit();
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $transaction->rollback($e);
 
             return false;
