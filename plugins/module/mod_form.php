@@ -130,8 +130,8 @@ class mod_gitlab_mod_form extends moodleform_mod {
 
         $existants = [];
         $current = $this->get_current();
-        if ($current != NULL && isset($current->reviewers) && !empty($current->reviewers)) {
-            $reviewers = json_decode($this->get_current()->reviewers, true);
+        if ($current != NULL && isset($current->reviewers) && !empty($current->reviewers ?? null)) {
+            $reviewers = json_decode($current->reviewers, true) ?: [];
             list($in_sql, $params) = $DB->get_in_or_equal($reviewers, SQL_PARAMS_NAMED, '', true, NULL);
             $users = $DB->get_records_sql("
                 SELECT u.id, u.firstname, u.lastname
