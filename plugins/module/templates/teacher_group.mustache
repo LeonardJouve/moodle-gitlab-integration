@@ -117,7 +117,7 @@
         </div>
         <div class="d-flex align-items-center justify-content-end">
             {{#js}}
-                require(['mod_gitlab/teacher_group'], (module) => module.init("{{id}}"));
+                require(['mod_gitlab/copy_button'], (module) => module.init("{{id}}"));
             {{/js}}
             
             <div id="code-dropdown-{{id}}" class="dropdown">
@@ -182,7 +182,7 @@
         </div>
 
         <div class="d-flex align-items-center">
-            <span class="mb-0">Delete</span>
+            <span class="mb-0">Delete group</span>
         </div>
         <div></div>
         <div class="d-flex align-items-center justify-content-end">

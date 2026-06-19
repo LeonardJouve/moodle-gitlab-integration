@@ -21,7 +21,7 @@
     Template for student groups
 }}
 
-<div class="box py-3 card-columns">
+<div class="box py-3 card-columns d-flex flex-column gap-2">
 <h2>Groups</h2>
 {{#groups}}
     <div class="card">
@@ -36,10 +36,7 @@
         </div>
     </div>
 {{/groups}}
-{{#has_group}}
-    <a href={{leave_group_url}} class="btn btn-primary">Leave</a>
-{{/has_group}}
-{{^has_group}}
+<div>
     <a href={{create_group_url}} class="btn btn-primary">Create</a>
-{{/has_group}}
+</div>
 </div>

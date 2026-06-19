@@ -48,6 +48,14 @@ $functions = [
         'type'        => 'read',
         'ajax'        => true,
     ],
+    'mod_gitlab_leave_group' => [
+        'classname'   => 'mod_gitlab\external\leave_group',
+        'methodname'  => 'execute',
+        'classpath'   => '',
+        'description' => 'Leave group',
+        'type'        => 'read',
+        'ajax'        => true,
+    ],
     'mod_gitlab_reviewer_selector' => [
         'classname'   => 'mod_gitlab\external\reviewer_selector',
         'methodname'  => 'execute',
