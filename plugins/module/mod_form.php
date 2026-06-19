@@ -42,7 +42,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
      * Defines forms elements
      */
     public function definition() {
-        global $CFG;
+        global $CFG, $DB, $PAGE;
 
         $mform = $this->_form;
 
@@ -128,17 +128,29 @@ class mod_gitlab_mod_form extends moodleform_mod {
         $mform->addRule('group_size', null, 'required', null, 'client');
         $mform->addHelpButton('group_size', 'form_group_size', 'mod_gitlab');
 
+        $existants = [];
+        if ($this->get_current()->reviewers) {
+            list($in_sql, $params) = $DB->get_in_or_equal($this->get_current()->reviewers, SQL_PARAMS_NAMED, '', true, NULL);
+            $users = $DB->get_records_sql("
+                SELECT u.id, u.firstname, u.lastname
+                FROM {user} u
+                WHERE u.id $in_sql
+            ", $params);
+            foreach ($users as $user) {
+                $existants[$user->id] = $PAGE->get_renderer('core')->render_from_template('mod_gitlab/reviewer_selector', $user);
+            }
+        }
         $options = array(
             'ajax' => 'mod_gitlab/reviewer_selector',
             'multiple' => true,
             'courseid' => $this->get_course()->id,
         );
-        $mform->addElement('autocomplete', 'reviewer', get_string('form_reviewer', 'mod_gitlab'), [], $options);
+        $mform->addElement('autocomplete', 'reviewer', get_string('form_reviewer', 'mod_gitlab'), $existants, $options);
         $mform->addElement(
             'static',
             'test',
             'Reviewer',
-            json_encode($this->get_current()),
+            json_encode($existants),
         );
         $mform->addElement(
             'date_time_selector',
