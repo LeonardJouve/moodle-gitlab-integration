@@ -71,6 +71,29 @@ class Group {
             null;
     }
 
+    public static function group_with_members(int $module_id, int $user_id) {
+        global $DB;
+
+        return $DB->get_record_sql("
+            SELECT
+                g.id,
+                g.repository_id,
+                COALESCE(array_agg(u.username) FILTER (WHERE u.username IS NOT NULL), ARRAY[]::text[]) AS members
+            FROM {gitlab_groups} g
+            LEFT JOIN {gitlab_group_members} m
+                ON m.group_id = g.id
+            LEFT JOIN {user} u
+                ON u.id = m.user_id
+            WHERE
+                g.module_id = :module_id
+                AND m.user_id = :user_id
+            GROUP BY g.id
+        ", [
+            'module_id' => $module_id,
+            'user_id' => $user_id,
+        ]);
+    }
+
     public static function get_groups(int $module_id) {
         global $DB;
         
