@@ -141,14 +141,6 @@ class Group {
             'user_id'  => $user_id
         ]);
 
-        $group = Group::group($group_id);
-        if ($group->member_count == 0) {
-            $DB->delete_records('gitlab_groups', [
-                'id' => $group_id,
-            ]);
-        }
-
-
         return $ok;
     }
 
