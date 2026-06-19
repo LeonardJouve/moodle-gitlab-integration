@@ -129,7 +129,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
         $mform->addHelpButton('group_size', 'form_group_size', 'mod_gitlab');
 
         $existants = [];
-        if ($this->get_current()->reviewers) {
+        if ($this->get_current() != NULL && $this->get_current()->reviewers) {
             $reviewers = json_decode($this->get_current()->reviewers, true);
             list($in_sql, $params) = $DB->get_in_or_equal($reviewers, SQL_PARAMS_NAMED, '', true, NULL);
             $users = $DB->get_records_sql("
@@ -147,13 +147,10 @@ class mod_gitlab_mod_form extends moodleform_mod {
             'courseid' => $this->get_course()->id,
         );
         $mform->addElement('autocomplete', 'reviewer', get_string('form_reviewer', 'mod_gitlab'), $existants, $options);
-        $mform->setDefault('reviewer', array_keys($existants));
-        $mform->addElement(
-            'static',
-            'test',
-            'Reviewer',
-            json_encode($existants),
-        );
+        if ($this->get_current() != NULL && $this->get_current()->reviewers) {
+            $mform->setDefault('reviewer', array_keys($existants));
+        }
+
         $mform->addElement(
             'date_time_selector',
             'due_date',
