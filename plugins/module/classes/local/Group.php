@@ -86,7 +86,12 @@ class Group {
                 ON u.id = m.user_id
             WHERE
                 g.module_id = :module_id
-                AND m.user_id = :user_id
+                AND EXISTS (
+                    SELECT 1
+                    FROM {gitlab_group_members} gm
+                    WHERE gm.group_id = g.id
+                    AND gm.user_id = :user_id
+                )
             GROUP BY g.id
         ", [
             'module_id' => $module_id,
