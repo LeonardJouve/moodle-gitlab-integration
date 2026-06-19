@@ -138,7 +138,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
             'static',
             'test',
             'Reviewer',
-            $this->get_current()->reviewer
+            json_encode($this->get_current()),
         );
         $mform->addElement(
             'date_time_selector',
