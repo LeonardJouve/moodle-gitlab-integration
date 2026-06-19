@@ -296,7 +296,7 @@ function template(Gitlab $client, int $template_id, int $due_date, array $review
     }
 
     list($in_sql, $params) = $DB->get_in_or_equal($reviewer_ids, SQL_PARAMS_NAMED, '', true, NULL);
-    $reviewers = $DB->get_records_sql("
+    $reviewers = $DB->get_fieldset_sql("
         SELECT u.username
         FROM {user} u
         WHERE u.id $in_sql
