@@ -129,7 +129,8 @@ class mod_gitlab_mod_form extends moodleform_mod {
         $mform->addHelpButton('group_size', 'form_group_size', 'mod_gitlab');
 
         $existants = [];
-        if ($this->get_current() != NULL && $this->get_current()->reviewers) {
+        $current = $this->get_current();
+        if ($current != NULL && isset($current->reviewers) && !empty($current->reviewers)) {
             $reviewers = json_decode($this->get_current()->reviewers, true);
             list($in_sql, $params) = $DB->get_in_or_equal($reviewers, SQL_PARAMS_NAMED, '', true, NULL);
             $users = $DB->get_records_sql("
