@@ -103,29 +103,6 @@ case 'joingroup':
         get_string('message_joined_group', 'mod_gitlab'),
     );
     break;
-case 'deletegroup':
-    $group_id = optional_param('group_id', '', PARAM_INT);
-    if (!$group_id || !Group::delete_group($group_id)) {
-        error(get_string('message_error_delete_group', 'mod_gitlab'));
-        return;
-    }
-
-    redirect(
-        new url('/mod/gitlab/view.php', ['id' => $cm->id]),
-        get_string('message_deleted_group', 'mod_gitlab'),
-    );
-    break;
-case 'leavegroup':
-    if (!Group::leave_group($cm->id, $USER->id)) {
-        error(get_string('message_error_leave_group', 'mod_gitlab'));
-        return;
-    }
-
-    redirect(
-        new url('/mod/gitlab/view.php', ['id' => $cm->id]),
-        get_string('message_left_group', 'mod_gitlab'),
-    );
-    break;
 case 'creategroup':
     try {
         $repository = $client->project()->create(
@@ -343,10 +320,6 @@ function student_group(Gitlab $client, int $module_id, int $user_id, int $max_me
         'member_count' => count($members),
         'members' => $members,
         'due_date' => userdate($due_date, get_string('strftimedaydatetime', 'langconfig')),
-        'leave_url' => (new url('/mod/gitlab/view.php', [
-            'id' => $module_id,
-            'action' => 'leavegroup',
-        ]))->out(false),
         'repository_url' => $repository->web_url,
         'is_graded' => $is_graded,
         'feedback_url' => $feedback_url,
