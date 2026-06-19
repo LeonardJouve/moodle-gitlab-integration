@@ -42,7 +42,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
      * Defines forms elements
      */
     public function definition() {
-        global $CFG;
+        global $CFG, $DB, $PAGE;
 
         $mform = $this->_form;
 
@@ -128,22 +128,29 @@ class mod_gitlab_mod_form extends moodleform_mod {
         $mform->addRule('group_size', null, 'required', null, 'client');
         $mform->addHelpButton('group_size', 'form_group_size', 'mod_gitlab');
 
-        $repeat = [];
-        $repeat[] = $mform->createElement(
-            'text',
-            'reviewer',
-            get_string('form_reviewer', 'mod_gitlab'),
+        $existants = [];
+        $current = $this->get_current();
+        if ($current != NULL && isset($current->reviewers) && !empty($current->reviewers ?? null)) {
+            $reviewers = json_decode($current->reviewers, true) ?: [];
+            list($in_sql, $params) = $DB->get_in_or_equal($reviewers, SQL_PARAMS_NAMED, '', true, NULL);
+            $users = $DB->get_records_sql("
+                SELECT u.id, u.firstname, u.lastname
+                FROM {user} u
+                WHERE u.id $in_sql
+            ", $params);
+            foreach ($users as $user) {
+                $existants[$user->id] = $PAGE->get_renderer('core')->render_from_template('mod_gitlab/reviewer_selector', $user);
+            }
+        }
+        $options = array(
+            'ajax' => 'mod_gitlab/reviewer_selector',
+            'multiple' => true,
+            'courseid' => $this->get_course()->id,
         );
-        $this->repeat_elements(
-            $repeat,
-            1,
-            ['reviewer' => ['type' => PARAM_TEXT]],
-            'reviewer_repeats',
-            'group_name_add_fields',
-            1,
-            get_string('form_reviewer_repeats_add', 'mod_gitlab'),
-            true,
-        );
+        $mform->addElement('autocomplete', 'reviewer', get_string('form_reviewer', 'mod_gitlab'), $existants, $options);
+        if (!empty($existants)) {
+            $mform->setDefault('reviewer', array_keys($existants));
+        }
 
         $mform->addElement(
             'date_time_selector',
@@ -200,17 +207,8 @@ class mod_gitlab_mod_form extends moodleform_mod {
             
             // Reviewers
             if (!empty($data['reviewer'])) {
-                foreach ($data['reviewer'] as $index => $reviewer) {
-                    $reviewer = trim($reviewer);
-                    if ($reviewer === '') {
-                        continue;
-                    }
-
-                    $users = $client->user()->list(['username' => $reviewer]);
-                    if (count($users) === 0) {
-                        $errors["reviewer[$index]"] = get_string('form_invalid_reviewer_err', 'mod_gitlab');
-                    }
-                }
+                // foreach ($data['reviewer'] as $index => $reviewer) {
+                // }
             }
         } catch (RuntimeException $e) {
             $errors['parent_group'] = get_string('form_invalid_token_err', 'mod_gitlab');

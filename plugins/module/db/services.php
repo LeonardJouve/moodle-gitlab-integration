@@ -47,5 +47,13 @@ $functions = [
         'description' => 'Delete group',
         'type'        => 'read',
         'ajax'        => true,
-    ]
+    ],
+    'mod_gitlab_reviewer_selector' => [
+        'classname'   => 'mod_gitlab\external\reviewer_selector',
+        'methodname'  => 'execute',
+        'classpath'   => '',
+        'description' => 'Select possible reviewer',
+        'type'        => 'read',
+        'ajax'        => true,
+    ],
 ];
