@@ -134,8 +134,12 @@ class mod_gitlab_mod_form extends moodleform_mod {
             'courseid' => $this->get_course()->id,
         );
         $mform->addElement('autocomplete', 'reviewer', get_string('form_reviewer', 'mod_gitlab'), [], $options);
-        $mform->addElement('label', 'test', $this->get_current()->reviewer, NULL);
-
+        $mform->addElement(
+            'static',
+            'test',
+            'Reviewer',
+            $this->get_current()->reviewer
+        );
         $mform->addElement(
             'date_time_selector',
             'due_date',
