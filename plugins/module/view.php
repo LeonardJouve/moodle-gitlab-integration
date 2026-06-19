@@ -327,16 +327,14 @@ function student_group(Gitlab $client, int $module_id, int $user_id, int $max_me
     $is_graded = false;
     $last_test_pass = true;
     $last_commit = $client->commit()->get_last($group->repository_id);
-    if ($last_commit == null) {
-        // TODO improve
-        return;
-    }
 
-    $time = strtotime($last_commit->committed_date);
+    $time = strtotime($last_commit->committed_date ?? '') ?: 0;
     $delay = format_time($time - $due_date);
     $is_delayed = ($time - $due_date) > 0;
 
-    // TODO add solution button after due date
+    $has_ended = (time() - $due_date) > 0;
+    $has_solution = $has_ended && true;
+    $solution_url = 'TODO_solution';
 
     echo $OUTPUT->render_from_template('mod_gitlab/student_group', [
         'id' => $group->id,
@@ -359,6 +357,8 @@ function student_group(Gitlab $client, int $module_id, int $user_id, int $max_me
         'download_url' => $client->project()->archive($group->repository_id),
         'https_url' => $repository->http_url_to_repo,
         'ssh_url' => $repository->ssh_url_to_repo,
+        'has_solution' => $has_solution,
+        'solution_url' => $solution_url,
     ]);
 }
 
