@@ -321,19 +321,25 @@ function student_group(Gitlab $client, int $module_id, int $user_id, int $max_me
         return;
     }
 
-    // $is_graded = false;
-    // $last_test_pass = true;
-    // $last_commit = $client->commit()->get_last($group->repository_id);
-    // if ($last_commit == null) {
-    //     // TODO improve
-    //     return;
-    // }
+    $feedback_url = 'TODO_feedback';
+    $test_url = 'TODO_test';
 
-    // $time = strtotime($last_commit->committed_date);
-    // $delay = format_time($time - $due_date);
-    // $is_delayed = ($time - $due_date) > 0;
+    $is_graded = false;
+    $last_test_pass = true;
+    $last_commit = $client->commit()->get_last($group->repository_id);
+    if ($last_commit == null) {
+        // TODO improve
+        return;
+    }
+
+    $time = strtotime($last_commit->committed_date);
+    $delay = format_time($time - $due_date);
+    $is_delayed = ($time - $due_date) > 0;
+
+    // TODO add solution button after due date
 
     echo $OUTPUT->render_from_template('mod_gitlab/student_group', [
+        'id' => $group->id,
         'name' => get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]),
         'max_member' => $max_member,
         'member_count' => count($members),
@@ -344,6 +350,15 @@ function student_group(Gitlab $client, int $module_id, int $user_id, int $max_me
             'action' => 'leavegroup',
         ]))->out(false),
         'repository_url' => $repository->web_url,
+        'is_graded' => $is_graded,
+        'feedback_url' => $feedback_url,
+        'last_test_pass' => $last_test_pass,
+        'test_url' => $test_url,
+        'is_delayed' => $is_delayed,
+        'delay' => $delay,
+        'download_url' => $client->project()->archive($group->repository_id),
+        'https_url' => $repository->http_url_to_repo,
+        'ssh_url' => $repository->ssh_url_to_repo,
     ]);
 }
 
