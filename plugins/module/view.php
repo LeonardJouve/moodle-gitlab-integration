@@ -192,16 +192,14 @@ function parse_group_members(stdClass $group) {
 }
 
 function list_student_groups(int $module_id, int $max_member) {
-    global $USER, $OUTPUT;
-
-    $has_group = Group::has_group($module_id, $USER->id);
+    global $OUTPUT;
 
     echo $OUTPUT->render_from_template('mod_gitlab/student_groups', [
-        'groups' => array_map(function($group) use ($module_id, $max_member, $has_group) {
+        'groups' => array_map(function($group) use ($module_id, $max_member) {
             $members = parse_group_members($group);
         
             $group->member_count = count($members);
-            $group->can_join_group = !$has_group && $group->member_count < $max_member;
+            $group->can_join_group = $group->member_count < $max_member;
             $group->join_group_url = (new url('/mod/gitlab/view.php', [
                 'id' => $module_id,
                 'action' => 'joingroup',
@@ -210,11 +208,6 @@ function list_student_groups(int $module_id, int $max_member) {
             $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]);
             return $group;
         }, Group::get_groups($module_id)),
-        'has_group' => $has_group,
-        'leave_group_url' => (new url('/mod/gitlab/view.php', [
-            'id' => $module_id,
-            'action' => 'leavegroup',
-        ]))->out(false),
         'create_group_url' => (new url('/mod/gitlab/view.php', [
             'id' => $module_id,
             'action' => 'creategroup',
@@ -315,6 +308,45 @@ function template(Gitlab $client, int $template_id, int $due_date, array $review
     ]);
 }
 
+function student_group(Gitlab $client, int $module_id, int $user_id, int $max_member, int $due_date) {
+    global $OUTPUT;
+
+    $group = Group::group_with_members($module_id, $user_id);
+    $members = parse_group_members($group);
+
+    try {
+        $repository = $client->project()->get($group->repository_id);
+    } catch (RuntimeException $e) {
+        error(get_string('message_error_get_repository', 'mod_gitlab', ['message' => $e->getMessage()]));
+        return;
+    }
+
+    // $is_graded = false;
+    // $last_test_pass = true;
+    // $last_commit = $client->commit()->get_last($group->repository_id);
+    // if ($last_commit == null) {
+    //     // TODO improve
+    //     return;
+    // }
+
+    // $time = strtotime($last_commit->committed_date);
+    // $delay = format_time($time - $due_date);
+    // $is_delayed = ($time - $due_date) > 0;
+
+    echo $OUTPUT->render_from_template('mod_gitlab/student_group', [
+        'name' => get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]),
+        'max_member' => $max_member,
+        'member_count' => count($members),
+        'members' => $members,
+        'due_date' => userdate($due_date, get_string('strftimedaydatetime', 'langconfig')),
+        'leave_url' => (new url('/mod/gitlab/view.php', [
+            'id' => $module_id,
+            'action' => 'leavegroup',
+        ]))->out(false),
+        'repository_url' => $repository->web_url,
+    ]);
+}
+
 echo $OUTPUT->header();
 
 if ($is_teacher) {
@@ -322,7 +354,13 @@ if ($is_teacher) {
     template($client, $moduleinstance->template_id, $moduleinstance->due_date, json_decode($moduleinstance->reviewers, true) ?: []);
     list_teacher_groups($client, $cm->id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
 } else {
-    list_student_groups($cm->id, $moduleinstance->group_size);
+    $has_group = Group::has_group($cm->id, $USER->id);
+
+    if ($has_group) {
+        student_group($client, $cm->id, $USER->id, $moduleinstance->group_size, $moduleinstance->due_date);
+    } else {
+        list_student_groups($cm->id, $moduleinstance->group_size);
+    }
 }
 
 echo $OUTPUT->footer();
