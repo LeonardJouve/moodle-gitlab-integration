@@ -40,7 +40,7 @@ class leave_group extends external_api {
         global $USER, $DB;
 
         $module_id = $DB->get_field_sql("
-            SELECT g.id
+            SELECT g.module_id
             FROM {gitlab_groups} g
             WHERE g.group_id = :group_id
         ", [
