@@ -37,7 +37,18 @@ class leave_group extends external_api {
     }
 
     public static function execute(int $groupid) {
-        $ok = Group::leave_group($module_id, $user_id); // TODO
+        global $USER, $DB;
+
+        $module_id = $DB->get_field_sql("
+            SELECT g.id
+            FROM {gitlab_groups} g
+            WHERE g.group_id = :group_id
+        ", [
+            'group_id' => $groupid,
+        ]);
+
+        $ok = Group::leave_group($module_id, $USER->id);
+
         return ['result' => $ok ? 'ok' : 'fail'];
     }
 
