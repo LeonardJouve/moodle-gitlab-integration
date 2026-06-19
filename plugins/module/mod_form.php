@@ -147,6 +147,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
             'courseid' => $this->get_course()->id,
         );
         $mform->addElement('autocomplete', 'reviewer', get_string('form_reviewer', 'mod_gitlab'), $existants, $options);
+        $mform->setDefault('reviewer', array_keys($existants));
         $mform->addElement(
             'static',
             'test',
