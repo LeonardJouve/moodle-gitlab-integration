@@ -285,8 +285,8 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
     ]);
 }
 
-function template(Gitlab $client, int $template_id, int $due_date, array $reviewers) {
-    global $OUTPUT;
+function template(Gitlab $client, int $template_id, int $due_date, array $reviewer_ids) {
+    global $OUTPUT, $DB;
     
     try {
         $template = $client->project()->get($template_id);
@@ -295,10 +295,17 @@ function template(Gitlab $client, int $template_id, int $due_date, array $review
         return;
     }
 
+    list($in_sql, $params) = $DB->get_in_or_equal($reviewer_ids, SQL_PARAMS_NAMED, '', true, NULL);
+    $reviewers = $DB->get_records_sql("
+        SELECT u.username
+        FROM {user} u
+        WHERE u.id $in_sql
+    ", $params);
+
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_template', [
         'name' => $template->name,
         'repository_url' => $template->web_url,
-        'reviewers' => [], // TODO MAP $reviewers,
+        'reviewers' => $reviewers,
         'due_date' => userdate($due_date, get_string('strftimedaydatetime', 'langconfig')),
         // TODO
         'test_url' => 'TODO_test',
