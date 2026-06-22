@@ -45,7 +45,8 @@ class Bridge {
         $this->client->issue()->create($template->id, Resources::instructionIssue());
         
         // reviewers
-        foreach ($moduleinstance->reviewer ?: [] as $reviewer) {
+        $reviewers = $moduleinstance->reviewer ?? [];
+        foreach ($reviewers as $reviewer) {
             $username = Helper::get_user_gitlab_username($reviewer);
 
             if ($username == null) {
