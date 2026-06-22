@@ -23,7 +23,6 @@
 namespace mod_gitlab\local;
 
 use mod_gitlab\http\Gitlab;
-use Resources;
 use stdClass;
 
 class Bridge {
