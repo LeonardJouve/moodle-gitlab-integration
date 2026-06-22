@@ -180,10 +180,6 @@ class mod_gitlab_mod_form extends moodleform_mod {
             $errors['group_size'] = get_string('form_group_size_negative_err', 'mod_gitlab');
         }
 
-        // Due date
-        // 1 traduction
-        // 2 field visibility
-
         $token = Helper::get_course_gitlab_token($this->get_course()->id);
 
         // Token
