@@ -10,7 +10,7 @@ const showModal = async (groupId) => {
         body: Str.get_string("modal_leave_group_help", "mod_gitlab"),
         type: ModalFactory.types.DELETE_CANCEL,
         buttons: {
-            save: Str.get_string("modal_leave_confirm", "mod_gitlab"),
+            delete: Str.get_string("modal_leave_confirm", "mod_gitlab"),
         },
     });
 
