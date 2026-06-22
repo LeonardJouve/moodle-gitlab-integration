@@ -112,7 +112,7 @@ case 'creategroup':
             $moduleinstance->group_id,
         );
 
-        $result = $bridge->create_group($cm->id, $repository->id);
+        $result = $bridge->create_group($cm->id, $moduleinstance);
         $group_id = $result->group_id;
         if (!$group_id) {
             error(get_string('message_error_create_group', 'mod_gitlab'));
