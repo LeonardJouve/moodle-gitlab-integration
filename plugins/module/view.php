@@ -110,7 +110,7 @@ case 'creategroup':
             $moduleinstance->group_id,
         );
 
-        $group = Group::create_group($cm->id, $USER->id, $repository->id);
+        $group = Group::create_group($cm->id, $repository->id);
         if (!$group) {
             error(get_string('message_error_create_group', 'mod_gitlab'));
             return;

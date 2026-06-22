@@ -121,7 +121,7 @@ class Group {
         return array_values($groups);
     }
 
-    public static function create_group(int $module_id, int $user_id, int $repository_id): ?int {
+    public static function create_group(int $module_id, int $repository_id): ?int {
         global $DB;
 
         $group = new stdClass();

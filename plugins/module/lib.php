@@ -24,6 +24,7 @@
 
 use mod_gitlab\local\Helper;
 use mod_gitlab\http\Gitlab;
+use mod_gitlab\local\Bridge;
 
 /**
  * Return if the plugin supports $feature.
@@ -60,14 +61,14 @@ function gitlab_add_instance($moduleinstance, $mform = null) {
         $token = Helper::get_course_gitlab_token($moduleinstance->course);
         $client = new Gitlab($token);
 
-        $group = $client->group()->create($moduleinstance->name, $moduleinstance->parent_group);
-
-        $template = $client->project()->create($moduleinstance->name . "_template", $group->id);
-
         $moduleinstance->reviewers = json_encode($moduleinstance->reviewer ?: [], JSON_UNESCAPED_UNICODE);
         $moduleinstance->timecreated = time();
-        $moduleinstance->group_id = $group->id;
-        $moduleinstance->template_id = $template->id;
+        
+        $bridge = new Bridge($client);
+        $result = $bridge->create_module($moduleinstance);
+
+        $moduleinstance->group_id = $result->group_id;
+        $moduleinstance->template_id = $result->template_id;
 
         $id = $DB->insert_record('gitlab', $moduleinstance);
 
