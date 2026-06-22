@@ -64,7 +64,7 @@ function gitlab_add_instance($moduleinstance, $mform = null) {
         $moduleinstance->reviewers = json_encode($moduleinstance->reviewer ?: [], JSON_UNESCAPED_UNICODE);
         $moduleinstance->timecreated = time();
         
-        $bridge = new Bridge($client);
+        $bridge = new Bridge($client, $token);
         $result = $bridge->create_module($moduleinstance);
 
         $moduleinstance->group_id = $result->group_id;
