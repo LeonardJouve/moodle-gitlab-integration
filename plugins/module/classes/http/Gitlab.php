@@ -121,7 +121,7 @@ class Gitlab {
 
         if (400 === $status || 422 === $status) {
             $response = $this->curl->getResponse();
-            throw new RuntimeException("validation failed $response");
+            throw new RuntimeException("validation failed" . json_encode($response, JSON_PRETTY_PRINT));
         }
 
         if (429 === $status) {
