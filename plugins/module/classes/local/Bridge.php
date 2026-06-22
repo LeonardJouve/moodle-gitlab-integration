@@ -48,9 +48,9 @@ class Bridge {
         }
     }
 
-    private function create_instructions_issue(int $repository_id, string $content) {
+    private function create_instructions_issue(int $repository_id, string $content, int $due_date) {
         $this->client->issue()->create($repository_id, Resources::instructionIssue(), $content, [
-            // 'due_date' => 'YYYY-MM-DD', // TODO
+            'due_date' => date('Y-m-d', $due_date),
         ]);
     }
 
@@ -64,7 +64,7 @@ class Bridge {
         $this->client->branch()->create($template->id, Resources::solutionBranch(), $template->default_branch);
         
         // instructions
-        $this->create_instructions_issue($template->id, get_string('instructions_issue_help', 'mod_gitlab'));
+        $this->create_instructions_issue($template->id, get_string('instructions_issue_help', 'mod_gitlab'), $moduleinstance->due_date);
         
         // reviewers
         $this->add_reviewers_as_maintainers($template->id, $moduleinstance->reviewer ?? []);
@@ -100,6 +100,7 @@ class Bridge {
             $this->token,
             json_decode($moduleinstance->reviewers, true) ?? [],
             $moduleinstance->template_id,
+            $moduleinstance->due_date,
         );
         manager::queue_adhoc_task($task);
 
@@ -110,7 +111,7 @@ class Bridge {
         ];
     }
 
-    public function finalize_create_group(stdClass $repository, array $reviewers, int $template_id) {
+    public function finalize_create_group(stdClass $repository, array $reviewers, int $template_id, int $due_date) {
         $this->client->branch()->unprotect($repository->id, $repository->default_branch);
 
         // base branch
@@ -133,7 +134,6 @@ class Bridge {
             $this->client->branch()->delete($repository->id, $branch->name);
         }
 
-        // TODO
         // instructions issue
         $issues = $this->client->issue()->list($template_id, [
             'search' => Resources::instructionIssue(),
@@ -141,7 +141,7 @@ class Bridge {
         ]);
         if (count($issues) >= 1) {
             $issue = $issues[0];
-            $this->create_instructions_issue($repository->id, $issue->description);
+            $this->create_instructions_issue($repository->id, $issue->description, $due_date);
         }
     }
 }

@@ -26,13 +26,14 @@ use core\task\adhoc_task;
 use mod_gitlab\http\Gitlab;
 
 class FinalizeGroupCreationTask extends adhoc_task {
-    public static function instance(int $repository_id, string $token, array $reviewers, int $template_id): self {
+    public static function instance(int $repository_id, string $token, array $reviewers, int $template_id, int $due_date): self {
         $task = new self();
         $task->set_custom_data((object) [
             'repository_id' => $repository_id,
             'token' => $token,
             'reviewers' => $reviewers,
             'template_id' => $template_id,
+            'due_date' => $due_date,
         ]);
 
         return $task;
@@ -43,6 +44,7 @@ class FinalizeGroupCreationTask extends adhoc_task {
         $repository_id = $custom_data->repository_id;
         $reviewers = $custom_data->reviewers;
         $template_id = $custom_data->template_id;
+        $due_date = $custom_data->due_date;
         $token = $custom_data->token;
         
         $client = new Gitlab($token);
@@ -64,7 +66,7 @@ class FinalizeGroupCreationTask extends adhoc_task {
             sleep($interval);
         } while (true);
 
-        $bridge->finalize_create_group($repository, $reviewers, $template_id);
+        $bridge->finalize_create_group($repository, $reviewers, $template_id, $due_date);
     }
 
     public function retry_until_success(): bool {
