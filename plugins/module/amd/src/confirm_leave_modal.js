@@ -9,6 +9,9 @@ const showModal = async (groupId) => {
         title: Str.get_string("modal_leave_group_title", "mod_gitlab"),
         body: Str.get_string("modal_leave_group_help", "mod_gitlab"),
         type: ModalFactory.types.DELETE_CANCEL,
+        buttons: {
+            save: Str.get_string("modal_leave_confirm", "mod_gitlab"),
+        },
     });
 
     modal.getRoot().on(ModalEvents.delete, () => {
@@ -27,6 +30,7 @@ export const init = ({groupId}) => {
     Prefetch.prefetchStrings("mod_gitlab", [
         "modal_leave_group_title",
         "modal_leave_group_help",
+        "modal_leave_confirm",
     ]);
 
     const button = document.getElementById(`leave-group-${groupId}`);
