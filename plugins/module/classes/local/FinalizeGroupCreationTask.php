@@ -22,9 +22,21 @@
 
 namespace mod_gitlab\local;
 
+use core\task\adhoc_task;
 use mod_gitlab\http\Gitlab;
 
-class finalize_group_creation_task extends \core\task\adhoc_task {
+class FinalizeGroupCreationTask extends adhoc_task {
+    public static function instance(int $repository_id, string $token, array $reviewers): self {
+        $task = new self();
+        $task->set_custom_data((object) [
+            'repository_id' => $repository_id,
+            'token' => $token,
+            'reviewers' => $reviewers,
+        ]);
+
+        return $task;
+    }
+
     public function execute() {
         $custom_data = $this->get_custom_data();
         $repository_id = $custom_data->repository_id;
@@ -44,12 +56,16 @@ class finalize_group_creation_task extends \core\task\adhoc_task {
             }
 
             if ($repository->import_status === 'failed' || time() > $timeout) {
-                throw new \RuntimeException("GitLab import timeout");
+                throw new \RuntimeException("GitLab import failed");
             }
 
             sleep($interval);
         } while (true);
 
         $bridge->finalize_create_group($repository, $reviewers);
+    }
+
+    public function retry_until_success(): bool {
+        return false;
     }
 }
