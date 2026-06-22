@@ -49,6 +49,7 @@ function create_user_field() {
         'name' => 'GitLab Username',
         'datatype' => 'text',
         'categoryid' => $category,
+        'visible' => 3, // user, teachers and admins
     ]);
 }
 
