@@ -281,7 +281,6 @@ function template(Gitlab $client, int $template_id, int $due_date, array $review
         'test_url' => 'TODO_test',
         'solution_url' => 'TODO_solution',
         'instruction_url' => 'TODO_instruction',
-        'skeleton_url' => 'TODO_skeleton',
     ]);
 }
 
