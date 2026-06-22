@@ -181,9 +181,8 @@ class mod_gitlab_mod_form extends moodleform_mod {
         }
 
         // Due date
-        if (empty($data['due_date']) || $data['due_date'] < time()) {
-            $errors['due_date'] = get_string('form_due_date_past_err', 'mod_gitlab');
-        }
+        // 1 traduction
+        // 2 field visibility
 
         $token = Helper::get_course_gitlab_token($this->get_course()->id);
 
