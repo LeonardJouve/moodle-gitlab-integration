@@ -48,16 +48,23 @@ class Bridge {
         }
     }
 
+    private function create_instructions_issue(int $repository_id, string $content) {
+        $this->client->issue()->create($repository_id, Resources::instructionIssue(), $content, [
+            // 'due_date' => 'YYYY-MM-DD', // TODO
+        ]);
+    }
+
     public function create_module(stdClass $moduleinstance) {
         $group = $this->client->group()->create($moduleinstance->name, $moduleinstance->parent_group);
 
         $template = $this->client->project()->create($moduleinstance->name . "_template", $group->id);
+        $this->client->branch()->unprotect($template->id, $template->default_branch);
 
         // solution branch
         $this->client->branch()->create($template->id, Resources::solutionBranch(), $template->default_branch);
         
         // instructions
-        $this->client->issue()->create($template->id, Resources::instructionIssue(), get_string('instructions_issue_help', 'mod_gitlab'));
+        $this->create_instructions_issue($template->id, get_string('instructions_issue_help', 'mod_gitlab'));
         
         // reviewers
         $this->add_reviewers_as_maintainers($template->id, $moduleinstance->reviewer ?? []);
@@ -88,28 +95,13 @@ class Bridge {
             ],
         );
 
-        $task = FinalizeGroupCreationTask::instance($repository->id, $this->token, json_decode($moduleinstance->reviewers, true) ?? []);
+        $task = FinalizeGroupCreationTask::instance(
+            $repository->id,
+            $this->token,
+            json_decode($moduleinstance->reviewers, true) ?? [],
+            $moduleinstance->template_id,
+        );
         manager::queue_adhoc_task($task);
-
-        // while ($repository->import_status !== 'finished') {
-        //     $repository = $this->client->project()->get($repository->id);
-        //     sleep(2);
-        // }
-
-        // // base branch
-        // // TODO lock
-        // $base = $this->client->branch()->create($repository->id, Resources::baseBranch(), $repository->default_branch);
-
-        // // submission merge request
-        // $this->client->merge_request()->create($repository->id, $repository->default_branch, $base->name, get_string('submission_merge_request_title', 'mod_gitlab'));
-
-        // // reviewers
-        // $this->add_reviewers_as_maintainers($repository->id, json_decode($moduleinstance->reviewers, true) ?? []);
-        
-        // TODO
-        // remove all branches
-        // instructions issue
-        // permissions
 
         $group_id = Group::create_group($module_id, $repository->id);
 
@@ -118,15 +110,38 @@ class Bridge {
         ];
     }
 
-    public function finalize_create_group(stdClass $repository, array $reviewers) {
+    public function finalize_create_group(stdClass $repository, array $reviewers, int $template_id) {
+        $this->client->branch()->unprotect($repository->id, $repository->default_branch);
+
         // base branch
-        // TODO lock
         $base = $this->client->branch()->create($repository->id, Resources::baseBranch(), $repository->default_branch);
+        $this->client->branch()->protect($repository->id, $base->name);
 
         // submission merge request
         $this->client->merge_request()->create($repository->id, $repository->default_branch, $base->name, get_string('submission_merge_request_title', 'mod_gitlab'));
 
         // reviewers
         $this->add_reviewers_as_maintainers($repository->id, $reviewers);
+
+        // remove all branches
+        $branches = $this->client->branch()->list($repository->id);
+        foreach ($branches as $branch) {
+            if ($branch->name == $repository->default_branch || $branch->protected) {
+                continue;
+            }
+
+            $this->client->branch()->delete($repository->id, $branch->name);
+        }
+
+        // TODO
+        // instructions issue
+        $issues = $this->client->issue()->list($template_id, [
+            'search' => Resources::instructionIssue(),
+            'order_by' => 'created_at',
+        ]);
+        if (count($issues) >= 1) {
+            $issue = $issues[0];
+            $this->create_instructions_issue($repository->id, $issue->description);
+        }
     }
 }
