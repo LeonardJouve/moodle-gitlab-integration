@@ -88,28 +88,28 @@ class Bridge {
             ],
         );
 
-        $task = new finalize_group_creation_task();
-        $task->set_custom_data((object)[
-            'repository_id' => $repository->id,
-            'token' => $this->token,
-            'reviewers' => json_decode($moduleinstance->reviewers, true) ?? [],
-        ]);
-        manager::queue_adhoc_task($task);
+        // $task = new finalize_group_creation_task();
+        // $task->set_custom_data((object)[
+        //     'repository_id' => $repository->id,
+        //     'token' => $this->token,
+        //     'reviewers' => json_decode($moduleinstance->reviewers, true) ?? [],
+        // ]);
+        // manager::queue_adhoc_task($task);
 
-        // while ($repository->import_status !== 'finished') {
-        //     $repository = $this->client->project()->get($repository->id);
-        //     sleep(2);
-        // }
+        while ($repository->import_status !== 'finished') {
+            $repository = $this->client->project()->get($repository->id);
+            sleep(2);
+        }
 
         // base branch
         // TODO lock
-        // $base = $this->client->branch()->create($repository->id, Resources::baseBranch(), $repository->default_branch);
+        $base = $this->client->branch()->create($repository->id, Resources::baseBranch(), $repository->default_branch);
 
-        // // submission merge request
-        // $this->client->merge_request()->create($repository->id, $repository->default_branch, $base->name, get_string('submission_merge_request_title', 'mod_gitlab'));
+        // submission merge request
+        $this->client->merge_request()->create($repository->id, $repository->default_branch, $base->name, get_string('submission_merge_request_title', 'mod_gitlab'));
 
-        // // reviewers
-        // $this->add_reviewers_as_maintainers($repository->id, json_decode($moduleinstance->reviewers, true) ?? []);
+        // reviewers
+        $this->add_reviewers_as_maintainers($repository->id, json_decode($moduleinstance->reviewers, true) ?? []);
         
         // TODO
         // instructions issue
