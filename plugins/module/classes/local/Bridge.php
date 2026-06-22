@@ -42,7 +42,7 @@ class Bridge {
         $this->client->branch()->create($template->id, Resources::solutionBranch(), $template->default_branch);
         
         // instructions
-        $this->client->issue()->create($template->id, Resources::instructionIssue());
+        $this->client->issue()->create($template->id, Resources::instructionIssue(), get_string('instructions_issue_help', 'mod_gitlab'));
         
         // reviewers
         $reviewers = $moduleinstance->reviewer ?? [];
