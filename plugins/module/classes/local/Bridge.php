@@ -90,7 +90,6 @@ class Bridge {
 
         // base branch
         // TODO lock
-        throw new RuntimeException('test ' . $repository->id . ' ' . $repository->default_branch);
         $base = $this->client->branch()->create($repository->id, Resources::baseBranch(), $repository->default_branch);
 
         // submission merge request
