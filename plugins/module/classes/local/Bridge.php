@@ -83,9 +83,9 @@ class Bridge {
         $repository = $this->client->project()->create(
             $moduleinstance->name . "_" . bin2hex(random_bytes(8)),
             $moduleinstance->group_id,
-            [
-                'import_url' => $import_url,
-            ],
+            // [
+            //     'import_url' => $import_url,
+            // ],
         );
 
         // base branch
@@ -93,10 +93,10 @@ class Bridge {
         $base = $this->client->branch()->create($repository->id, Resources::baseBranch(), $repository->default_branch);
 
         // submission merge request
-        // $this->client->merge_request()->create($repository->id, $repository->default_branch, $base->name, get_string('submission_merge_request_title', 'mod_gitlab'));
+        $this->client->merge_request()->create($repository->id, $repository->default_branch, $base->name, get_string('submission_merge_request_title', 'mod_gitlab'));
 
         // reviewers
-        // $this->add_reviewers_as_maintainers($repository->id, json_decode($moduleinstance->reviewers, true) ?? []);
+        $this->add_reviewers_as_maintainers($repository->id, json_decode($moduleinstance->reviewers, true) ?? []);
         
         // TODO
         // instructions issue
