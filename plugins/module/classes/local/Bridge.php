@@ -50,6 +50,7 @@ class Bridge {
 
     private function create_instructions_issue(int $repository_id, string $content, int $due_date) {
         $this->client->issue()->create($repository_id, Resources::instructionIssue(), $content, [
+            'start_date' => date('Y-m-d', time()),
             'due_date' => date('Y-m-d', $due_date),
         ]);
     }
