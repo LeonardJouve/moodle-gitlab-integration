@@ -83,12 +83,15 @@ class Bridge {
         $repository = $this->client->project()->create(
             $moduleinstance->name . "_" . bin2hex(random_bytes(8)),
             $moduleinstance->group_id,
-            // [
-            //     'import_url' => $import_url,
-            // ],
+            [
+                'import_url' => $import_url,
+            ],
         );
 
-        throw new RuntimeException(json_encode($repository));
+        while ($repository->import_status !== 'finished') {
+            $repository = $this->client->project()->get($repository->id);
+            sleep(2);
+        }
 
         // base branch
         // TODO lock
