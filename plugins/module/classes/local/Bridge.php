@@ -68,9 +68,9 @@ class Bridge {
         $repository = $this->client->project()->create(
             $moduleinstance->name . "_" . bin2hex(random_bytes(8)),
             $moduleinstance->group_id,
-            // [
-            //     'import_url' => $template->http_url_to_repo,
-            // ],
+            [
+                'import_url' => $template->http_url_to_repo,
+            ],
         );
         
         // TODO
