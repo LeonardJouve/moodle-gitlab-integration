@@ -34,7 +34,8 @@ class finalize_group_creation_task extends \core\task\adhoc_task {
         $client = new Gitlab($token);
         $bridge = new Bridge($client, $token);
 
-        $timeout = time() + 30;
+        $interval = 2;
+        $timeout = time() + 120;
         do {
             $repository = $client->project()->get($repository_id);
 
@@ -42,11 +43,11 @@ class finalize_group_creation_task extends \core\task\adhoc_task {
                 break;
             }
 
-            if (time() > $timeout) {
+            if ($repository->import_status === 'failed' || time() > $timeout) {
                 throw new \RuntimeException("GitLab import timeout");
             }
 
-            sleep(2);
+            sleep($interval);
         } while (true);
 
         $bridge->finalize_create_group($repository, $reviewers);
