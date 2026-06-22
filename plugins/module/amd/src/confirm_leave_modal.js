@@ -11,6 +11,8 @@ const showModal = async (groupId) => {
         type: ModalFactory.types.DELETE_CANCEL,
     });
 
+    modal.setDeleteButtonText(Str.get_string("modal_leave_confirm", "mod_gitlab"));
+
     modal.getRoot().on(ModalEvents.delete, () => {
         Ajax.call([{
             methodname: "mod_gitlab_leave_group",
@@ -27,6 +29,7 @@ export const init = ({groupId}) => {
     Prefetch.prefetchStrings("mod_gitlab", [
         "modal_leave_group_title",
         "modal_leave_group_help",
+        "modal_leave_confirm",
     ]);
 
     const button = document.getElementById(`leave-group-${groupId}`);

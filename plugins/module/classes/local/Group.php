@@ -124,10 +124,6 @@ class Group {
     public static function create_group(int $module_id, int $user_id, int $repository_id): ?int {
         global $DB;
 
-        if (Group::has_group($module_id, $user_id)) {
-            return null;
-        }
-
         $group = new stdClass();
         $group->module_id = $module_id;
         $group->repository_id = $repository_id;
