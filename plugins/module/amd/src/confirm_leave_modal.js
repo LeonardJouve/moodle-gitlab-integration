@@ -9,10 +9,9 @@ const showModal = async (groupId) => {
         title: Str.get_string("modal_leave_group_title", "mod_gitlab"),
         body: Str.get_string("modal_leave_group_help", "mod_gitlab"),
         type: ModalFactory.types.DELETE_CANCEL,
-        buttons: {
-            delete: Str.get_string("modal_leave_confirm", "mod_gitlab"),
-        },
     });
+
+    modal.setDeleteButtonText(Str.get_string("modal_leave_confirm", "mod_gitlab"));
 
     modal.getRoot().on(ModalEvents.delete, () => {
         Ajax.call([{
