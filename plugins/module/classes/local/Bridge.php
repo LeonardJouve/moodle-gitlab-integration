@@ -92,6 +92,7 @@ class Bridge {
         $task->set_custom_data((object)[
             'repository_id' => $repository->id,
             'token' => $this->token,
+            'reviewers' => json_decode($moduleinstance->reviewers, true) ?? [],
         ]);
         manager::queue_adhoc_task($task);
 
