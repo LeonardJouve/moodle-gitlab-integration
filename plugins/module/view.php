@@ -107,11 +107,6 @@ case 'joingroup':
     break;
 case 'creategroup':
     try {
-        // $repository = $client->project()->create(
-        //     $moduleinstance->name . "_" . bin2hex(random_bytes(8)),
-        //     $moduleinstance->group_id,
-        // );
-
         $result = $bridge->create_group($cm->id, $moduleinstance);
         $group_id = $result->group_id;
         if (!$group_id) {
