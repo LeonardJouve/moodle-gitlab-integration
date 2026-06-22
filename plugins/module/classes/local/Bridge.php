@@ -23,6 +23,7 @@
 namespace mod_gitlab\local;
 
 use mod_gitlab\http\Gitlab;
+use RuntimeException;
 use stdClass;
 
 class Bridge {
@@ -89,6 +90,7 @@ class Bridge {
 
         // base branch
         // TODO lock
+        throw new RuntimeException('test ' . $repository->id);
         $base = $this->client->branch()->create($repository->id, Resources::baseBranch(), $repository->default_branch);
 
         // submission merge request
