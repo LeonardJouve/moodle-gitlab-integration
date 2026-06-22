@@ -88,6 +88,8 @@ class Bridge {
             // ],
         );
 
+        throw new RuntimeException(json_encode($repository));
+
         // base branch
         // TODO lock
         $base = $this->client->branch()->create($repository->id, Resources::baseBranch(), $repository->default_branch);
