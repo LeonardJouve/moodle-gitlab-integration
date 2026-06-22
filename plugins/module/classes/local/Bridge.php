@@ -34,6 +34,18 @@ class Bridge {
         $this->client = $client;
         $this->token = $token;
     }
+    
+    private function add_reviewers_as_maintainers(int $repository_id, array $reviewers) {
+        foreach ($reviewers as $reviewer) {
+            $username = Helper::get_user_gitlab_username($reviewer);
+
+            if ($username == null) {
+                continue;
+            }
+
+            $this->client->member()->add($repository_id, $username, Bridge::$maintainer_access_level);
+        }
+    }
 
     public function create_module(stdClass $moduleinstance) {
         $group = $this->client->group()->create($moduleinstance->name, $moduleinstance->parent_group);
@@ -47,16 +59,7 @@ class Bridge {
         $this->client->issue()->create($template->id, Resources::instructionIssue(), get_string('instructions_issue_help', 'mod_gitlab'));
         
         // reviewers
-        $reviewers = $moduleinstance->reviewer ?? [];
-        foreach ($reviewers as $reviewer) {
-            $username = Helper::get_user_gitlab_username($reviewer);
-
-            if ($username == null) {
-                continue;
-            }
-
-            $this->client->member()->add($template->id, $username, Bridge::$maintainer_access_level);
-        }
+        $this->add_reviewers_as_maintainers($template->id, $moduleinstance->reviewer ?? []);
 
         return (object)[
             'group_id' => $group->id,
@@ -83,12 +86,19 @@ class Bridge {
                 'import_url' => $import_url,
             ],
         );
+
+        // base branch
+        // TODO lock
+        $base = $this->client->branch()->create($repository->id, Resources::baseBranch(), $repository->default_branch);
+
+        // submission merge request
+        $this->client->merge_request()->create($repository->id, $repository->default_branch, $base->name, get_string('submission_merge_request_title', 'mod_gitlab'));
+
+        // reviewers
+        $this->add_reviewers_as_maintainers($repository->id, json_decode($moduleinstance->reviewers, true) ?? []);
         
         // TODO
-        // create from template
-        // pr
-        // issue
-        // reviewers
+        // instructions issue
         // permissions
 
         $group_id = Group::create_group($module_id, $repository->id);

@@ -27,6 +27,10 @@ class Resources {
         return 'solution';
     }
 
+    public static function baseBranch() {
+        return 'base';
+    }
+
     public static function instructionIssue() {
         return 'instructions';
     }
