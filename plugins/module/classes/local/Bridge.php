@@ -63,9 +63,14 @@ class Bridge {
     }
 
     public function create_group(int $module_id, stdClass $moduleinstance) {
+        $template = $this->client->project()->get($moduleinstance->template_id);
+
         $repository = $this->client->project()->create(
             $moduleinstance->name . "_" . bin2hex(random_bytes(8)),
             $moduleinstance->group_id,
+            [
+                'import_url' => $template->ssh_url_to_repo,
+            ],
         );
         
         // TODO
@@ -75,6 +80,10 @@ class Bridge {
         // reviewers
         // permissions
 
-        Group::create_group($module_id, $repository->id);
+        $group_id = Group::create_group($module_id, $repository->id);
+
+        return (object)[
+            'group_id' => $group_id,
+        ];
     }
 }

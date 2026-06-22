@@ -26,6 +26,7 @@ use core\output\html_writer;
 use core\url;
 use mod_gitlab\http\Gitlab;
 use mod_gitlab\http\RuntimeException;
+use mod_gitlab\local\Bridge;
 use mod_gitlab\local\Helper;
 use mod_gitlab\local\Group;
 
@@ -72,6 +73,7 @@ $PAGE->set_context($modulecontext);
 
 $token = Helper::get_course_gitlab_token($moduleinstance->course);
 $client = new Gitlab($token);
+$bridge = new Bridge($client);
 
 // TODO handle perm
 switch ($action) {
@@ -110,14 +112,15 @@ case 'creategroup':
             $moduleinstance->group_id,
         );
 
-        $group = Group::create_group($cm->id, $repository->id);
-        if (!$group) {
+        $result = $bridge->create_group($cm->id, $repository->id);
+        $group_id = $result->group_id;
+        if (!$group_id) {
             error(get_string('message_error_create_group', 'mod_gitlab'));
             return;
         }
 
         if (!$is_teacher) {
-            Group::join_group($cm->id, $group, $USER->id, $moduleinstance->group_size);
+            Group::join_group($cm->id, $group_id, $USER->id, $moduleinstance->group_size);
         }
 
         redirect(
