@@ -64,7 +64,7 @@ class Bridge {
         $group = $this->client->group()->create($moduleinstance->name, $moduleinstance->parent_group);
 
         $template = $this->client->project()->create($moduleinstance->name . "_template", $group->id);
-        // $this->client->branch()->unprotect($template->id, $template->default_branch);
+        $this->client->branch()->unprotect($template->id, $template->default_branch);
 
         // solution branch
         $this->client->branch()->create($template->id, Resources::solutionBranch(), $template->default_branch);
@@ -162,5 +162,9 @@ class Bridge {
         $this->add_user($group->repository_id, $user_id, Bridge::$developer_access_level);
 
         return true;
+    }
+
+    public function release_solution(int $module_id, stdClass $moduleinstance) {
+
     }
 }
