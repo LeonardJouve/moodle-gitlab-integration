@@ -60,7 +60,9 @@ class Bridge {
         ]);
     }
 
-    public function create_module(int $module_id, stdClass $moduleinstance) {
+    public function create_module(stdClass $moduleinstance) {
+        global $DB;
+
         $group = $this->client->group()->create($moduleinstance->name, $moduleinstance->parent_group);
 
         $template = $this->client->project()->create($moduleinstance->name . "_template", $group->id);
@@ -75,9 +77,16 @@ class Bridge {
         // reviewers
         $this->add_reviewers_as_maintainers($template->id, $moduleinstance->reviewer ?? []);
 
+        $moduleinstance->reviewers = json_encode($moduleinstance->reviewer ?: [], JSON_UNESCAPED_UNICODE);
+        $moduleinstance->timecreated = time();
+        $moduleinstance->group_id = $group->id;
+        $moduleinstance->template_id = $template->id;
+
+        $id = $DB->insert_record('gitlab', $moduleinstance);
+
         // release solution task
         if ($moduleinstance->due_date > time()) {
-            $task = ReleaseSolutionTask::instance($module_id);
+            $task = ReleaseSolutionTask::instance($id);
             $task->set_next_run_time($moduleinstance->due_date);
             manager::queue_adhoc_task($task);
         }
@@ -85,10 +94,11 @@ class Bridge {
         return (object)[
             'group_id' => $group->id,
             'template_id' => $template->id,
+            'module_id' => $id,
         ];
     }
 
-    public function create_group(int $module_id, stdClass $moduleinstance) {
+    public function create_group(stdClass $moduleinstance) {
         $template = $this->client->project()->get($moduleinstance->template_id);
 
         $parts = parse_url($template->http_url_to_repo);
@@ -110,11 +120,11 @@ class Bridge {
 
         $task = FinalizeGroupCreationTask::instance(
             $repository->id,
-            $module_id,
+            $moduleinstance->id,
         );
         manager::queue_adhoc_task($task);
 
-        $group_id = Group::create_group($module_id, $repository->id);
+        $group_id = Group::create_group($moduleinstance->id, $repository->id);
 
         return (object)[
             'group_id' => $group_id,
@@ -155,10 +165,10 @@ class Bridge {
         }
     }
 
-    public function join_group(int $module_id, int $group_id, int $user_id, stdClass $moduleinstance): bool {
+    public function join_group(int $group_id, int $user_id, stdClass $moduleinstance): bool {
         $group = Group::group($group_id);
     
-        $ok = Group::join_group($module_id, $group_id, $user_id, $moduleinstance->group_size);
+        $ok = Group::join_group($moduleinstance->id, $group_id, $user_id, $moduleinstance->group_size);
         if (!$ok) {
             return false;
         }

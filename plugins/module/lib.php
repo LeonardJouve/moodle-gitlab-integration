@@ -61,20 +61,12 @@ function gitlab_add_instance($moduleinstance, $mform = null) {
         $token = Helper::get_course_gitlab_token($moduleinstance->course);
         $client = new Gitlab($token);
 
-        $moduleinstance->reviewers = json_encode($moduleinstance->reviewer ?: [], JSON_UNESCAPED_UNICODE);
-        $moduleinstance->timecreated = time();
-        
         $bridge = new Bridge($client, $token);
         $result = $bridge->create_module($moduleinstance);
 
-        $moduleinstance->group_id = $result->group_id;
-        $moduleinstance->template_id = $result->template_id;
-
-        $id = $DB->insert_record('gitlab', $moduleinstance);
-
         $transaction->allow_commit();
 
-        return $id;
+        return $result->module_id;
     } catch (\Exception $e) {
         $transaction->rollback($e);
         throw $e;
