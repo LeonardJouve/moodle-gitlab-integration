@@ -60,11 +60,11 @@ class Bridge {
         ]);
     }
 
-    public function create_module(stdClass $moduleinstance) {
+    public function create_module(int $module_id, stdClass $moduleinstance) {
         $group = $this->client->group()->create($moduleinstance->name, $moduleinstance->parent_group);
 
         $template = $this->client->project()->create($moduleinstance->name . "_template", $group->id);
-        $this->client->branch()->unprotect($template->id, $template->default_branch);
+        // $this->client->branch()->unprotect($template->id, $template->default_branch);
 
         // solution branch
         $this->client->branch()->create($template->id, Resources::solutionBranch(), $template->default_branch);
@@ -74,6 +74,13 @@ class Bridge {
         
         // reviewers
         $this->add_reviewers_as_maintainers($template->id, $moduleinstance->reviewer ?? []);
+
+        // release solution task
+        if ($moduleinstance->due_date > time()) {
+            $task = ReleaseSolutionTask::instance($module_id);
+            $task->set_next_run_time($moduleinstance->due_date);
+            manager::queue_adhoc_task($task);
+        }
 
         return (object)[
             'group_id' => $group->id,
@@ -103,10 +110,7 @@ class Bridge {
 
         $task = FinalizeGroupCreationTask::instance(
             $repository->id,
-            $this->token,
-            json_decode($moduleinstance->reviewers, true) ?? [],
-            $moduleinstance->template_id,
-            $moduleinstance->due_date,
+            $module_id,
         );
         manager::queue_adhoc_task($task);
 
@@ -164,7 +168,16 @@ class Bridge {
         return true;
     }
 
-    public function release_solution(int $module_id, stdClass $moduleinstance) {
-
+    public function release_solution(int $module_id, int $template_id) {
+        $groups = Group::get_groups($module_id);
+        foreach ($groups as $group) {
+            $this->client->merge_request()->create(
+                $template_id,
+                Resources::solutionBranch(),
+                Resources::baseBranch(),
+                get_string('solution_merge_request_title', 'mod_gitlab'),
+                ['target_project_id' => $group->repository_id],
+            );
+        }
     }
 }

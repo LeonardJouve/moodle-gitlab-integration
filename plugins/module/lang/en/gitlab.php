@@ -45,6 +45,7 @@ $string['form_reviewer_help'] = 'GitLab username of a reviewer';
 $string['form_reviewer_repeats_add'] = 'Add a reviewer';
 $string['instructions_issue_help'] = 'Modify this to include instructions.';
 $string['submission_merge_request_title'] = 'Submission';
+$string['solution_merge_request_title'] = 'Solution';
 $string['gitlabfieldset'] = 'gitlab';
 $string['gitlabname'] = 'gitlab';
 $string['gitlabsettings'] = 'gitlab';

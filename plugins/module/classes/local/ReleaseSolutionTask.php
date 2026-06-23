@@ -25,11 +25,10 @@ namespace mod_gitlab\local;
 use core\task\adhoc_task;
 use mod_gitlab\http\Gitlab;
 
-class FinalizeGroupCreationTask extends adhoc_task {
-    public static function instance(int $repository_id, int $module_id): self {
+class ReleaseSolutionTask extends adhoc_task {
+    public static function instance(int $module_id): self {
         $task = new self();
         $task->set_custom_data((object) [
-            'repository_id' => $repository_id,
             'module_id' => $module_id,
         ]);
 
@@ -40,34 +39,15 @@ class FinalizeGroupCreationTask extends adhoc_task {
         global $DB;
 
         $custom_data = $this->get_custom_data();
-        $repository_id = $custom_data->repository_id;
         $module_id = $custom_data->module_id;
 
         $module = $DB->get_record('gitlab', ['id' => $module_id], '*', MUST_EXIST);
 
-        $reviewers = json_decode($module->reviewers, true) ?? [];
         $token = Helper::get_course_gitlab_token($module->course);
-        
         $client = new Gitlab($token);
         $bridge = new Bridge($client, $token);
 
-        $interval = 2;
-        $timeout = time() + 120;
-        do {
-            $repository = $client->project()->get($repository_id);
-
-            if ($repository->import_status === 'finished') {
-                break;
-            }
-
-            if ($repository->import_status === 'failed' || time() > $timeout) {
-                throw new \RuntimeException("GitLab import failed");
-            }
-
-            sleep($interval);
-        } while (true);
-
-        $bridge->finalize_create_group($repository, $reviewers, $module->template_id, $module->due_date);
+        $bridge->release_solution($module_id, $module->template_id);
     }
 
     public function retry_until_success(): bool {
