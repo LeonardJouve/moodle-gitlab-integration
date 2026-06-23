@@ -25,7 +25,7 @@ namespace mod_gitlab\local;
 use core\task\adhoc_task;
 use mod_gitlab\http\Gitlab;
 
-class ReleaseSolutionTask extends adhoc_task {
+class SubmissionTask extends adhoc_task {
     public static function instance(int $module_id): self {
         $task = new self();
         $task->set_custom_data((object) [

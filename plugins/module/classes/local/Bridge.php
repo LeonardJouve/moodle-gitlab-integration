@@ -66,7 +66,10 @@ class Bridge {
 
         $group = $this->client->group()->create($moduleinstance->name, $moduleinstance->parent_group);
 
-        $template = $this->client->project()->create($moduleinstance->name . "_template", $group->id);
+        $template = $this->client->project()->create($moduleinstance->name . "_template", $group->id, [
+            'default_branch' => Resources::defaultBranch(),
+            'initialize_with_readme' => true,
+        ]);
         // $this->client->branch()->unprotect($template->id, $template->default_branch);
 
         // solution branch
@@ -87,7 +90,7 @@ class Bridge {
 
         // release solution task
         if ($moduleinstance->due_date > time()) {
-            $task = ReleaseSolutionTask::instance($id);
+            $task = SubmissionTask::instance($id);
             $task->set_next_run_time($moduleinstance->due_date);
             manager::queue_adhoc_task($task);
         }
@@ -100,8 +103,6 @@ class Bridge {
     }
 
     public function create_group(stdClass $moduleinstance) {
-        $template = $this->client->project()->get($moduleinstance->template_id);
-
         $name = $moduleinstance->name . "_" . bin2hex(random_bytes(8));
 
         $repository = $this->client->project()->fork(
@@ -109,7 +110,7 @@ class Bridge {
             $name,
             $moduleinstance->group_id,
             [
-                'branches' => $template->default_branch,
+                'branches' => Resources::defaultBranch(),
                 'path' => $name,    
             ],
         );
@@ -127,18 +128,18 @@ class Bridge {
         ];
     }
 
-    public function finalize_create_group(stdClass $repository, array $reviewers, int $template_id, int $due_date) {
-        $this->client->branch()->unprotect($repository->id, $repository->default_branch);
+    public function finalize_create_group(int $repository_id, array $reviewers, int $template_id, int $due_date) {
+        $this->client->branch()->unprotect($repository_id, Resources::defaultBranch());
 
         // base branch
-        $base = $this->client->branch()->create($repository->id, Resources::baseBranch(), $repository->default_branch);
-        $this->client->branch()->protect($repository->id, $base->name);
+        $base = $this->client->branch()->create($repository_id, Resources::baseBranch(), Resources::defaultBranch());
+        $this->client->branch()->protect($repository_id, $base->name);
 
         // submission merge request
-        $this->client->merge_request()->create($repository->id, $repository->default_branch, $base->name, get_string('submission_merge_request_title', 'mod_gitlab'));
+        $this->client->merge_request()->create($repository_id, Resources::defaultBranch(), $base->name, get_string('submission_merge_request_title', 'mod_gitlab'));
 
         // reviewers
-        $this->add_reviewers_as_maintainers($repository->id, $reviewers);
+        $this->add_reviewers_as_maintainers($repository_id, $reviewers);
 
         // instructions issue
         $issues = $this->client->issue()->list($template_id, [
@@ -147,7 +148,7 @@ class Bridge {
         ]);
         if (count($issues) >= 1) {
             $issue = $issues[0];
-            $this->create_instructions_issue($repository->id, $issue->description, $due_date);
+            $this->create_instructions_issue($repository_id, $issue->description, $due_date);
         }
     }
 
@@ -180,13 +181,13 @@ class Bridge {
     public function submit_student_merge_requests(int $module_id, int $template_id) {
         $groups = Group::get_groups($module_id);
         foreach ($groups as $group) {
-            $repository = $this->client->project()->get($group->repository_id);
+            $name = implode("-", explode(',', trim($group->members, '{}'))) . ':group-' . $group->id;
         
             $this->client->merge_request()->create(
-                $repository->id,
-                $repository->default_branch,
-                $repository->name,
-                get_string('template_submission_merge_request_title', 'mod_gitlab', ['name' => $repository->name]),
+                $group->repository_id,
+                Resources::defaultBranch(),
+                Resources::defaultBranch(),
+                get_string('template_submission_merge_request_title', 'mod_gitlab', ['name' => $name]),
                 ['target_project_id' => $template_id],
             );
         }

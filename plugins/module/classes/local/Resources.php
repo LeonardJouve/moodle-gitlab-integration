@@ -34,4 +34,8 @@ class Resources {
     public static function instructionIssue() {
         return 'instructions';
     }
+
+    public static function defaultBranch() {
+        return 'main';
+    }
 }
