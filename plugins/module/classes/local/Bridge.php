@@ -99,10 +99,13 @@ class Bridge {
     }
 
     public function create_group(stdClass $moduleinstance) {
+        $template = $this->client->project()->get($moduleinstance->template_id);
+
         $repository = $this->client->project()->fork(
             $moduleinstance->template_id,
             $moduleinstance->name . "_" . bin2hex(random_bytes(8)),
             $moduleinstance->group_id,
+            ['branches' => $template->default_branch],
         );
 
         $group_id = Group::create_group($moduleinstance->id, $repository->id);
