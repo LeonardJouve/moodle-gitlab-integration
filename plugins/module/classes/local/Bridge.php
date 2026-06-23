@@ -99,23 +99,10 @@ class Bridge {
     }
 
     public function create_group(stdClass $moduleinstance) {
-        $template = $this->client->project()->get($moduleinstance->template_id);
-
-        $parts = parse_url($template->http_url_to_repo);
-        $import_url = sprintf(
-            '%s://oauth2:%s@%s%s',
-            $parts['scheme'],
-            rawurlencode($this->token),
-            $parts['host'],
-            $parts['path'],
-        );
-
-        $repository = $this->client->project()->create(
+        $repository = $this->client->project()->fork(
+            $moduleinstance->template_id,
             $moduleinstance->name . "_" . bin2hex(random_bytes(8)),
             $moduleinstance->group_id,
-            [
-                'import_url' => $import_url,
-            ],
         );
 
         $group_id = Group::create_group($moduleinstance->id, $repository->id);
