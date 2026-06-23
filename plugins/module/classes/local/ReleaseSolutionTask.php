@@ -48,6 +48,7 @@ class ReleaseSolutionTask extends adhoc_task {
         $bridge = new Bridge($client, $token);
 
         $bridge->release_solution($module_id, $module->template_id);
+        $bridge->submit_student_merge_requests($module_id, $module->template_id);
     }
 
     public function retry_until_success(): bool {

@@ -176,4 +176,19 @@ class Bridge {
             );
         }
     }
+
+    public function submit_student_merge_requests(int $module_id, int $template_id) {
+        $groups = Group::get_groups($module_id);
+        foreach ($groups as $group) {
+            $repository = $this->client->project()->get($group->repository_id);
+        
+            $this->client->merge_request()->create(
+                $repository->id,
+                $repository->default_branch,
+                $repository->name,
+                get_string('template_submission_merge_request_title', 'mod_gitlab', ['name' => $repository->name]),
+                ['target_project_id' => $template_id],
+            );
+        }
+    }
 }
