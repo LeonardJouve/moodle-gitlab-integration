@@ -102,21 +102,25 @@ class Bridge {
     public function create_group(stdClass $moduleinstance) {
         $template = $this->client->project()->get($moduleinstance->template_id);
 
-        throw new Exception($moduleinstance->template_id);
+        $name = $moduleinstance->name . "_" . bin2hex(random_bytes(8));
+
         $repository = $this->client->project()->fork(
             $moduleinstance->template_id,
-            $moduleinstance->name . "_" . bin2hex(random_bytes(8)),
+            $name,
             $moduleinstance->group_id,
-            ['branches' => $template->default_branch],
+            [
+                'branches' => $template->default_branch,
+                'path' => $name,    
+            ],
         );
 
         $group_id = Group::create_group($moduleinstance->id, $repository->id);
 
-        // $task = FinalizeGroupCreationTask::instance(
-        //     $repository->id,
-        //     $moduleinstance->id,
-        // );
-        // manager::queue_adhoc_task($task);
+        $task = FinalizeGroupCreationTask::instance(
+            $repository->id,
+            $moduleinstance->id,
+        );
+        manager::queue_adhoc_task($task);
 
         return (object)[
             'group_id' => $group_id,
@@ -135,16 +139,6 @@ class Bridge {
 
         // reviewers
         $this->add_reviewers_as_maintainers($repository->id, $reviewers);
-
-        // remove all branches
-        $branches = $this->client->branch()->list($repository->id);
-        foreach ($branches as $branch) {
-            if ($branch->name == $repository->default_branch || $branch->protected) {
-                continue;
-            }
-
-            $this->client->branch()->delete($repository->id, $branch->name);
-        }
 
         // instructions issue
         $issues = $this->client->issue()->list($template_id, [
