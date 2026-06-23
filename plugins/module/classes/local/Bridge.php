@@ -30,21 +30,26 @@ class Bridge {
     private Gitlab $client;
     private string $token;
     private static int $maintainer_access_level = 40;
+    private static int $developer_access_level = 30;
 
     public function __construct(Gitlab $client, string $token) {
         $this->client = $client;
         $this->token = $token;
     }
+
+    private function add_user(int $repository_id, int $user_id, int $access_level) {
+        $username = Helper::get_user_gitlab_username($user_id);
+
+        if ($username == null) {
+            return;
+        }
+
+        $this->client->member()->add($repository_id, $username, $access_level);
+    }
     
     private function add_reviewers_as_maintainers(int $repository_id, array $reviewers) {
         foreach ($reviewers as $reviewer) {
-            $username = Helper::get_user_gitlab_username($reviewer);
-
-            if ($username == null) {
-                continue;
-            }
-
-            $this->client->member()->add($repository_id, $username, Bridge::$maintainer_access_level);
+            $this->add_user($repository_id, $reviewer, Bridge::$maintainer_access_level);
         }
     }
 
@@ -144,5 +149,18 @@ class Bridge {
             $issue = $issues[0];
             $this->create_instructions_issue($repository->id, $issue->description, $due_date);
         }
+    }
+
+    public function join_group(int $module_id, int $group_id, int $user_id, stdClass $moduleinstance): bool {
+        $group = Group::group($group_id);
+    
+        $ok = Group::join_group($module_id, $group_id, $user_id, $moduleinstance->group_size);
+        if (!$ok) {
+            return false;
+        }
+
+        $this->add_user($group->repository_id, $user_id, Bridge::$developer_access_level);
+
+        return true;
     }
 }

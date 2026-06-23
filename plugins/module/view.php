@@ -95,7 +95,7 @@ case 'createrepository':
     break;
 case 'joingroup':
     $group_id = optional_param('group_id', '', PARAM_INT);
-    if (!$group_id || !Group::join_group($cm->id, $group_id, $USER->id, $moduleinstance->group_size)) {
+    if (!$group_id || !$bridge->join_group($cm->id, $group_id, $USER->id, $moduleinstance)) {
         error(get_string('message_error_join_group', 'mod_gitlab'));
         return;
     }
@@ -115,7 +115,7 @@ case 'creategroup':
         }
 
         if (!$is_teacher) {
-            Group::join_group($cm->id, $group_id, $USER->id, $moduleinstance->group_size);
+            $bridge->join_group($cm->id, $group_id, $USER->id, $moduleinstance);
         }
 
         redirect(
