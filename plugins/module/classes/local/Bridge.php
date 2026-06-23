@@ -23,6 +23,7 @@
 namespace mod_gitlab\local;
 
 use core\task\manager;
+use Exception;
 use mod_gitlab\http\Gitlab;
 use stdClass;
 
@@ -101,6 +102,7 @@ class Bridge {
     public function create_group(stdClass $moduleinstance) {
         $template = $this->client->project()->get($moduleinstance->template_id);
 
+        throw new Exception($moduleinstance->template_id);
         $repository = $this->client->project()->fork(
             $moduleinstance->template_id,
             $moduleinstance->name . "_" . bin2hex(random_bytes(8)),
