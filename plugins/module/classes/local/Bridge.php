@@ -118,13 +118,13 @@ class Bridge {
             ],
         );
 
+        $group_id = Group::create_group($moduleinstance->id, $repository->id);
+
         $task = FinalizeGroupCreationTask::instance(
             $repository->id,
             $moduleinstance->id,
         );
         manager::queue_adhoc_task($task);
-
-        $group_id = Group::create_group($moduleinstance->id, $repository->id);
 
         return (object)[
             'group_id' => $group_id,

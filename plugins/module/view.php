@@ -166,7 +166,7 @@ function parse_group_members(stdClass $group) {
     return $members !== '' ? explode(',', $members) : [];
 }
 
-function list_student_groups(int $module_id, int $max_member) {
+function list_student_groups(int $module_id, int $instance_id, int $max_member) {
     global $OUTPUT;
 
     echo $OUTPUT->render_from_template('mod_gitlab/student_groups', [
@@ -182,7 +182,7 @@ function list_student_groups(int $module_id, int $max_member) {
             ]))->out(false);
             $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]);
             return $group;
-        }, Group::get_groups($module_id)),
+        }, Group::get_groups($instance_id)),
         'create_group_url' => (new url('/mod/gitlab/view.php', [
             'id' => $module_id,
             'action' => 'creategroup',
@@ -191,7 +191,7 @@ function list_student_groups(int $module_id, int $max_member) {
     ]);
 }
 
-function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, int $due_date, int $context_id) {
+function list_teacher_groups(Gitlab $client, int $module_id, int $instance_id, int $max_member, int $due_date, int $context_id) {
     global $OUTPUT;
     
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_groups', [
@@ -243,7 +243,7 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
             $group->last_test_pass = true;
             
             return $group;
-        }, Group::get_groups($module_id)),
+        }, Group::get_groups($instance_id)),
         'max_member' => $max_member,
         'context_id' => $context_id,
         'create_group_url' => (new url('/mod/gitlab/view.php', [
@@ -282,10 +282,10 @@ function template(Gitlab $client, int $template_id, int $due_date, array $review
     ]);
 }
 
-function student_group(Gitlab $client, int $module_id, int $user_id, int $max_member, int $due_date) {
+function student_group(Gitlab $client, int $instance_id, int $user_id, int $max_member, int $due_date) {
     global $OUTPUT;
 
-    $group = Group::group_with_members($module_id, $user_id);
+    $group = Group::group_with_members($instance_id, $user_id);
     $members = parse_group_members($group);
 
     try {
@@ -337,14 +337,14 @@ echo $OUTPUT->header();
 if ($is_teacher) {
     list_repositories($client, $moduleinstance->group_id, $cm->id);
     template($client, $moduleinstance->template_id, $moduleinstance->due_date, json_decode($moduleinstance->reviewers, true) ?: []);
-    list_teacher_groups($client, $cm->id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
+    list_teacher_groups($client, $cm->id, $moduleinstance->id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
 } else {
-    $has_group = Group::has_group($cm->id, $USER->id);
+    $has_group = Group::has_group($moduleinstance->id, $USER->id);
 
     if ($has_group) {
-        student_group($client, $cm->id, $USER->id, $moduleinstance->group_size, $moduleinstance->due_date);
+        student_group($client, $moduleinstance->id, $USER->id, $moduleinstance->group_size, $moduleinstance->due_date);
     } else {
-        list_student_groups($cm->id, $moduleinstance->group_size);
+        list_student_groups($cm->id, $moduleinstance->id, $moduleinstance->group_size);
     }
 }
 
