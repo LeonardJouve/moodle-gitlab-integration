@@ -15,7 +15,6 @@ async function copy(text) {
 define([], function() {
     return {
         init: function(id) {
-            // TODO
             ["ssh", "https", "checkout", "fetch-mr", "checkout-mr"].forEach((name) => {
                 const prefix = `#code-dropdown-${id}`;
                 const input = document.querySelector(`${prefix} .${name}-input`);

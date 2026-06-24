@@ -52,6 +52,10 @@ class Resources {
         return 'main';
     }
 
+    public static function submissionMergeRequestLabel(int $group_id) {
+        return "group-$group_id";
+    }
+
     public function get_gitlab_user_id(int $user_id): ?int {
         $username = Helper::get_user_gitlab_username($user_id);
         if ($username == null) {
@@ -101,11 +105,11 @@ class Resources {
         ]);
     }
 
-    private function get_merge_request(int $repository_id, string $source, string $target): ?stdClass {
-        $merge_requests = $this->client->merge_request()->list($repository_id, [
+    private function get_merge_request(int $repository_id, string $source, string $target, array $extra = []): ?stdClass {
+        $merge_requests = $this->client->merge_request()->list($repository_id, array_merge([
             'source_branch' => $source,
             'target_branch' => $target,
-        ]);
+        ], $extra));
         if (count($merge_requests) == 0) {
             return null;
         }
@@ -117,8 +121,10 @@ class Resources {
         return $this->get_merge_request($repository_id, Resources::defaultBranch(), Resources::baseBranch());
     }
 
-    public function get_teacher_submission_merge_request(int $repository_id): ?stdClass {
-        // TODO
+    public function get_teacher_submission_merge_request(int $template_id, int $group_id): ?stdClass {
+        return $this->get_merge_request($template_id, Resources::defaultBranch(), Resources::defaultBranch(), [
+            'labels' => Resources::submissionMergeRequestLabel($group_id),
+        ]);
     }
 
     public function get_solution_merge_request(int $repository_id): ?stdClass {

@@ -151,14 +151,18 @@ class Bridge {
     public function submit_student_merge_requests(int $module_id, int $template_id) {
         $groups = Group::get_groups($module_id);
         foreach ($groups as $group) {
-            $name = implode("-", explode(',', trim($group->members, '{}'))) . ':group-' . $group->id;
+            $label = Resources::submissionMergeRequestLabel($group->id);
+            $name = implode("-", explode(',', trim($group->members, '{}'))) . ':' . $label;
         
             $this->client->merge_request()->create(
                 $group->repository_id,
                 Resources::defaultBranch(),
                 Resources::defaultBranch(),
                 get_string('template_submission_merge_request_title', 'mod_gitlab', ['name' => $name]),
-                ['target_project_id' => $template_id],
+                [
+                    'target_project_id' => $template_id,
+                    'labels' => $label,
+                ],
             );
         }
     }

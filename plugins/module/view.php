@@ -199,11 +199,11 @@ function list_student_groups(int $module_id, int $max_member) {
     ]);
 }
 
-function list_teacher_groups(Gitlab $client, Resources $resources, int $module_id, int $max_member, int $due_date, int $context_id) {
+function list_teacher_groups(Gitlab $client, Resources $resources, int $module_id, int $template_id, int $max_member, int $due_date, int $context_id) {
     global $OUTPUT;
     
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_groups', [
-        'groups' => array_map(function($group) use ($client, $resources, $module_id, $due_date) {
+        'groups' => array_map(function($group) use ($client, $resources, $module_id, $template_id, $due_date) {
             $group->members = parse_group_members($group);
             $group->member_count = count($group->members);
             $group->name = get_group_name($group->members);
@@ -258,8 +258,7 @@ function list_teacher_groups(Gitlab $client, Resources $resources, int $module_i
                 $group->last_test_pass = $last_test_result->status == 'success';
             }
             
-            // TODO
-            $submission_merge_request = $resources->get_teacher_submission_merge_request($template_id, );
+            $submission_merge_request = $resources->get_teacher_submission_merge_request($template_id, $group->id);
             $group->has_submission_merge_request = $submission_merge_request != null;
             if ($group->has_submission_merge_request) {
                 $mr_id = $submission_merge_request->id;
@@ -386,7 +385,7 @@ echo $OUTPUT->header();
 if ($is_teacher) {
     list_repositories($client, $moduleinstance->group_id, $moduleinstance->id);
     template($client, $resources, $moduleinstance->template_id, $moduleinstance->due_date, json_decode($moduleinstance->reviewers, true) ?: []);
-    list_teacher_groups($client, $resources, $moduleinstance->id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
+    list_teacher_groups($client, $resources, $moduleinstance->id, $moduleinstance->template_id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
 } else {
     $has_group = Group::has_group($moduleinstance->id, $USER->id);
 
