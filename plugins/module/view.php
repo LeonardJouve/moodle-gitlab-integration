@@ -79,22 +79,6 @@ $resources = new Resources($client);
 
 // TODO handle perm
 switch ($action) {
-case 'createrepository':
-    try {
-        $client->project()->create(
-            $moduleinstance->name . "_" . $USER->username . "_" . bin2hex(random_bytes(8)),
-            $moduleinstance->group_id
-        );
-    } catch (RuntimeException $e) {
-        error(get_string('message_error_create_repository', 'mod_gitlab', ['message' => $e->getMessage()]));
-        return;
-    }
-
-    redirect(
-        new url('/mod/gitlab/view.php', ['g' => $moduleinstance->id]),
-        get_string('message_repository_created', 'mod_gitlab'),
-    );
-    break;
 case 'joingroup':
     $group_id = optional_param('group_id', '', PARAM_INT);
     if (!$group_id || !$bridge->join_group($group_id, $USER->id, $moduleinstance)) {
@@ -129,38 +113,6 @@ case 'creategroup':
         return;
     }
     break;
-}
-
-function list_repositories(Gitlab $client, int $group_id, int $module_id) {
-    echo html_writer::link(
-        new url('/mod/gitlab/view.php', [
-            'g' => $module_id,
-            'action' => 'createrepository',
-        ]),
-        get_string('button_create_repository', 'mod_gitlab'),
-        ['class' => 'btn btn-primary']
-    );    
-
-    try {
-        $repositories = $client->group()->projects($group_id);
-
-        echo html_writer::start_tag('ul');
-
-        foreach ($repositories as $repository) {
-            echo html_writer::tag(
-                'li',
-                html_writer::link(
-                    $repository->web_url,
-                    format_string($repository->name),
-                    ['target' => '_blank']
-                )
-            );
-        }
-
-        echo html_writer::end_tag('ul');
-    } catch (RuntimeException $e) {
-        error(get_string('message_error_list_repositories', 'mod_gitlab', ['message' => $e->getMessage()]));
-    }
 }
 
 function parse_group_members(stdClass $group) {
@@ -383,7 +335,6 @@ function student_group(Gitlab $client, Resources $resources, int $instance_id, i
 echo $OUTPUT->header();
 
 if ($is_teacher) {
-    list_repositories($client, $moduleinstance->group_id, $moduleinstance->id);
     template($client, $resources, $moduleinstance->template_id, $moduleinstance->due_date, json_decode($moduleinstance->reviewers, true) ?: []);
     list_teacher_groups($client, $resources, $moduleinstance->id, $moduleinstance->template_id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
 } else {
