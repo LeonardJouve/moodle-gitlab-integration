@@ -101,15 +101,24 @@ class Resources {
         ]);
     }
 
-    public function get_student_submission_merge_request(int $repository_id): ?stdClass {
+    private function get_merge_request(int $repository_id, string $source, string $target): ?stdClass {
         $merge_requests = $this->client->merge_request()->list($repository_id, [
-            'target_branch' => Resources::baseBranch(),
+            'source_branch' => $source,
+            'target_branch' => $target,
         ]);
         if (count($merge_requests) == 0) {
             return null;
         }
 
         return $merge_requests[0];
+    }
+
+    public function get_student_submission_merge_request(int $repository_id): ?stdClass {
+        return $this->get_merge_request($repository_id, Resources::defaultBranch(), Resources::baseBranch());
+    }
+
+    public function get_solution_merge_request(int $repository_id): ?stdClass {
+        return $this->get_merge_request($repository_id, Resources::solutionBranch(), Resources::baseBranch());
     }
 
     public function get_latest_test_result(int $repository_id): ?stdClass {
@@ -120,5 +129,9 @@ class Resources {
         }catch (RuntimeException $e) {
             return null;
         }
+    }
+
+    public function get_solution_branch(int $repository_id): ?stdClass {
+        return $this->client->branch()->get($repository_id, Resources::solutionBranch());
     }
 }

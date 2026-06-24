@@ -263,7 +263,7 @@ function list_teacher_groups(Gitlab $client, Resources $resources, int $module_i
     ]);
 }
 
-function template(Gitlab $client, int $template_id, int $due_date, array $reviewer_ids) {
+function template(Gitlab $client, Resources $resources, int $template_id, int $due_date, array $reviewer_ids) {
     global $OUTPUT, $DB;
     
     try {
@@ -280,19 +280,25 @@ function template(Gitlab $client, int $template_id, int $due_date, array $review
         WHERE u.id $in_sql
     ", $params);
 
+    $solution_branch = $resources->get_solution_branch($template_id);
+    $instruction_issue = $resources->get_instructions_issue($template_id);
+
+    // TODO improve error handling
+    if ($solution_branch == null || $instruction_issue == null) {
+        return;
+    }
+
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_template', [
         'name' => $template->name,
         'repository_url' => $template->web_url,
         'reviewers' => $reviewers,
         'due_date' => userdate($due_date, get_string('strftimedaydatetime', 'langconfig')),
-        // TODO
-        'test_url' => 'TODO_test',
-        'solution_url' => 'TODO_solution',
-        'instruction_url' => 'TODO_instruction',
+        'solution_url' => $solution_branch->web_url,
+        'instruction_url' => $instruction_issue->web_url,
     ]);
 }
 
-function student_group(Gitlab $client, int $instance_id, int $user_id, int $max_member, int $due_date) {
+function student_group(Gitlab $client, Resources $resources, int $instance_id, int $user_id, int $max_member, int $due_date) {
     global $OUTPUT;
 
     $group = Group::group_with_members($instance_id, $user_id);
@@ -305,11 +311,21 @@ function student_group(Gitlab $client, int $instance_id, int $user_id, int $max_
         return;
     }
 
-    $feedback_url = 'TODO_feedback';
-    $test_url = 'TODO_test';
-
     $is_graded = false;
-    $last_test_pass = true;
+    $submission_merge_request = $resources->get_student_submission_merge_request($repository->id);
+    if ($submission_merge_request != null) {
+        $feedback_url = $submission_merge_request->web_url;
+        $is_graded = $submission_merge_request->state == 'closed';
+    }
+
+    $last_test_pass = false;
+    $last_test_result = $resources->get_latest_test_result($repository->id);
+    $has_test_result = $last_test_result != null;
+    if ($has_test_result) {
+        $test_url = $last_test_result->web_url;
+        $last_test_pass = $last_test_result->status == 'success';
+    }
+
     $last_commit = $client->commit()->get_last($group->repository_id);
 
     $time = strtotime($last_commit->committed_date ?? '') ?: 0;
@@ -318,7 +334,11 @@ function student_group(Gitlab $client, int $instance_id, int $user_id, int $max_
 
     $has_ended = (time() - $due_date) > 0;
     $has_solution = $has_ended && true;
-    $solution_url = 'TODO_solution';
+
+    $solution_merge_request = $resources->get_solution_merge_request($repository->id);
+    if ($solution_merge_request != null) {
+        $solution_url = $solution_merge_request->web_url;
+    }
 
     echo $OUTPUT->render_from_template('mod_gitlab/student_group', [
         'id' => $group->id,
@@ -331,6 +351,7 @@ function student_group(Gitlab $client, int $instance_id, int $user_id, int $max_
         'is_graded' => $is_graded,
         'feedback_url' => $feedback_url,
         'last_test_pass' => $last_test_pass,
+        'has_test_result' => $has_test_result,
         'test_url' => $test_url,
         'is_delayed' => $is_delayed,
         'delay' => $delay,
@@ -346,13 +367,13 @@ echo $OUTPUT->header();
 
 if ($is_teacher) {
     list_repositories($client, $moduleinstance->group_id, $moduleinstance->id);
-    template($client, $moduleinstance->template_id, $moduleinstance->due_date, json_decode($moduleinstance->reviewers, true) ?: []);
+    template($client, $resources, $moduleinstance->template_id, $moduleinstance->due_date, json_decode($moduleinstance->reviewers, true) ?: []);
     list_teacher_groups($client, $resources, $moduleinstance->id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
 } else {
     $has_group = Group::has_group($moduleinstance->id, $USER->id);
 
     if ($has_group) {
-        student_group($client, $moduleinstance->id, $USER->id, $moduleinstance->group_size, $moduleinstance->due_date);
+        student_group($client, $resources, $moduleinstance->id, $USER->id, $moduleinstance->group_size, $moduleinstance->due_date);
     } else {
         list_student_groups($moduleinstance->id, $moduleinstance->group_size);
     }
