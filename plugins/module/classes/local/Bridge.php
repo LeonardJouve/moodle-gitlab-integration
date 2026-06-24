@@ -23,19 +23,16 @@
 namespace mod_gitlab\local;
 
 use core\task\manager;
-use Exception;
 use mod_gitlab\http\Gitlab;
 use stdClass;
 
 class Bridge {
     private Gitlab $client;
-    private string $token;
     private static int $maintainer_access_level = 40;
     private static int $developer_access_level = 30;
 
-    public function __construct(Gitlab $client, string $token) {
+    public function __construct(Gitlab $client) {
         $this->client = $client;
-        $this->token = $token;
     }
 
     private function add_user(int $repository_id, int $user_id, int $access_level) {
@@ -191,5 +188,25 @@ class Bridge {
                 ['target_project_id' => $template_id],
             );
         }
+    }
+
+    public function leave_group(int $module_id, int $user_id): bool {
+        $username = Helper::get_user_gitlab_username($user_id);
+        if ($username == null) {
+            return false;
+        }
+
+        $gitlab_users = $this->client->user()->list(['username' => $username]);
+        if (count($gitlab_users) != 1) {
+            return false;
+        }
+        $gitlab_user_id = $gitlab_users[0]->id;
+
+        $group_id = Group::user_group($module_id, $user_id);
+        $group = Group::group($group_id);
+
+        $this->client->member()->remove($group->repository_id, $gitlab_user_id);
+
+        return Group::leave_group($module_id, $user_id);
     }
 }

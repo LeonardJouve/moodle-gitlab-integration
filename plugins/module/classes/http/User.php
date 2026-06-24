@@ -42,7 +42,7 @@ class User {
         $this->client = $client;
     }
 
-    // username / public_email => '' Get a single user
+    // username / public_email => Get a single user
     public function list(array $params = []) {
         return $this->client->get("/users", $params);
     }

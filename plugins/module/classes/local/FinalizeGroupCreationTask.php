@@ -49,7 +49,7 @@ class FinalizeGroupCreationTask extends adhoc_task {
         $token = Helper::get_course_gitlab_token($module->course);
         
         $client = new Gitlab($token);
-        $bridge = new Bridge($client, $token);
+        $bridge = new Bridge($client);
 
         $interval = 2;
         $timeout = time() + 120;

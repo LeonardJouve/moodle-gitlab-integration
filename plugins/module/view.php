@@ -73,7 +73,7 @@ $PAGE->set_context($modulecontext);
 
 $token = Helper::get_course_gitlab_token($moduleinstance->course);
 $client = new Gitlab($token);
-$bridge = new Bridge($client, $token);
+$bridge = new Bridge($client);
 
 // TODO handle perm
 switch ($action) {

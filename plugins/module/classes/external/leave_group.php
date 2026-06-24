@@ -27,7 +27,9 @@ defined('MOODLE_INTERNAL') || die();
 use \core_external\external_api;
 use \core_external\external_function_parameters;
 use \core_external\external_value;
-use mod_gitlab\local\Group;
+use mod_gitlab\http\Gitlab;
+use mod_gitlab\local\Bridge;
+use mod_gitlab\local\Helper;
 
 class leave_group extends external_api {
     public static function execute_parameters() {
@@ -47,7 +49,13 @@ class leave_group extends external_api {
             'group_id' => $groupid,
         ]);
 
-        $ok = Group::leave_group($module_id, $USER->id);
+        $course_id = $DB->get_field('gitlab', 'course', ['id' => $module_id], MUST_EXIST);
+       
+        $token = Helper::get_course_gitlab_token($course_id);
+        $client = new Gitlab($token);
+        $bridge = new Bridge($client);
+
+        $ok = $bridge->leave_group($module_id, $USER->id);
 
         return ['result' => $ok ? 'ok' : 'fail'];
     }

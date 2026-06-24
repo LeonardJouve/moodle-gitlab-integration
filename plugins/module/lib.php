@@ -61,7 +61,7 @@ function gitlab_add_instance($moduleinstance, $mform = null) {
         $token = Helper::get_course_gitlab_token($moduleinstance->course);
         $client = new Gitlab($token);
 
-        $bridge = new Bridge($client, $token);
+        $bridge = new Bridge($client);
         $result = $bridge->create_module($moduleinstance);
 
         $transaction->allow_commit();
