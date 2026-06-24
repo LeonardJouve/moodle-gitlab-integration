@@ -22,7 +22,20 @@
 
 namespace mod_gitlab\local;
 
+use mod_gitlab\http\Gitlab;
+use mod_gitlab\http\RuntimeException;
+use stdClass;
+
 class Resources {
+    private Gitlab $client;
+    
+    public static int $maintainer_access_level = 40;
+    public static int $developer_access_level = 30;
+
+    public function __construct(Gitlab $client) {
+        $this->client = $client;
+    }
+
     public static function solutionBranch() {
         return 'solution';
     }
@@ -37,5 +50,75 @@ class Resources {
 
     public static function defaultBranch() {
         return 'main';
+    }
+
+    public function get_gitlab_user_id(int $user_id): ?int {
+        $username = Helper::get_user_gitlab_username($user_id);
+        if ($username == null) {
+            return null;
+        }
+
+        $gitlab_users = $this->client->user()->list(['username' => $username]);
+        if (count($gitlab_users) != 1) {
+            return null;
+        }
+
+        return $gitlab_users[0]->id;
+    }
+
+    public function get_instructions_issue(int $repository_id): ?stdClass {
+        $issues = $this->client->issue()->list($repository_id, [
+            'search' => Resources::instructionIssue(),
+            'order_by' => 'created_at',
+        ]);
+        if (count($issues) == 0) {
+            return null;
+        }
+            
+        return $issues[0];
+    }
+
+    public function add_member(int $repository_id, int $user_id, int $access_level) {
+        $username = Helper::get_user_gitlab_username($user_id);
+
+        if ($username == null) {
+            return;
+        }
+
+        $this->client->member()->add($repository_id, $username, $access_level);
+    }
+    
+    public function add_reviewers_as_maintainers(int $repository_id, array $reviewers) {
+        foreach ($reviewers as $reviewer) {
+            $this->add_member($repository_id, $reviewer, Resources::$maintainer_access_level);
+        }
+    }
+
+    public function create_instructions_issue(int $repository_id, string $content, int $due_date) {
+        $this->client->issue()->create($repository_id, Resources::instructionIssue(), $content, [
+            'start_date' => date('Y-m-d', time()),
+            'due_date' => date('Y-m-d', $due_date),
+        ]);
+    }
+
+    public function get_student_submission_merge_request(int $repository_id): ?stdClass {
+        $merge_requests = $this->client->merge_request()->list($repository_id, [
+            'target_branch' => Resources::baseBranch(),
+        ]);
+        if (count($merge_requests) == 0) {
+            return null;
+        }
+
+        return $merge_requests[0];
+    }
+
+    public function get_latest_test_result(int $repository_id): ?stdClass {
+        try {
+            return $this->client->pipeline()->latest($repository_id, [
+                'ref' => Resources::defaultBranch(),
+            ]);
+        }catch (RuntimeException $e) {
+            return null;
+        }
     }
 }

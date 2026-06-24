@@ -29,6 +29,7 @@ use mod_gitlab\http\RuntimeException;
 use mod_gitlab\local\Bridge;
 use mod_gitlab\local\Helper;
 use mod_gitlab\local\Group;
+use mod_gitlab\local\Resources;
 
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
@@ -74,6 +75,7 @@ $PAGE->set_context($modulecontext);
 $token = Helper::get_course_gitlab_token($moduleinstance->course);
 $client = new Gitlab($token);
 $bridge = new Bridge($client);
+$resources = new Resources($client);
 
 // TODO handle perm
 switch ($action) {
@@ -191,11 +193,11 @@ function list_student_groups(int $module_id, int $max_member) {
     ]);
 }
 
-function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, int $due_date, int $context_id) {
+function list_teacher_groups(Gitlab $client, Resources $resources, int $module_id, int $max_member, int $due_date, int $context_id) {
     global $OUTPUT;
     
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_groups', [
-        'groups' => array_map(function($group) use ($client, $module_id, $due_date) {
+        'groups' => array_map(function($group) use ($client, $resources, $module_id, $due_date) {
             $group->members = parse_group_members($group);
             $group->member_count = count($group->members);
             $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $group->members)]);
@@ -236,11 +238,19 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, in
             $group->delay = format_time($time - $due_date);
             $group->is_delayed = ($time - $due_date) > 0;
             
-            // TODO
-            $group->feedback_url = 'TODO_feedback';
-            $group->test_url = 'TODO_test';
-            $group->is_graded = false;
-            $group->last_test_pass = true;
+            $submission_merge_request = $resources->get_student_submission_merge_request($group->repository_id);
+            if ($submission_merge_request != null) {
+                $group->feedback_url = $submission_merge_request->web_url;
+                $group->is_graded = $submission_merge_request->state == 'closed';
+            }
+
+            $last_test_result = $resources->get_latest_test_result($group->repository_id);
+
+            $group->has_test_result = $last_test_result != null;
+            if ($group->has_test_result) {
+                $group->test_url = $last_test_result->web_url;
+                $group->last_test_pass = $last_test_result->status == 'success';
+            }
             
             return $group;
         }, Group::get_groups($module_id)),
@@ -337,7 +347,7 @@ echo $OUTPUT->header();
 if ($is_teacher) {
     list_repositories($client, $moduleinstance->group_id, $moduleinstance->id);
     template($client, $moduleinstance->template_id, $moduleinstance->due_date, json_decode($moduleinstance->reviewers, true) ?: []);
-    list_teacher_groups($client, $moduleinstance->id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
+    list_teacher_groups($client, $resources, $moduleinstance->id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
 } else {
     $has_group = Group::has_group($moduleinstance->id, $USER->id);
 
