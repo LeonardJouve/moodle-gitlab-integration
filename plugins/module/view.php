@@ -301,6 +301,9 @@ function template(Gitlab $client, Resources $resources, int $template_id, int $d
         'due_date' => userdate($due_date, get_string('strftimedaydatetime', 'langconfig')),
         'solution_url' => $solution_branch->web_url,
         'instruction_url' => $instruction_issue->web_url,
+        'download_url' => $client->project()->archive($template_id),
+        'https_url' => $template->http_url_to_repo,
+        'ssh_url' => $template->ssh_url_to_repo,
     ]);
 }
 
