@@ -29,6 +29,7 @@ use mod_gitlab\http\RuntimeException;
 use mod_gitlab\local\Bridge;
 use mod_gitlab\local\Helper;
 use mod_gitlab\local\Group;
+use mod_gitlab\local\Resources;
 
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
@@ -74,25 +75,10 @@ $PAGE->set_context($modulecontext);
 $token = Helper::get_course_gitlab_token($moduleinstance->course);
 $client = new Gitlab($token);
 $bridge = new Bridge($client);
+$resources = new Resources($client);
 
 // TODO handle perm
 switch ($action) {
-case 'createrepository':
-    try {
-        $client->project()->create(
-            $moduleinstance->name . "_" . $USER->username . "_" . bin2hex(random_bytes(8)),
-            $moduleinstance->group_id
-        );
-    } catch (RuntimeException $e) {
-        error(get_string('message_error_create_repository', 'mod_gitlab', ['message' => $e->getMessage()]));
-        return;
-    }
-
-    redirect(
-        new url('/mod/gitlab/view.php', ['id' => $cm->id]),
-        get_string('message_repository_created', 'mod_gitlab'),
-    );
-    break;
 case 'joingroup':
     $group_id = optional_param('group_id', '', PARAM_INT);
     if (!$group_id || !$bridge->join_group($group_id, $USER->id, $moduleinstance)) {
@@ -101,7 +87,7 @@ case 'joingroup':
     }
 
     redirect(
-        new url('/mod/gitlab/view.php', ['id' => $cm->id]),
+        new url('/mod/gitlab/view.php', ['g' => $moduleinstance->id]),
         get_string('message_joined_group', 'mod_gitlab'),
     );
     break;
@@ -119,7 +105,7 @@ case 'creategroup':
         }
 
         redirect(
-            new url('/mod/gitlab/view.php', ['id' => $cm->id]),
+            new url('/mod/gitlab/view.php', ['g' => $moduleinstance->id]),
             get_string('message_created_group', 'mod_gitlab'),
         );
     } catch (RuntimeException $e) {
@@ -129,44 +115,18 @@ case 'creategroup':
     break;
 }
 
-function list_repositories(Gitlab $client, int $group_id, int $module_id) {
-    echo html_writer::link(
-        new url('/mod/gitlab/view.php', [
-            'id' => $module_id,
-            'action' => 'createrepository',
-        ]),
-        get_string('button_create_repository', 'mod_gitlab'),
-        ['class' => 'btn btn-primary']
-    );    
-
-    try {
-        $repositories = $client->group()->projects($group_id);
-
-        echo html_writer::start_tag('ul');
-
-        foreach ($repositories as $repository) {
-            echo html_writer::tag(
-                'li',
-                html_writer::link(
-                    $repository->web_url,
-                    format_string($repository->name),
-                    ['target' => '_blank']
-                )
-            );
-        }
-
-        echo html_writer::end_tag('ul');
-    } catch (RuntimeException $e) {
-        error(get_string('message_error_list_repositories', 'mod_gitlab', ['message' => $e->getMessage()]));
-    }
-}
-
 function parse_group_members(stdClass $group) {
     $members = trim($group->members, '{}');
     return $members !== '' ? explode(',', $members) : [];
 }
 
-function list_student_groups(int $module_id, int $instance_id, int $max_member) {
+function get_group_name(array $members) {
+    return count($members) > 0 ?
+        get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]) :
+        get_string('message_empty_group_name', 'mod_gitlab');
+}
+
+function list_student_groups(int $module_id, int $max_member) {
     global $OUTPUT;
 
     echo $OUTPUT->render_from_template('mod_gitlab/student_groups', [
@@ -176,29 +136,29 @@ function list_student_groups(int $module_id, int $instance_id, int $max_member) 
             $group->member_count = count($members);
             $group->can_join_group = $group->member_count < $max_member;
             $group->join_group_url = (new url('/mod/gitlab/view.php', [
-                'id' => $module_id,
+                'g' => $module_id,
                 'action' => 'joingroup',
                 'group_id' => $group->id,
             ]))->out(false);
-            $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]);
+            $group->name = get_group_name($members);
             return $group;
-        }, Group::get_groups($instance_id)),
+        }, Group::get_groups($module_id)),
         'create_group_url' => (new url('/mod/gitlab/view.php', [
-            'id' => $module_id,
+            'g' => $module_id,
             'action' => 'creategroup',
         ]))->out(false),
         'max_member' => $max_member,
     ]);
 }
 
-function list_teacher_groups(Gitlab $client, int $module_id, int $instance_id, int $max_member, int $due_date, int $context_id) {
+function list_teacher_groups(Gitlab $client, Resources $resources, int $module_id, int $template_id, int $max_member, int $due_date, int $context_id) {
     global $OUTPUT;
     
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_groups', [
-        'groups' => array_map(function($group) use ($client, $module_id, $due_date) {
+        'groups' => array_map(function($group) use ($client, $resources, $module_id, $template_id, $due_date) {
             $group->members = parse_group_members($group);
             $group->member_count = count($group->members);
-            $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $group->members)]);
+            $group->name = get_group_name($group->members);
             
             try {
                 $repository = $client->project()->get($group->repository_id);
@@ -208,7 +168,7 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $instance_id, i
             }
             
             $group->delete_url = (new url('/mod/gitlab/view.php', [
-                'id' => $module_id,
+                'g' => $module_id,
                 'action' => 'deletegroup',
                 'group_id' => $group->id,
             ]))->out(false);
@@ -236,24 +196,40 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $instance_id, i
             $group->delay = format_time($time - $due_date);
             $group->is_delayed = ($time - $due_date) > 0;
             
-            // TODO
-            $group->feedback_url = 'TODO_feedback';
-            $group->test_url = 'TODO_test';
-            $group->is_graded = false;
-            $group->last_test_pass = true;
+            $submission_merge_request = $resources->get_student_submission_merge_request($group->repository_id);
+            if ($submission_merge_request != null) {
+                $group->feedback_url = $submission_merge_request->web_url;
+                $group->is_graded = $submission_merge_request->state == 'closed';
+            }
+
+            $last_test_result = $resources->get_latest_test_result($group->repository_id);
+
+            $group->has_test_result = $last_test_result != null;
+            if ($group->has_test_result) {
+                $group->test_url = $last_test_result->web_url;
+                $group->last_test_pass = $last_test_result->status == 'success';
+            }
             
+            $submission_merge_request = $resources->get_teacher_submission_merge_request($template_id, $group->id);
+            $group->has_submission_merge_request = $submission_merge_request != null;
+            if ($group->has_submission_merge_request) {
+                $mr_id = $submission_merge_request->iid;
+                $group->fetch_merge_request = "git fetch origin merge-requests/$mr_id/head:mr-$mr_id";
+                $group->checkout_merge_request = "git checkout mr-$mr_id";
+            }
+
             return $group;
-        }, Group::get_groups($instance_id)),
+        }, Group::get_groups($module_id)),
         'max_member' => $max_member,
         'context_id' => $context_id,
         'create_group_url' => (new url('/mod/gitlab/view.php', [
-            'id' => $module_id,
+            'g' => $module_id,
             'action' => 'creategroup',
         ]))->out(false),
     ]);
 }
 
-function template(Gitlab $client, int $template_id, int $due_date, array $reviewer_ids) {
+function template(Gitlab $client, Resources $resources, int $template_id, int $due_date, array $reviewer_ids) {
     global $OUTPUT, $DB;
     
     try {
@@ -270,19 +246,28 @@ function template(Gitlab $client, int $template_id, int $due_date, array $review
         WHERE u.id $in_sql
     ", $params);
 
+    $solution_branch = $resources->get_solution_branch($template_id);
+    $instruction_issue = $resources->get_instructions_issue($template_id);
+
+    // TODO improve error handling
+    if ($solution_branch == null || $instruction_issue == null) {
+        return;
+    }
+
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_template', [
         'name' => $template->name,
         'repository_url' => $template->web_url,
         'reviewers' => $reviewers,
         'due_date' => userdate($due_date, get_string('strftimedaydatetime', 'langconfig')),
-        // TODO
-        'test_url' => 'TODO_test',
-        'solution_url' => 'TODO_solution',
-        'instruction_url' => 'TODO_instruction',
+        'solution_url' => $solution_branch->web_url,
+        'instruction_url' => $instruction_issue->web_url,
+        'download_url' => $client->project()->archive($template_id),
+        'https_url' => $template->http_url_to_repo,
+        'ssh_url' => $template->ssh_url_to_repo,
     ]);
 }
 
-function student_group(Gitlab $client, int $instance_id, int $user_id, int $max_member, int $due_date) {
+function student_group(Gitlab $client, Resources $resources, int $instance_id, int $user_id, int $max_member, int $due_date) {
     global $OUTPUT;
 
     $group = Group::group_with_members($instance_id, $user_id);
@@ -295,11 +280,21 @@ function student_group(Gitlab $client, int $instance_id, int $user_id, int $max_
         return;
     }
 
-    $feedback_url = 'TODO_feedback';
-    $test_url = 'TODO_test';
-
     $is_graded = false;
-    $last_test_pass = true;
+    $submission_merge_request = $resources->get_student_submission_merge_request($repository->id);
+    if ($submission_merge_request != null) {
+        $feedback_url = $submission_merge_request->web_url;
+        $is_graded = $submission_merge_request->state == 'closed';
+    }
+
+    $last_test_pass = false;
+    $last_test_result = $resources->get_latest_test_result($repository->id);
+    $has_test_result = $last_test_result != null;
+    if ($has_test_result) {
+        $test_url = $last_test_result->web_url;
+        $last_test_pass = $last_test_result->status == 'success';
+    }
+
     $last_commit = $client->commit()->get_last($group->repository_id);
 
     $time = strtotime($last_commit->committed_date ?? '') ?: 0;
@@ -308,11 +303,15 @@ function student_group(Gitlab $client, int $instance_id, int $user_id, int $max_
 
     $has_ended = (time() - $due_date) > 0;
     $has_solution = $has_ended && true;
-    $solution_url = 'TODO_solution';
+
+    $solution_merge_request = $resources->get_solution_merge_request($repository->id);
+    if ($solution_merge_request != null) {
+        $solution_url = $solution_merge_request->web_url;
+    }
 
     echo $OUTPUT->render_from_template('mod_gitlab/student_group', [
         'id' => $group->id,
-        'name' => get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]),
+        'name' => get_group_name($members),
         'max_member' => $max_member,
         'member_count' => count($members),
         'members' => $members,
@@ -321,6 +320,7 @@ function student_group(Gitlab $client, int $instance_id, int $user_id, int $max_
         'is_graded' => $is_graded,
         'feedback_url' => $feedback_url,
         'last_test_pass' => $last_test_pass,
+        'has_test_result' => $has_test_result,
         'test_url' => $test_url,
         'is_delayed' => $is_delayed,
         'delay' => $delay,
@@ -335,16 +335,15 @@ function student_group(Gitlab $client, int $instance_id, int $user_id, int $max_
 echo $OUTPUT->header();
 
 if ($is_teacher) {
-    list_repositories($client, $moduleinstance->group_id, $cm->id);
-    template($client, $moduleinstance->template_id, $moduleinstance->due_date, json_decode($moduleinstance->reviewers, true) ?: []);
-    list_teacher_groups($client, $cm->id, $moduleinstance->id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
+    template($client, $resources, $moduleinstance->template_id, $moduleinstance->due_date, json_decode($moduleinstance->reviewers, true) ?: []);
+    list_teacher_groups($client, $resources, $moduleinstance->id, $moduleinstance->template_id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
 } else {
     $has_group = Group::has_group($moduleinstance->id, $USER->id);
 
     if ($has_group) {
-        student_group($client, $moduleinstance->id, $USER->id, $moduleinstance->group_size, $moduleinstance->due_date);
+        student_group($client, $resources, $moduleinstance->id, $USER->id, $moduleinstance->group_size, $moduleinstance->due_date);
     } else {
-        list_student_groups($cm->id, $moduleinstance->id, $moduleinstance->group_size);
+        list_student_groups($moduleinstance->id, $moduleinstance->group_size);
     }
 }
 

@@ -23,7 +23,7 @@ const showModal = (contextId, groupId) => {
         modal.getRoot().on("submit", "form", (e) => {
             e.preventDefault();
 
-            submitFormAjax(modal, contextId, groupId);
+            submitFormAjax(modal, groupId);
         });
 
         modal.getRoot().on(ModalEvents.hidden, () => {
@@ -32,7 +32,7 @@ const showModal = (contextId, groupId) => {
     });
 };
 
-const submitFormAjax = (modal, contextId, groupId) => {
+const submitFormAjax = (modal, groupId) => {
     modal.hide();
     modal.destroy();
 

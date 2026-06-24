@@ -28,48 +28,11 @@ use stdClass;
 
 class Bridge {
     private Gitlab $client;
-    private static int $maintainer_access_level = 40;
-    private static int $developer_access_level = 30;
+    private Resources $resources;
 
     public function __construct(Gitlab $client) {
         $this->client = $client;
-    }
-
-    private function add_user(int $repository_id, int $user_id, int $access_level) {
-        $username = Helper::get_user_gitlab_username($user_id);
-
-        if ($username == null) {
-            return;
-        }
-
-        $this->client->member()->add($repository_id, $username, $access_level);
-    }
-    
-    private function add_reviewers_as_maintainers(int $repository_id, array $reviewers) {
-        foreach ($reviewers as $reviewer) {
-            $this->add_user($repository_id, $reviewer, Bridge::$maintainer_access_level);
-        }
-    }
-
-    private function create_instructions_issue(int $repository_id, string $content, int $due_date) {
-        $this->client->issue()->create($repository_id, Resources::instructionIssue(), $content, [
-            'start_date' => date('Y-m-d', time()),
-            'due_date' => date('Y-m-d', $due_date),
-        ]);
-    }
-
-    private function get_gitlab_user_id(int $user_id): ?int {
-        $username = Helper::get_user_gitlab_username($user_id);
-        if ($username == null) {
-            return null;
-        }
-
-        $gitlab_users = $this->client->user()->list(['username' => $username]);
-        if (count($gitlab_users) != 1) {
-            return null;
-        }
-
-        return $gitlab_users[0]->id;
+        $this->resources = new Resources($client);
     }
 
     public function create_module(stdClass $moduleinstance) {
@@ -87,10 +50,10 @@ class Bridge {
         $this->client->branch()->create($template->id, Resources::solutionBranch(), $template->default_branch);
         
         // instructions
-        $this->create_instructions_issue($template->id, get_string('instructions_issue_help', 'mod_gitlab'), $moduleinstance->due_date);
+        $this->resources->create_instructions_issue($template->id, get_string('instructions_issue_help', 'mod_gitlab'), $moduleinstance->due_date);
         
         // reviewers
-        $this->add_reviewers_as_maintainers($template->id, $moduleinstance->reviewer ?? []);
+        $this->resources->add_reviewers_as_maintainers($template->id, $moduleinstance->reviewer ?? []);
 
         $moduleinstance->reviewers = json_encode($moduleinstance->reviewer ?: [], JSON_UNESCAPED_UNICODE);
         $moduleinstance->timecreated = time();
@@ -150,16 +113,12 @@ class Bridge {
         $this->client->merge_request()->create($repository_id, Resources::defaultBranch(), $base->name, get_string('submission_merge_request_title', 'mod_gitlab'));
 
         // reviewers
-        $this->add_reviewers_as_maintainers($repository_id, $reviewers);
+        $this->resources->add_reviewers_as_maintainers($repository_id, $reviewers);
 
         // instructions issue
-        $issues = $this->client->issue()->list($template_id, [
-            'search' => Resources::instructionIssue(),
-            'order_by' => 'created_at',
-        ]);
-        if (count($issues) >= 1) {
-            $issue = $issues[0];
-            $this->create_instructions_issue($repository_id, $issue->description, $due_date);
+        $issue = $this->resources->get_instructions_issue($template_id);
+        if ($issue != null) {
+            $this->resources->create_instructions_issue($repository_id, $issue->description, $due_date);
         }
     }
 
@@ -171,7 +130,7 @@ class Bridge {
             return false;
         }
 
-        $this->add_user($group->repository_id, $user_id, Bridge::$developer_access_level);
+        $this->resources->add_member($group->repository_id, $user_id, Resources::$developer_access_level);
 
         return true;
     }
@@ -192,20 +151,24 @@ class Bridge {
     public function submit_student_merge_requests(int $module_id, int $template_id) {
         $groups = Group::get_groups($module_id);
         foreach ($groups as $group) {
-            $name = implode("-", explode(',', trim($group->members, '{}'))) . ':group-' . $group->id;
+            $label = Resources::submissionMergeRequestLabel($group->id);
+            $name = implode("-", explode(',', trim($group->members, '{}'))) . ':' . $label;
         
             $this->client->merge_request()->create(
                 $group->repository_id,
                 Resources::defaultBranch(),
                 Resources::defaultBranch(),
                 get_string('template_submission_merge_request_title', 'mod_gitlab', ['name' => $name]),
-                ['target_project_id' => $template_id],
+                [
+                    'target_project_id' => $template_id,
+                    'labels' => $label,
+                ],
             );
         }
     }
 
     public function leave_group(int $module_id, int $user_id): bool {
-        $gitlab_user_id = $this->get_gitlab_user_id($user_id);
+        $gitlab_user_id = $this->resources->get_gitlab_user_id($user_id);
         if ($gitlab_user_id == null) {
             return false;
         }
@@ -232,7 +195,7 @@ class Bridge {
             $params,
         );
         foreach ($to_remove as $user_id) {
-            $gitlab_user_id = $this->get_gitlab_user_id($user_id);
+            $gitlab_user_id = $this->resources->get_gitlab_user_id($user_id);
             if ($gitlab_user_id == null) {
                 continue;
             }
@@ -256,7 +219,7 @@ class Bridge {
                 continue;
             }
 
-            $this->client->member()->add($group->repository_id, $username, Bridge::$developer_access_level);
+            $this->client->member()->add($group->repository_id, $username, Resources::$developer_access_level);
         }
 
         return Group::set_group_members($members, $max_member, $group_id);
