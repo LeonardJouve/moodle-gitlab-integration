@@ -65,6 +65,7 @@ $string['message_error_get_repository'] = 'failed to get group repository: {$a->
 $string['message_error_download'] = 'failed to download repository code: {$a->message}';
 $string['message_error_list_repositories'] = 'failed to list repositories: {$a->message}';
 $string['message_group_name'] = 'Group of {$a->members}';
+$string['message_empty_group_name'] = 'Empty group';
 $string['modal_group_members_title'] = 'Group members';
 $string['modal_group_members_update'] = 'Update';
 $string['modal_group_members_field'] = 'Members';

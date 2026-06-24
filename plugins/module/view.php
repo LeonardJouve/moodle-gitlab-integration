@@ -168,6 +168,12 @@ function parse_group_members(stdClass $group) {
     return $members !== '' ? explode(',', $members) : [];
 }
 
+function get_group_name(array $members) {
+    return count($members) > 0 ?
+        get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]) :
+        get_string('message_empty_group_name', 'mod_gitlab');
+}
+
 function list_student_groups(int $module_id, int $max_member) {
     global $OUTPUT;
 
@@ -182,7 +188,7 @@ function list_student_groups(int $module_id, int $max_member) {
                 'action' => 'joingroup',
                 'group_id' => $group->id,
             ]))->out(false);
-            $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]);
+            $group->name = get_group_name($members);
             return $group;
         }, Group::get_groups($module_id)),
         'create_group_url' => (new url('/mod/gitlab/view.php', [
@@ -200,7 +206,7 @@ function list_teacher_groups(Gitlab $client, Resources $resources, int $module_i
         'groups' => array_map(function($group) use ($client, $resources, $module_id, $due_date) {
             $group->members = parse_group_members($group);
             $group->member_count = count($group->members);
-            $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $group->members)]);
+            $group->name = get_group_name($group->members);
             
             try {
                 $repository = $client->project()->get($group->repository_id);
@@ -342,7 +348,7 @@ function student_group(Gitlab $client, Resources $resources, int $instance_id, i
 
     echo $OUTPUT->render_from_template('mod_gitlab/student_group', [
         'id' => $group->id,
-        'name' => get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]),
+        'name' => get_group_name($members),
         'max_member' => $max_member,
         'member_count' => count($members),
         'members' => $members,
