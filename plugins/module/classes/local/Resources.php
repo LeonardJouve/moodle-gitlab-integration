@@ -117,6 +117,10 @@ class Resources {
         return $this->get_merge_request($repository_id, Resources::defaultBranch(), Resources::baseBranch());
     }
 
+    public function get_teacher_submission_merge_request(int $repository_id): ?stdClass {
+        // TODO
+    }
+
     public function get_solution_merge_request(int $repository_id): ?stdClass {
         return $this->get_merge_request($repository_id, Resources::solutionBranch(), Resources::baseBranch());
     }

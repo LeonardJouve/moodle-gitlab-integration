@@ -258,6 +258,15 @@ function list_teacher_groups(Gitlab $client, Resources $resources, int $module_i
                 $group->last_test_pass = $last_test_result->status == 'success';
             }
             
+            // TODO
+            $submission_merge_request = $resources->get_teacher_submission_merge_request($template_id, );
+            $group->has_submission_merge_request = $submission_merge_request != null;
+            if ($group->has_submission_merge_request) {
+                $mr_id = $submission_merge_request->id;
+                $group->fetch_merge_request = "git fetch origin merge-requests/$mr_id/head:mr-$mr_id";
+                $group->checkout_merge_request = "git checkout mr-$mr_id";
+            }
+
             return $group;
         }, Group::get_groups($module_id)),
         'max_member' => $max_member,

@@ -158,6 +158,26 @@
 
                     <hr>
 
+                    {#has_submission_merge_request}
+                    <div>
+                        <span>Checkout from template</span>
+                        <div class="input-group input-group-sm">
+                            <input class="form-control fetch-mr-input" value="{{fetch_merge_request}}" readonly>
+                            <button class="btn btn-outline-primary fetch-mr-button">
+                                <i class="icon fa fa-copy me-0"></i>
+                            </button>
+                        </div>
+                        <div class="input-group input-group-sm">
+                            <input class="form-control checkout-mr-input" value="{{checkout_merge_request}}" readonly>
+                            <button class="btn btn-outline-primary checkout-mr-button">
+                                <i class="icon fa fa-copy me-0"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <hr>
+                    {/has_submission_merge_request}
+
                     <div>
                         <span>Download source code</span>
                         <div class="d-flex gap-2 mt-1">
