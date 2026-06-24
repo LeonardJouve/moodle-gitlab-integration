@@ -81,7 +81,7 @@
             </a>
         </div>
 
-        {#has_test_result}
+        {{#has_test_result}}
         <div class="d-flex align-items-center">
             <span class="mb-0">Tests</span>
         </div>
@@ -104,7 +104,7 @@
                 Open
             </a>
         </div>
-        {/has_test_result}
+        {{/has_test_result}}
         
         <div class="d-flex align-items-center">
             <span class="mb-0">Get source code</span>
@@ -158,7 +158,7 @@
 
                     <hr>
 
-                    {#has_submission_merge_request}
+                    {{#has_submission_merge_request}}
                     <div>
                         <span>Checkout from template</span>
                         <div class="input-group input-group-sm">
@@ -176,7 +176,7 @@
                     </div>
 
                     <hr>
-                    {/has_submission_merge_request}
+                    {{/has_submission_merge_request}}
 
                     <div>
                         <span>Download source code</span>
