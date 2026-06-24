@@ -37,4 +37,21 @@ class Helper {
 
         return null;
     }
+
+    public static function get_user_gitlab_username(int $user_id): ?string {
+        global $DB;
+
+        $username = $DB->get_field_sql("
+            SELECT d.data
+            FROM {user_info_data} d
+            JOIN {user_info_field} f ON f.id = d.fieldid
+            WHERE d.userid = :userid
+                AND f.shortname = :shortname
+        ", [
+            'userid' => $user_id,
+            'shortname' => 'gitlab_username',
+        ]);
+
+        return $username ?: null;
+    }
 }

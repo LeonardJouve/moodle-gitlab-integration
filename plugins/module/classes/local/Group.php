@@ -121,7 +121,7 @@ class Group {
         return array_values($groups);
     }
 
-    public static function create_group(int $module_id, int $user_id, int $repository_id): ?int {
+    public static function create_group(int $module_id, int $repository_id): ?int {
         global $DB;
 
         $group = new stdClass();
@@ -188,21 +188,25 @@ class Group {
                 $params,
             );
 
+            $left_members = $DB->get_fieldset_select(
+                'gitlab_group_members',
+                'user_id',
+                'group_id = :group_id',
+                ['group_id' => $group_id],
+            );
+
+            $data = [];
             foreach ($members as $user_id) {
-                $exists = $DB->record_exists('gitlab_group_members', [
-                    'group_id' => $group_id,
-                    'user_id'  => $user_id
-                ]);
-                if ($exists) {
+                if (in_array($user_id, $left_members)) {
                     continue;
                 }
 
-                $member = new stdClass();
-                $member->group_id = $group_id;
-                $member->user_id  = $user_id;
-
-                $DB->insert_record('gitlab_group_members', $member);
+                $data[] = (object)[
+                    'group_id' => $group_id,
+                    'user_id' => $user_id,
+                ];
             }
+            $DB->insert_records('gitlab_group_members', $data);
 
             $transaction->allow_commit();
 
@@ -218,7 +222,7 @@ class Group {
         global $DB;
     
         $DB->delete_records('gitlab_group_members', ['group_id' => $group_id]);
-        $DB->delete_records('gitlab_groups', ['id' => $group_id]);
+        $DB->delete_record('gitlab_groups', ['id' => $group_id]);
 
         return true;
     }

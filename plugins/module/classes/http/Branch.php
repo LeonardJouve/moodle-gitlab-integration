@@ -70,4 +70,8 @@ class Branch {
 
         return $this->client->post("/projects/" . $project_id . "/protected_branches", $data);
     }
+
+    public function unprotect(int $project_id, string $name, array $data = []) {
+        return $this->client->delete("/projects/" . $project_id . "/protected_branches/" . $name, $data);
+    }
 }

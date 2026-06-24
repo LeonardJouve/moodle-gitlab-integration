@@ -62,4 +62,13 @@ class Project {
     public function archive(int $id, string $format = ".zip", array $params = []) {
         return $this->client->url("/projects/" . $id . "/repository/archive" . $format, $params);
     }
+
+    public function fork(int $repository_id, string $name, int $group_id, array $extra = []) {
+        $data = array_merge([
+            'name' => $name,
+            'namespace_id' => $group_id,
+        ], $extra);
+
+        return $this->client->post('/projects/'  . $repository_id . '/fork', $data);
+    }
 }
