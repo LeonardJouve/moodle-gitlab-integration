@@ -29,7 +29,9 @@ use \core_external\external_function_parameters;
 use \core_external\external_multiple_structure;
 use \core_external\external_value;
 use context_course;
-use mod_gitlab\local\Group;
+use mod_gitlab\http\Gitlab;
+use mod_gitlab\local\Bridge;
+use mod_gitlab\local\Helper;
 use moodle_exception;
 
 class set_group_members extends external_api {
@@ -62,7 +64,11 @@ class set_group_members extends external_api {
             }
         }
 
-        $ok = Group::set_group_members($members, $moduleinstance->group_size, $groupid);
+        $token = Helper::get_course_gitlab_token($moduleinstance->course);
+        $client = new Gitlab($token);
+        $bridge = new Bridge($client);
+
+        $ok = $bridge->set_group_members($members, $moduleinstance->group_size, $groupid);
         
         return ['result' => $ok ? 'ok' : 'failed'];
     }

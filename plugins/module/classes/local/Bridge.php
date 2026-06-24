@@ -58,6 +58,20 @@ class Bridge {
         ]);
     }
 
+    private function get_gitlab_user_id(int $user_id): ?int {
+        $username = Helper::get_user_gitlab_username($user_id);
+        if ($username == null) {
+            return null;
+        }
+
+        $gitlab_users = $this->client->user()->list(['username' => $username]);
+        if (count($gitlab_users) != 1) {
+            return null;
+        }
+
+        return $gitlab_users[0]->id;
+    }
+
     public function create_module(stdClass $moduleinstance) {
         global $DB;
 
@@ -191,16 +205,10 @@ class Bridge {
     }
 
     public function leave_group(int $module_id, int $user_id): bool {
-        $username = Helper::get_user_gitlab_username($user_id);
-        if ($username == null) {
+        $gitlab_user_id = $this->get_gitlab_user_id($user_id);
+        if ($gitlab_user_id == null) {
             return false;
         }
-
-        $gitlab_users = $this->client->user()->list(['username' => $username]);
-        if (count($gitlab_users) != 1) {
-            return false;
-        }
-        $gitlab_user_id = $gitlab_users[0]->id;
 
         $group_id = Group::user_group($module_id, $user_id);
         $group = Group::group($group_id);
@@ -208,5 +216,49 @@ class Bridge {
         $this->client->member()->remove($group->repository_id, $gitlab_user_id);
 
         return Group::leave_group($module_id, $user_id);
+    }
+
+    public function set_group_members(array $members, int $max_member, int $group_id) {
+        global $DB;
+
+        $group = Group::group($group_id);
+
+        list($not_in_sql, $params) = $DB->get_in_or_equal($members, SQL_PARAMS_NAMED, '', false, NULL);
+        $params['group_id'] = $group_id;
+        $to_remove = $DB->get_fieldset_select(
+            'gitlab_group_members',
+            'user_id',
+            "group_id = :group_id AND user_id $not_in_sql",
+            $params,
+        );
+        foreach ($to_remove as $user_id) {
+            $gitlab_user_id = $this->get_gitlab_user_id($user_id);
+            if ($gitlab_user_id == null) {
+                continue;
+            }
+
+            $this->client->member()->remove($group->repository_id, $gitlab_user_id);
+        }
+
+        $in_group = $DB->get_fieldset_select(
+            'gitlab_group_members',
+            'user_id',
+            'group_id = :group_id',
+            ['group_id' => $group_id],
+        );
+        foreach ($members as $member) {
+            if (in_array($member, $in_group)) {
+                continue;
+            }
+
+            $username = Helper::get_user_gitlab_username($member);
+            if ($username == null) {
+                continue;
+            }
+
+            $this->client->member()->add($group->repository_id, $username, Bridge::$developer_access_level);
+        }
+
+        return Group::set_group_members($members, $max_member, $group_id);
     }
 }
