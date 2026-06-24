@@ -53,9 +53,8 @@ class set_group_members extends external_api {
             'group_id' => $groupid,
         ]);
 
-        $cm = get_coursemodule_from_id('gitlab', $module_id, 0, false, MUST_EXIST);
-        $moduleinstance = $DB->get_record('gitlab', ['id' => $cm->instance], '*', MUST_EXIST);
-        $coursecontext = context_course::instance($cm->course);
+        $moduleinstance = $DB->get_record('gitlab', ['id' => $module_id], '*', MUST_EXIST);
+        $coursecontext = context_course::instance($moduleinstance->course);
 
         foreach ($members as $user_id) {
             if (!is_enrolled($coursecontext, $user_id)) {
