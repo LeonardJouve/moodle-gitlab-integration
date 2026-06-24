@@ -261,7 +261,7 @@ function list_teacher_groups(Gitlab $client, Resources $resources, int $module_i
             $submission_merge_request = $resources->get_teacher_submission_merge_request($template_id, $group->id);
             $group->has_submission_merge_request = $submission_merge_request != null;
             if ($group->has_submission_merge_request) {
-                $mr_id = $submission_merge_request->id;
+                $mr_id = $submission_merge_request->iid;
                 $group->fetch_merge_request = "git fetch origin merge-requests/$mr_id/head:mr-$mr_id";
                 $group->checkout_merge_request = "git checkout mr-$mr_id";
             }
