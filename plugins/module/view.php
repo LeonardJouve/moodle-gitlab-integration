@@ -89,7 +89,7 @@ case 'createrepository':
     }
 
     redirect(
-        new url('/mod/gitlab/view.php', ['id' => $cm->id]),
+        new url('/mod/gitlab/view.php', ['g' => $moduleinstance->id]),
         get_string('message_repository_created', 'mod_gitlab'),
     );
     break;
@@ -101,7 +101,7 @@ case 'joingroup':
     }
 
     redirect(
-        new url('/mod/gitlab/view.php', ['id' => $cm->id]),
+        new url('/mod/gitlab/view.php', ['g' => $moduleinstance->id]),
         get_string('message_joined_group', 'mod_gitlab'),
     );
     break;
@@ -119,7 +119,7 @@ case 'creategroup':
         }
 
         redirect(
-            new url('/mod/gitlab/view.php', ['id' => $cm->id]),
+            new url('/mod/gitlab/view.php', ['g' => $moduleinstance->id]),
             get_string('message_created_group', 'mod_gitlab'),
         );
     } catch (RuntimeException $e) {
@@ -132,7 +132,7 @@ case 'creategroup':
 function list_repositories(Gitlab $client, int $group_id, int $module_id) {
     echo html_writer::link(
         new url('/mod/gitlab/view.php', [
-            'id' => $module_id,
+            'g' => $module_id,
             'action' => 'createrepository',
         ]),
         get_string('button_create_repository', 'mod_gitlab'),
@@ -166,7 +166,7 @@ function parse_group_members(stdClass $group) {
     return $members !== '' ? explode(',', $members) : [];
 }
 
-function list_student_groups(int $module_id, int $instance_id, int $max_member) {
+function list_student_groups(int $module_id, int $max_member) {
     global $OUTPUT;
 
     echo $OUTPUT->render_from_template('mod_gitlab/student_groups', [
@@ -176,22 +176,22 @@ function list_student_groups(int $module_id, int $instance_id, int $max_member) 
             $group->member_count = count($members);
             $group->can_join_group = $group->member_count < $max_member;
             $group->join_group_url = (new url('/mod/gitlab/view.php', [
-                'id' => $module_id,
+                'g' => $module_id,
                 'action' => 'joingroup',
                 'group_id' => $group->id,
             ]))->out(false);
             $group->name = get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]);
             return $group;
-        }, Group::get_groups($instance_id)),
+        }, Group::get_groups($module_id)),
         'create_group_url' => (new url('/mod/gitlab/view.php', [
-            'id' => $module_id,
+            'g' => $module_id,
             'action' => 'creategroup',
         ]))->out(false),
         'max_member' => $max_member,
     ]);
 }
 
-function list_teacher_groups(Gitlab $client, int $module_id, int $instance_id, int $max_member, int $due_date, int $context_id) {
+function list_teacher_groups(Gitlab $client, int $module_id, int $max_member, int $due_date, int $context_id) {
     global $OUTPUT;
     
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_groups', [
@@ -208,7 +208,7 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $instance_id, i
             }
             
             $group->delete_url = (new url('/mod/gitlab/view.php', [
-                'id' => $module_id,
+                'g' => $module_id,
                 'action' => 'deletegroup',
                 'group_id' => $group->id,
             ]))->out(false);
@@ -243,11 +243,11 @@ function list_teacher_groups(Gitlab $client, int $module_id, int $instance_id, i
             $group->last_test_pass = true;
             
             return $group;
-        }, Group::get_groups($instance_id)),
+        }, Group::get_groups($module_id)),
         'max_member' => $max_member,
         'context_id' => $context_id,
         'create_group_url' => (new url('/mod/gitlab/view.php', [
-            'id' => $module_id,
+            'g' => $module_id,
             'action' => 'creategroup',
         ]))->out(false),
     ]);
@@ -335,16 +335,16 @@ function student_group(Gitlab $client, int $instance_id, int $user_id, int $max_
 echo $OUTPUT->header();
 
 if ($is_teacher) {
-    list_repositories($client, $moduleinstance->group_id, $cm->id);
+    list_repositories($client, $moduleinstance->group_id, $moduleinstance->id);
     template($client, $moduleinstance->template_id, $moduleinstance->due_date, json_decode($moduleinstance->reviewers, true) ?: []);
-    list_teacher_groups($client, $cm->id, $moduleinstance->id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
+    list_teacher_groups($client, $moduleinstance->id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
 } else {
     $has_group = Group::has_group($moduleinstance->id, $USER->id);
 
     if ($has_group) {
         student_group($client, $moduleinstance->id, $USER->id, $moduleinstance->group_size, $moduleinstance->due_date);
     } else {
-        list_student_groups($cm->id, $moduleinstance->id, $moduleinstance->group_size);
+        list_student_groups($moduleinstance->id, $moduleinstance->group_size);
     }
 }
 
