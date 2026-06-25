@@ -69,7 +69,6 @@ class Bridge {
         $moduleinstance->id = $DB->insert_record('gitlab', $moduleinstance);
 
         $this->create_calendar_event($moduleinstance);
-        $this->send_submission_soon_notifications($moduleinstance);
 
         // submission task
         if ($moduleinstance->due_date > time()) {
@@ -138,6 +137,8 @@ class Bridge {
         if (!$ok) {
             return false;
         }
+
+        $this->send_submission_soon_notifications($moduleinstance);
 
         $this->resources->add_member($group->repository_id, $user_id, Resources::$developer_access_level);
 
