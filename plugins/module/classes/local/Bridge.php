@@ -22,13 +22,17 @@
 
 namespace mod_gitlab\local;
 
+use calendar_event;
 use core\task\manager;
 use mod_gitlab\http\Gitlab;
 use stdClass;
 
+require_once($CFG->dirroot.'/calendar/lib.php');
+
 class Bridge {
     private Gitlab $client;
     private Resources $resources;
+    private static string $GITLAB_DUE_DATE_EVENT = 'gitlab-due-date-event';
 
     public function __construct(Gitlab $client) {
         $this->client = $client;
@@ -90,6 +94,8 @@ class Bridge {
         );
 
         $group_id = Group::create_group($moduleinstance->id, $repository->id);
+
+        $this->create_calendar_event($moduleinstance);
 
         $task = FinalizeGroupCreationTask::instance(
             $repository->id,
@@ -223,5 +229,24 @@ class Bridge {
         }
 
         return Group::set_group_members($members, $max_member, $group_id);
+    }
+
+    public function create_calendar_event(stdClass $moduleinstance) {
+        $event = new stdClass();
+        $event->eventtype = Bridge::$GITLAB_DUE_DATE_EVENT;
+        $event->type = CALENDAR_EVENT_TYPE_STANDARD;
+        $event->name = get_string('calendar_due_date_event', 'mod_gitlab');
+        $event->description = 'description';// format_module_intro('scorm', $scorm, $cmid, false);
+        $event->format = FORMAT_HTML;
+        $event->courseid = $moduleinstance->course;
+        $event->groupid = 0;
+        $event->userid = 0;
+        $event->modulename = 'gitlab';
+        $event->instance = $moduleinstance->id;
+        $event->timestart = $moduleinstance->due_date;
+        $event->visible = instance_is_visible('mod_gitlab', $moduleinstance);
+        $event->timeduration = 0;
+
+        calendar_event::create($event);
     }
 }
