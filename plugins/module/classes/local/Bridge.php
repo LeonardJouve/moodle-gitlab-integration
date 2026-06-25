@@ -64,13 +64,13 @@ class Bridge {
         $moduleinstance->group_id = $group->id;
         $moduleinstance->template_id = $template->id;
 
-        $id = $DB->insert_record('gitlab', $moduleinstance);
+        $moduleinstance->id = $DB->insert_record('gitlab', $moduleinstance);
 
         $this->create_calendar_event($moduleinstance);
 
         // submission task
         if ($moduleinstance->due_date > time()) {
-            $task = SubmissionTask::instance($id);
+            $task = SubmissionTask::instance($moduleinstance->id);
             $task->set_next_run_time($moduleinstance->due_date);
             manager::queue_adhoc_task($task);
         }
@@ -78,7 +78,7 @@ class Bridge {
         return (object)[
             'group_id' => $group->id,
             'template_id' => $template->id,
-            'module_id' => $id,
+            'module_id' => $moduleinstance->id,
         ];
     }
 
