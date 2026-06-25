@@ -310,8 +310,6 @@ class Bridge {
 
         $user = $DB->get_record('user', ['id' => $user_id], '*');
 
-        throw new Exception("user" . json_encode($user) . $user_id);
-        
         $message = new \core\message\message();
         $message->component = 'mod_gitlab';
         $message->name = 'submission_soon';
