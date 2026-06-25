@@ -75,6 +75,11 @@ class Bridge {
             $task = SubmissionTask::instance($moduleinstance->id);
             $task->set_next_run_time($moduleinstance->due_date);
             manager::queue_adhoc_task($task);
+
+            $SECONDS_IN_DAY = 60 * 60 * 24;
+            $task = SubmissionSoonTask::instance($moduleinstance->id);
+            $task->set_next_run_time($moduleinstance->due_date - $SECONDS_IN_DAY);
+            manager::queue_adhoc_task($task);
         }
 
         return (object)[
@@ -137,8 +142,6 @@ class Bridge {
         if (!$ok) {
             return false;
         }
-
-        $this->send_submission_soon_notifications($moduleinstance);
 
         $this->resources->add_member($group->repository_id, $user_id, Resources::$developer_access_level);
 
@@ -264,7 +267,7 @@ class Bridge {
         calendar_event::create($event);
     }
 
-    public function send_submission_soon_notifications(stdClass $moduleinstance) {
+    public function send_submission_notifications(stdClass $moduleinstance, bool $soon) {
         global $DB;    
 
         $course = $DB->get_field('course', 'fullname', ['id' => $moduleinstance->course], MUST_EXIST);
@@ -282,11 +285,16 @@ class Bridge {
             'module_id' => $moduleinstance->id,
         ]);
 
-        $content = get_string('notification_submission_soon_description', 'mod_gitlab', [
-            'name' => $moduleinstance->name,
-            'course' => $course,
-            'due_date' => userdate($moduleinstance->due_date, get_string('strftimedaydatetime', 'langconfig')),
-        ]);
+        $content = get_string(
+            $soon ?
+                'notification_submission_soon_description' :
+                'notification_submission_now_description',
+            'mod_gitlab', [
+                'name' => $moduleinstance->name,
+                'course' => $course,
+                'due_date' => userdate($moduleinstance->due_date, get_string('strftimedaydatetime', 'langconfig')),
+            ],
+        );
 
         foreach ($groups as $group) {
             foreach ($group->members as $member) {
@@ -295,7 +303,7 @@ class Bridge {
         }
     }
 
-    public function send_submission_notification(int $module_id, int $user_id, string $name, int $due_date, string $content) {
+    private function send_submission_notification(int $module_id, int $user_id, string $name, int $due_date, string $content) {
         global $DB;
 
         $user = $DB->get_record('user', ['id' => $user_id]);
