@@ -309,6 +309,7 @@ function student_group(Gitlab $client, Resources $resources, int $instance_id, i
         $solution_url = $solution_merge_request->web_url;
     }
 
+    // TODO improve: some data array values are undefined
     echo $OUTPUT->render_from_template('mod_gitlab/student_group', [
         'id' => $group->id,
         'name' => get_group_name($members),
@@ -334,7 +335,14 @@ function student_group(Gitlab $client, Resources $resources, int $instance_id, i
 
 echo $OUTPUT->header();
 
-if ($is_teacher) {
+$username = Helper::get_user_gitlab_username($USER->id);
+
+if ($username == null) {
+    echo html_writer::div(
+        get_string('no_gitlab_username_err', 'mod_gitlab'),
+        'alert alert-danger'
+    );
+} else if ($is_teacher) {
     template($client, $resources, $moduleinstance->template_id, $moduleinstance->due_date, json_decode($moduleinstance->reviewers, true) ?: []);
     list_teacher_groups($client, $resources, $moduleinstance->id, $moduleinstance->template_id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
 } else {
