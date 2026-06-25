@@ -26,6 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_gitlab';
 $plugin->release = '0.1.0';
-$plugin->version = 2026033001;
+$plugin->version = 2026033002;
 $plugin->requires = 2025100601;
 $plugin->maturity = MATURITY_ALPHA;
