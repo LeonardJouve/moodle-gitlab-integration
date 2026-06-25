@@ -240,13 +240,13 @@ class Bridge {
         $event->eventtype = Bridge::$GITLAB_DUE_DATE_EVENT;
         $event->type = CALENDAR_EVENT_TYPE_STANDARD;
         $event->name = get_string('calendar_due_date_event', 'mod_gitlab', [
-            'due_date' => $moduleinstance->due_date,
             'name' => $moduleinstance->name,
+            'due_date' => userdate($moduleinstance->due_date, get_string('strftimedaydatetime', 'langconfig')),
         ]);
-        $event->description = get_string('calendar_due_date_event', 'mod_gitlab', [
-            'course' => $course->name,
-            'due_date' => $moduleinstance->due_date,
+        $event->description = get_string('calendar_due_date_description', 'mod_gitlab', [
             'name' => $moduleinstance->name,
+            'due_date' => userdate($moduleinstance->due_date, get_string('strftimedaydatetime', 'langconfig')),
+            'course' => $course->fullname,
         ]);
         $event->format = FORMAT_HTML;
         $event->courseid = $moduleinstance->course;
