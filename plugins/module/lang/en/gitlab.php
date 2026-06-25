@@ -26,7 +26,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['button_create_repository'] = 'Create GitLab Repository';
-$string['calendar_due_date_event'] = 'Practical work due date';
+$string['calendar_due_date_event'] = 'Assignment due on {$a->due_date}: {$a->name}';
+$string['calendar_due_date_description'] = 'The assignment {$a->name} in the course {$a->course} is due soon.\n\nDue date : {$a->due_date}';
 $string['form_due_date'] = 'Due date';
 $string['form_due_date_help'] = 'Practical work due date and time';
 $string['form_group_size'] = 'Group size';

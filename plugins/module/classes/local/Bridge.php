@@ -66,7 +66,9 @@ class Bridge {
 
         $id = $DB->insert_record('gitlab', $moduleinstance);
 
-        // release solution task
+        $this->create_calendar_event($moduleinstance);
+
+        // submission task
         if ($moduleinstance->due_date > time()) {
             $task = SubmissionTask::instance($id);
             $task->set_next_run_time($moduleinstance->due_date);
@@ -94,8 +96,6 @@ class Bridge {
         );
 
         $group_id = Group::create_group($moduleinstance->id, $repository->id);
-
-        $this->create_calendar_event($moduleinstance);
 
         $task = FinalizeGroupCreationTask::instance(
             $repository->id,
@@ -232,11 +232,22 @@ class Bridge {
     }
 
     public function create_calendar_event(stdClass $moduleinstance) {
+        global $DB;
+
+        $course = $DB->get_record('course', ['id' => $moduleinstance->course], '*', MUST_EXIST);
+
         $event = new stdClass();
         $event->eventtype = Bridge::$GITLAB_DUE_DATE_EVENT;
         $event->type = CALENDAR_EVENT_TYPE_STANDARD;
-        $event->name = get_string('calendar_due_date_event', 'mod_gitlab');
-        $event->description = 'description';// format_module_intro('scorm', $scorm, $cmid, false);
+        $event->name = get_string('calendar_due_date_event', 'mod_gitlab', [
+            'due_date' => $moduleinstance->due_date,
+            'name' => $moduleinstance->name,
+        ]);
+        $event->description = get_string('calendar_due_date_event', 'mod_gitlab', [
+            'course' => $course->name,
+            'due_date' => $moduleinstance->due_date,
+            'name' => $moduleinstance->name,
+        ]);
         $event->format = FORMAT_HTML;
         $event->courseid = $moduleinstance->course;
         $event->groupid = 0;
