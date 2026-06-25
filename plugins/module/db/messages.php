@@ -24,10 +24,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $messageproviders = [
-    'submission_soon' => [
-        'capability' => 'mod/gitlab:view'
-    ],
-    'submission_now' => [
-        'capability' => 'mod/gitlab:view'
+    'submission' => [
+        'capability' => 'mod/gitlab:view',
     ],
 ];

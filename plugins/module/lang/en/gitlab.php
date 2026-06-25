@@ -26,8 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['button_create_repository'] = 'Create GitLab Repository';
-$string['messageprovider:submission_soon'] = 'Notification of GitLab submissions';
-$string['messageprovider:submission_now'] = 'Notification of GitLab submissions';
+$string['messageprovider:submission'] = 'Notification of GitLab submissions';
 $string['notification_module_view'] = 'Module view';
 $string['notification_submission_title'] = 'Assignment due on {$a->due_date}: {$a->name}';
 $string['notification_submission_soon_description'] = 'The assignment {$a->name} in the course {$a->course} is due soon.<br>Due date : {$a->due_date}';

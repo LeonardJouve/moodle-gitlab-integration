@@ -26,7 +26,6 @@ use calendar_event;
 use core\task\manager;
 use core\url;
 use core_user;
-use Exception;
 use mod_gitlab\http\Gitlab;
 use stdClass;
 
@@ -312,7 +311,7 @@ class Bridge {
 
         $message = new \core\message\message();
         $message->component = 'mod_gitlab';
-        $message->name = 'submission_soon';
+        $message->name = 'submission';
         $message->userfrom = core_user::get_noreply_user();
         $message->userto = $user;
         $message->subject = get_string('notification_submission_title', 'mod_gitlab', [
