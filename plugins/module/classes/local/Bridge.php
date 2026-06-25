@@ -297,7 +297,8 @@ class Bridge {
         );
 
         foreach ($groups as $group) {
-            foreach ($group->members as $member) {
+            $members = array_map('intval', explode(',', trim($group->members, '{}')));
+            foreach ($members as $member) {
                 $this->send_submission_notification($moduleinstance->id, $member, $moduleinstance->name, $moduleinstance->due_date, $content);
             }
         }
