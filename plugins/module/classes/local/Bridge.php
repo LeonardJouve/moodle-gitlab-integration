@@ -32,7 +32,7 @@ require_once($CFG->dirroot.'/calendar/lib.php');
 class Bridge {
     private Gitlab $client;
     private Resources $resources;
-    private static string $GITLAB_DUE_DATE_EVENT = 'gitlab-due-date-event';
+    private static string $GITLAB_DUE_DATE_EVENT = 'gitlab-due-date';
 
     public function __construct(Gitlab $client) {
         $this->client = $client;
