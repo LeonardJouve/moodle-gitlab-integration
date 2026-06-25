@@ -25,7 +25,7 @@ namespace mod_gitlab\local;
 use core\task\adhoc_task;
 use mod_gitlab\http\Gitlab;
 
-class SubmissionTask extends adhoc_task {
+class SubmissionSoonTask extends adhoc_task {
     public static function instance(int $module_id): self {
         $task = new self();
         $task->set_custom_data((object) [
@@ -47,9 +47,7 @@ class SubmissionTask extends adhoc_task {
         $client = new Gitlab($token);
         $bridge = new Bridge($client);
 
-        $bridge->release_solution($module_id, $module->template_id);
-        $bridge->submit_student_merge_requests($module_id, $module->template_id);
-        $bridge->send_submission_notifications($module, false);
+        $bridge->send_submission_notifications($module, true);
     }
 
     public function retry_until_success(): bool {

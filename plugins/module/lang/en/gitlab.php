@@ -26,6 +26,13 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['button_create_repository'] = 'Create GitLab Repository';
+$string['messageprovider:submission'] = 'Notification of GitLab submissions';
+$string['notification_module_view'] = 'Module view';
+$string['notification_submission_title'] = 'Assignment due on {$a->due_date}: {$a->name}';
+$string['notification_submission_soon_description'] = 'The assignment {$a->name} in the course {$a->course} is due soon.<br>Due date : {$a->due_date}';
+$string['notification_submission_now_description'] = 'The assignment {$a->name} in the course {$a->course} is now closed.';
+$string['calendar_due_date_event'] = 'Assignment {$a->name} due';
+$string['calendar_due_date_description'] = 'The assignment {$a->name} from the course {$a->course} must be submitted by {$a->due_date}';
 $string['form_due_date'] = 'Due date';
 $string['form_due_date_help'] = 'Practical work due date and time';
 $string['form_group_size'] = 'Group size';

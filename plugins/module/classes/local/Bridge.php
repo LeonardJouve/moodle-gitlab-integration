@@ -22,13 +22,19 @@
 
 namespace mod_gitlab\local;
 
+use calendar_event;
 use core\task\manager;
+use core\url;
+use core_user;
 use mod_gitlab\http\Gitlab;
 use stdClass;
+
+require_once($CFG->dirroot.'/calendar/lib.php');
 
 class Bridge {
     private Gitlab $client;
     private Resources $resources;
+    private static string $GITLAB_DUE_DATE_EVENT = 'gitlab-due-date';
 
     public function __construct(Gitlab $client) {
         $this->client = $client;
@@ -60,19 +66,26 @@ class Bridge {
         $moduleinstance->group_id = $group->id;
         $moduleinstance->template_id = $template->id;
 
-        $id = $DB->insert_record('gitlab', $moduleinstance);
+        $moduleinstance->id = $DB->insert_record('gitlab', $moduleinstance);
 
-        // release solution task
+        $this->create_calendar_event($moduleinstance);
+
+        // submission task
         if ($moduleinstance->due_date > time()) {
-            $task = SubmissionTask::instance($id);
+            $task = SubmissionTask::instance($moduleinstance->id);
             $task->set_next_run_time($moduleinstance->due_date);
+            manager::queue_adhoc_task($task);
+
+            $SECONDS_IN_DAY = 60 * 60 * 24;
+            $task = SubmissionSoonTask::instance($moduleinstance->id);
+            $task->set_next_run_time($moduleinstance->due_date - $SECONDS_IN_DAY);
             manager::queue_adhoc_task($task);
         }
 
         return (object)[
             'group_id' => $group->id,
             'template_id' => $template->id,
-            'module_id' => $id,
+            'module_id' => $moduleinstance->id,
         ];
     }
 
@@ -223,5 +236,96 @@ class Bridge {
         }
 
         return Group::set_group_members($members, $max_member, $group_id);
+    }
+
+    public function create_calendar_event(stdClass $moduleinstance) {
+        global $DB;
+
+        $course = $DB->get_field('course', 'fullname', ['id' => $moduleinstance->course], MUST_EXIST);
+
+        $event = new stdClass();
+        $event->eventtype = Bridge::$GITLAB_DUE_DATE_EVENT;
+        $event->type = CALENDAR_EVENT_TYPE_STANDARD;
+        $event->name = get_string('calendar_due_date_event', 'mod_gitlab', [
+            'name' => $moduleinstance->name,
+        ]);
+        $event->description = get_string('calendar_due_date_description', 'mod_gitlab', [
+            'name' => $moduleinstance->name,
+            'due_date' => userdate($moduleinstance->due_date, get_string('strftimedaydatetime', 'langconfig')),
+            'course' => $course,
+        ]);
+        $event->format = FORMAT_HTML;
+        $event->courseid = $moduleinstance->course;
+        $event->groupid = 0;
+        $event->userid = 0;
+        $event->modulename = 'gitlab';
+        $event->instance = $moduleinstance->id;
+        $event->timestart = $moduleinstance->due_date;
+        $event->visible = instance_is_visible('mod_gitlab', $moduleinstance);
+        $event->timeduration = 0;
+
+        calendar_event::create($event);
+    }
+
+    public function send_submission_notifications(stdClass $moduleinstance, bool $soon) {
+        global $DB;    
+
+        $course = $DB->get_field('course', 'fullname', ['id' => $moduleinstance->course], MUST_EXIST);
+        $groups = $DB->get_records_sql("
+            SELECT
+                g.id,
+                g.repository_id,
+                COALESCE(array_agg(m.user_id) FILTER (WHERE m.user_id IS NOT NULL), ARRAY[]::int[]) AS members
+            FROM {gitlab_groups} g
+            LEFT JOIN {gitlab_group_members} m
+                ON m.group_id = g.id
+            WHERE g.module_id = :module_id
+            GROUP BY g.id
+        ", [
+            'module_id' => $moduleinstance->id,
+        ]);
+
+        $content = get_string(
+            $soon ?
+                'notification_submission_soon_description' :
+                'notification_submission_now_description',
+            'mod_gitlab', [
+                'name' => $moduleinstance->name,
+                'course' => $course,
+                'due_date' => userdate($moduleinstance->due_date, get_string('strftimedaydatetime', 'langconfig')),
+            ],
+        );
+
+        foreach ($groups as $group) {
+            $members = array_map('intval', explode(',', trim($group->members, '{}')));
+            foreach ($members as $member) {
+                $this->send_submission_notification($moduleinstance->id, $member, $moduleinstance->name, $moduleinstance->due_date, $content);
+            }
+        }
+    }
+
+    private function send_submission_notification(int $module_id, int $user_id, string $name, int $due_date, string $content) {
+        global $DB;
+
+        $user = $DB->get_record('user', ['id' => $user_id], '*');
+
+        $message = new \core\message\message();
+        $message->component = 'mod_gitlab';
+        $message->name = 'submission';
+        $message->userfrom = core_user::get_noreply_user();
+        $message->userto = $user;
+        $message->subject = get_string('notification_submission_title', 'mod_gitlab', [
+            'name' => $name,
+            'due_date' => userdate($due_date, get_string('strftimedaydatetime', 'langconfig')),
+        ]);
+        $message->fullmessage = $content;
+        $message->fullmessageformat = FORMAT_HTML;
+        $message->fullmessagehtml = $content;
+        $message->smallmessage = $content;
+        $message->notification = 1;
+        $message->contexturl = (new url('/mod/gitlab/view.php', ['g' => $module_id]))->out(false);;
+        $message->contexturlname = get_string('notification_module_view', 'mod_gitlab');
+
+        message_send($message);
     }
 }
