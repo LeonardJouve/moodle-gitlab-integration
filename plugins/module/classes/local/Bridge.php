@@ -308,9 +308,9 @@ class Bridge {
     private function send_submission_notification(int $module_id, int $user_id, string $name, int $due_date, string $content) {
         global $DB;
 
-        $user = $DB->get_record('user', ['id' => $user_id]);
+        $user = $DB->get_record('user', ['id' => $user_id], '*');
 
-        throw new Exception("user" . json_encode($user));
+        throw new Exception("user" . json_encode($user) . $user_id);
         
         $message = new \core\message\message();
         $message->component = 'mod_gitlab';
