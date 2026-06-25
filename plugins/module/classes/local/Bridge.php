@@ -24,6 +24,8 @@ namespace mod_gitlab\local;
 
 use calendar_event;
 use core\task\manager;
+use core\url;
+use core_user;
 use mod_gitlab\http\Gitlab;
 use stdClass;
 
@@ -67,6 +69,7 @@ class Bridge {
         $moduleinstance->id = $DB->insert_record('gitlab', $moduleinstance);
 
         $this->create_calendar_event($moduleinstance);
+        $this->send_submission_soon_notifications($moduleinstance);
 
         // submission task
         if ($moduleinstance->due_date > time()) {
@@ -234,19 +237,18 @@ class Bridge {
     public function create_calendar_event(stdClass $moduleinstance) {
         global $DB;
 
-        $course = $DB->get_record('course', ['id' => $moduleinstance->course], '*', MUST_EXIST);
+        $course = $DB->get_field('course', 'fullname', ['id' => $moduleinstance->course], MUST_EXIST);
 
         $event = new stdClass();
         $event->eventtype = Bridge::$GITLAB_DUE_DATE_EVENT;
         $event->type = CALENDAR_EVENT_TYPE_STANDARD;
         $event->name = get_string('calendar_due_date_event', 'mod_gitlab', [
             'name' => $moduleinstance->name,
-            'due_date' => userdate($moduleinstance->due_date, get_string('strftimedaydatetime', 'langconfig')),
         ]);
         $event->description = get_string('calendar_due_date_description', 'mod_gitlab', [
             'name' => $moduleinstance->name,
             'due_date' => userdate($moduleinstance->due_date, get_string('strftimedaydatetime', 'langconfig')),
-            'course' => $course->fullname,
+            'course' => $course,
         ]);
         $event->format = FORMAT_HTML;
         $event->courseid = $moduleinstance->course;
@@ -259,5 +261,61 @@ class Bridge {
         $event->timeduration = 0;
 
         calendar_event::create($event);
+    }
+
+    public function send_submission_soon_notifications(stdClass $moduleinstance) {
+        global $DB;    
+
+        $course = $DB->get_field('course', 'fullname', ['id' => $moduleinstance->course], MUST_EXIST);
+        $groups = $DB->get_records_sql("
+            SELECT
+                g.id,
+                g.repository_id,
+                COALESCE(array_agg(m.user_id) FILTER (WHERE m.user_id IS NOT NULL), ARRAY[]::int[]) AS members
+            FROM {gitlab_groups} g
+            LEFT JOIN {gitlab_group_members} m
+                ON m.group_id = g.id
+            WHERE g.module_id = :module_id
+            GROUP BY g.id
+        ", [
+            'module_id' => $moduleinstance->id,
+        ]);
+
+        $content = get_string('notification_submission_soon_description', 'mod_gitlab', [
+            'name' => $moduleinstance->name,
+            'course' => $course,
+            'due_date' => userdate($moduleinstance->due_date, get_string('strftimedaydatetime', 'langconfig')),
+        ]);
+
+        foreach ($groups as $group) {
+            foreach ($group->members as $member) {
+                $this->send_submission_notification($moduleinstance->id, $member, $moduleinstance->name, $moduleinstance->due_date, $content);
+            }
+        }
+    }
+
+    public function send_submission_notification(int $module_id, int $user_id, string $name, int $due_date, string $content) {
+        global $DB;
+
+        $user = $DB->get_record('user', ['id' => $user_id]);
+        
+        $message = new \core\message\message();
+        $message->component = 'mod_gitlab';
+        $message->name = 'submission_soon';
+        $message->userfrom = core_user::get_noreply_user();
+        $message->userto = $user;
+        $message->subject = get_string('notification_submission_title', 'mod_gitlab', [
+            'name' => $name,
+            'due_date' => $due_date,
+        ]);
+        $message->fullmessage = $content;
+        $message->fullmessageformat = FORMAT_HTML;
+        $message->fullmessagehtml = $content;
+        $message->smallmessage = $content;
+        $message->notification = 1;
+        $message->contexturl = (new url('/mod/gitlab/view.php', ['g' => $module_id]))->out(false);;
+        $message->contexturlname = get_string('notification_module_view', 'mod_gitlab');
+
+        message_send($message);
     }
 }
