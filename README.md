@@ -1,5 +1,7 @@
 Simplified Moodle for development [fork](https://github.com/LeonardJouve/moodle-docker) on docker
 
+Web notifications should be enabled for both "Notification of GitLab submissions" under _Site administration_ -> _Messaging_ -> _Notification settings_ -> _gitlab_ 
+
 > On GitLab.com, you must use the GitLab UI to create groups without a parent group. You cannot use the API to do this. [cf](https://docs.gitlab.com/api/groups/#create-a-group)
 
 Gitlab API [documentation](https://docs.gitlab.com/api/api_resources)
