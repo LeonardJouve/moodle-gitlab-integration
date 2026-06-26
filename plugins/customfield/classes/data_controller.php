@@ -73,7 +73,7 @@ class data_controller extends \core_customfield\data_controller {
      * @return mixed|null value or null if empty
      */
     public function export_value() {
-        return '••••••••';
+        return null;
     }
 
     /**

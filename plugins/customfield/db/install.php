@@ -14,6 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+function create_course_field() {
+    $handler = \core_customfield\handler::get_handler('core_course', 'course');
+    
+    $category = $handler->create_category('GitLab');
+    
+    $token = new \core_customfield\field(0, (object)[
+        'shortname' => 'gitlab_token',
+        'name' => 'GitLab Token',
+        'type' => 'gitlab',
+        'categoryid' => $category,
+        'configdata' => json_encode([
+            'required' => 0,
+            'uniquevalues' => 0,
+            'ispassword' => 1,
+            'displaysize' => 50,
+            'maxlength' => 255,
+            'visibility' => 0,
+        ]),
+    ]);
+    $token->save();
+}
+
 function create_user_field() {
     global $DB;
 
@@ -39,4 +61,5 @@ function create_user_field() {
 
 function xmldb_customfield_gitlab_install() {
     create_user_field();
+    create_course_field();
 }
