@@ -33,7 +33,5 @@ class field_controller extends \core_customfield\field_controller {
      * @param \MoodleQuickForm $mform
      */
     public function config_form_definition(\MoodleQuickForm $mform) {
-        $mform->addElement('text', 'token', get_string('token_field', 'customfield_gitlab'));
-        $mform->setType('token', PARAM_RAW);
     }
 }
