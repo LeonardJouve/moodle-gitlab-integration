@@ -22,7 +22,7 @@
 }}
 
 <div class="box py-3 card-columns">
-<h2>Template</h2>
+<h2>{{#str}} template_teacher_template_template, mod_gitlab {{/str}}</h2>
 <div class="card">
     <div class="card-body d-flex flex-column">
         <div class="d-flex align-items-center">
@@ -37,11 +37,11 @@
             >
                 <span class="expanded-icon icon-no-margin p-2" title="Collapse">
                     <i class="icon fa fa-chevron-down fa-fw"></i>
-                    <span class="visually-hidden">Collapse</span>
+                    <span class="visually-hidden">{{#str}} template_teacher_template_collapse, mod_gitlab {{/str}}</span>
                 </span>
                 <span class="collapsed-icon icon-no-margin p-2" title="Expand">
                     <i class="icon fa fa-chevron-right fa-fw"></i>
-                    <span class="visually-hidden">Expand</span>
+                    <span class="visually-hidden">{{#str}} template_teacher_template_expand, mod_gitlab {{/str}}</span>
                 </span>
             </a>
             <h5 class="mb-0 flex-grow-1">
@@ -52,7 +52,7 @@
         <div id="collapsetemplate" class="collapse">
             <div class="d-grid gap-3 mt-3" style="grid-template-columns: 1fr auto;">
                 <div class="d-flex align-items-center">
-                    <span class="mb-0">Reviewers</span>
+                    <span class="mb-0">{{#str}} template_teacher_template_reviewers, mod_gitlab {{/str}}</span>
                 </div>
                 <div class="d-flex align-items-center gap-2 justify-content-end">
                     {{#reviewers}}
@@ -61,14 +61,14 @@
                 </div>
                 
                 <div class="d-flex align-items-center">
-                    <span class="mb-0">Due date</span>
+                    <span class="mb-0">{{#str}} template_teacher_template_due_date, mod_gitlab {{/str}}</span>
                 </div>
                 <div class="d-flex align-items-center justify-content-end">
                     <span class="mb-0">{{due_date}}</span>
                 </div>
 
                 <div class="d-flex align-items-center">
-                    <span class="mb-0">Repository</span>
+                    <span class="mb-0">{{#str}} template_teacher_template_repository, mod_gitlab {{/str}}</span>
                 </div>
                 <div class="d-flex align-items-center justify-content-end">
                     <a class="btn btn-primary d-inline-flex align-items-center"
@@ -78,12 +78,12 @@
                         aria-label="Repository"
                     >
                         <i class="icon fa fa-globe me-2"></i>
-                        Open
+                        {{#str}} template_teacher_template_open, mod_gitlab {{/str}}
                     </a>
                 </div>
 
                 <div class="d-flex align-items-center">
-                    <span class="mb-0">Instructions</span>
+                    <span class="mb-0">{{#str}} template_teacher_template_instructions, mod_gitlab {{/str}}</span>
                 </div>
                 <div class="d-flex align-items-center justify-content-end">
                     <a class="btn btn-primary d-inline-flex align-items-center"
@@ -93,12 +93,12 @@
                         aria-label="Instructions"
                     >
                         <i class="icon fa fa-globe me-2"></i>
-                        Open
+                        {{#str}} template_teacher_template_open, mod_gitlab {{/str}}
                     </a>
                 </div>
 
                 <div class="d-flex align-items-center">
-                    <span class="mb-0">Solution</span>
+                    <span class="mb-0">{{#str}} template_teacher_template_solution, mod_gitlab {{/str}}</span>
                 </div>
                 <div class="d-flex align-items-center justify-content-end">
                     <a class="btn btn-primary d-inline-flex align-items-center"
@@ -108,12 +108,12 @@
                         aria-label="Solution"
                     >
                         <i class="icon fa fa-globe me-2"></i>
-                        Open
+                        {{#str}} template_teacher_template_open, mod_gitlab {{/str}}
                     </a>
                 </div>
 
                 <div class="d-flex align-items-center">
-                    <span class="mb-0">Get source code</span>
+                    <span class="mb-0">{{#str}} template_teacher_template_get_source, mod_gitlab {{/str}}</span>
                 </div>
                 <div class="d-flex align-items-center justify-content-end">
                     {{#js}}
@@ -125,7 +125,7 @@
 
                         <div class="dropdown-menu p-3">
                             <div class="mb-2">
-                                <span>Clone with SSH</span>
+                                <span>{{#str}} template_teacher_template_clone_ssh, mod_gitlab {{/str}}</span>
                                 <div class="input-group input-group-sm">
                                     <input class="form-control ssh-input" value="{{ssh_url}}" readonly>
                                     <button class="btn btn-outline-primary ssh-button">
@@ -135,7 +135,7 @@
                             </div>
 
                             <div class="mb-2">
-                                <span>Clone with HTTPS</span>
+                                <span>{{#str}} template_teacher_template_clone_http, mod_gitlab {{/str}}</span>
                                 <div class="input-group input-group-sm">
                                     <input class="form-control https-input" value="{{https_url}}" readonly>
                                     <button class="btn btn-outline-primary https-button">
@@ -147,7 +147,7 @@
                             <hr>
 
                             <div>
-                                <span>Download source code</span>
+                                <span>{{#str}} template_teacher_template_download_source, mod_gitlab {{/str}}</span>
                                 <div class="d-flex gap-2 mt-1">
                                     <a class="btn btn-outline-primary d-inline-flex align-items-center text-nowrap"
                                         href="{{download_url}}"
