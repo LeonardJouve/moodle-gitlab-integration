@@ -25,6 +25,25 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['template_student_group_group'] = 'Group';
+$string['template_student_group_members'] = 'Members';
+$string['template_student_group_repository'] = 'Repository';
+$string['template_student_group_open'] = 'Open';
+$string['template_student_group_feedbacks'] = 'Feedbacks';
+$string['template_student_group_graded'] = 'Graded';
+$string['template_student_group_not_graded'] = 'Not Graded';
+$string['template_student_group_tests'] = 'Tests';
+$string['template_student_group_solution'] = 'Solution';
+$string['template_student_group_get_source'] = 'Get source code';
+$string['template_student_group_overdue'] = 'Overdue';
+$string['template_student_group_on_time'] = 'On time';
+$string['template_student_group_clone_ssh'] = 'Clone with SSH';
+$string['template_student_group_clone_http'] = 'Clone with HTTPS';
+$string['template_student_group_download_source'] = 'Download source code';
+$string['template_student_group_leave_group'] = 'Leave group';
+$string['template_student_group_leave'] = 'Leave';
+$string['template_student_group_download_source'] = 'Download source code';
+$string['template_student_group_download_source'] = 'Download source code';
 $string['button_create_repository'] = 'Create GitLab Repository';
 $string['no_gitlab_username_err'] = 'Your GitLab username is not configured. Please set it under: Profile → User details → Edit profile → GitLab → GitLab Username.';
 $string['messageprovider:submission'] = 'Notification of GitLab submissions';
