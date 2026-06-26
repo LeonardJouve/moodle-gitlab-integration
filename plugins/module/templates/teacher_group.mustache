@@ -28,7 +28,7 @@
         {{/js}}
         
         <div class="d-flex align-items-center">
-            <span class="mb-0">Members</span>
+            <span class="mb-0">{{#str}} template_teacher_group_members, mod_gitlab {{/str}}</span>
         </div>
         <div class="d-flex align-items-center gap-2">
             {{#members}}
@@ -38,12 +38,12 @@
         <div class="d-flex align-items-center justify-content-end">
             <button id="manage-group-members-{{id}}" class="btn btn-primary d-inline-flex align-items-center">
                 <i class="icon fa fa-pen me-2"></i>
-                Edit
+                {{#str}} template_teacher_group_edit, mod_gitlab {{/str}}
             </button>
         </div>
 
         <div class="d-flex align-items-center">
-            <span class="mb-0">Repository</span>
+            <span class="mb-0">{{#str}} template_teacher_group_repository, mod_gitlab {{/str}}</span>
         </div>
         <div></div>
         <div class="d-flex align-items-center justify-content-end">
@@ -54,19 +54,19 @@
                 aria-label="Repository"
             >
                 <i class="icon fa fa-globe me-2"></i>
-                Open
+                {{#str}} template_teacher_group_open, mod_gitlab {{/str}}
             </a>
         </div>
 
         <div class="d-flex align-items-center">
-            <span class="mb-0">Feedbacks</span>
+            <span class="mb-0">{{#str}} template_teacher_group_feedbacks, mod_gitlab {{/str}}</span>
         </div>
         <div class="d-flex align-items-center">
             {{#is_graded}}
-                <span class="mb-0 badge bg-success">Graded</span>
+                <span class="mb-0 badge bg-success">{{#str}} template_teacher_group_graded, mod_gitlab {{/str}}</span>
             {{/is_graded}}
             {{^is_graded}}
-                <span class="mb-0 badge bg-danger">Not graded</span>
+                <span class="mb-0 badge bg-danger">{{#str}} template_teacher_group_not_graded, mod_gitlab {{/str}}</span>
             {{/is_graded}}
         </div>
         <div class="d-flex align-items-center justify-content-end">
@@ -77,13 +77,13 @@
                 aria-label="Feedbacks"
             >
                 <i class="icon fa fa-globe me-2"></i>
-                Open
+                {{#str}} template_teacher_group_open, mod_gitlab {{/str}}
             </a>
         </div>
 
         {{#has_test_result}}
         <div class="d-flex align-items-center">
-            <span class="mb-0">Tests</span>
+            <span class="mb-0">{{#str}} template_teacher_group_tests, mod_gitlab {{/str}}</span>
         </div>
         <div class="d-flex align-items-center">
             {{#last_test_pass}}
@@ -101,20 +101,20 @@
                 aria-label="Tests"
             >
                 <i class="icon fa fa-globe me-2"></i>
-                Open
+                {{#str}} template_teacher_group_open, mod_gitlab {{/str}}
             </a>
         </div>
         {{/has_test_result}}
         
         <div class="d-flex align-items-center">
-            <span class="mb-0">Get source code</span>
+            <span class="mb-0">{{#str}} template_teacher_group_get_source, mod_gitlab {{/str}}</span>
         </div>
         <div class="d-flex align-items-center">
             {{#is_delayed}}
-                <span class="mb-0 badge bg-danger">Overdue ({{delay}})</span>
+                <span class="mb-0 badge bg-danger">{{#str}} template_teacher_group_overdue, mod_gitlab {{/str}} ({{delay}})</span>
             {{/is_delayed}}
             {{^is_delayed}}
-                <span class="mb-0 badge bg-success">On time</span>
+                <span class="mb-0 badge bg-success">{{#str}} template_teacher_group_on_time, mod_gitlab {{/str}}</span>
             {{/is_delayed}}
         </div>
         <div class="d-flex align-items-center justify-content-end">
@@ -127,7 +127,7 @@
 
                 <div class="dropdown-menu p-3">
                     <div class="mb-2">
-                        <span>Clone with SSH</span>
+                        <span>{{#str}} template_teacher_group_clone_ssh, mod_gitlab {{/str}}</span>
                         <div class="input-group input-group-sm">
                             <input class="form-control ssh-input" value="{{ssh_url}}" readonly>
                             <button class="btn btn-outline-primary ssh-button">
@@ -137,7 +137,7 @@
                     </div>
 
                     <div class="mb-2">
-                        <span>Clone with HTTPS</span>
+                        <span>{{#str}} template_teacher_group_clone_http, mod_gitlab {{/str}}</span>
                         <div class="input-group input-group-sm">
                             <input class="form-control https-input" value="{{https_url}}" readonly>
                             <button class="btn btn-outline-primary https-button">
@@ -147,7 +147,7 @@
                     </div>
 
                     <div>
-                        <span>Checkout version at due date</span>
+                        <span>{{#str}} template_teacher_group_checkout_due_date, mod_gitlab {{/str}}</span>
                         <div class="input-group input-group-sm">
                             <input class="form-control checkout-input" value="{{checkout_due_date}}" readonly>
                             <button class="btn btn-outline-primary checkout-button">
@@ -160,7 +160,7 @@
 
                     {{#has_submission_merge_request}}
                     <div>
-                        <span>Checkout from template</span>
+                        <span>{{#str}} template_teacher_group_checkout_template, mod_gitlab {{/str}}</span>
                         <div class="input-group input-group-sm mb-2">
                             <input class="form-control fetch-mr-input" value="{{fetch_merge_request}}" readonly>
                             <button class="btn btn-outline-primary fetch-mr-button">
@@ -179,7 +179,7 @@
                     {{/has_submission_merge_request}}
 
                     <div>
-                        <span>Download source code</span>
+                        <span>{{#str}} template_teacher_group_download_source, mod_gitlab {{/str}}</span>
                         <div class="d-flex gap-2 mt-1">
                             <a class="btn btn-outline-primary d-inline-flex align-items-center text-nowrap"
                                 href="{{download_due_date_url}}"
@@ -187,7 +187,7 @@
                                 rel="noopener noreferrer"
                                 aria-label="At due date"
                             >
-                                At due date
+                                {{#str}} template_teacher_group_at_due_date, mod_gitlab {{/str}}
                             </a>
                             <a class="btn btn-outline-primary d-inline-flex align-items-center text-nowrap"
                                 href="{{download_latest_url}}"
@@ -195,7 +195,7 @@
                                 rel="noopener noreferrer"
                                 aria-label="Latest"
                             >
-                                Latest
+                                {{#str}} template_teacher_group_latest, mod_gitlab {{/str}}
                             </a>
                         </div>
                     </div>
@@ -204,7 +204,7 @@
         </div>
 
         <div class="d-flex align-items-center">
-            <span class="mb-0">Delete group</span>
+            <span class="mb-0">{{#str}} template_teacher_group_delete_group, mod_gitlab {{/str}}</span>
         </div>
         <div></div>
         <div class="d-flex align-items-center justify-content-end">
@@ -214,7 +214,7 @@
 
             <button id="delete-group-{{id}}" class="btn btn-primary btn-danger d-inline-flex align-items-center">
                 <i class="icon fa fa-trash me-2"></i>
-                Delete
+                {{#str}} template_teacher_group_delete, mod_gitlab {{/str}}
             </button>
         </div>
     </div>
