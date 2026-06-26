@@ -22,7 +22,7 @@ function create_course_field() {
     $token = new \core_customfield\field(0, (object)[
         'shortname' => 'gitlab_token',
         'name' => 'GitLab Token',
-        'type' => 'text',
+        'type' => 'gitlab',
         'categoryid' => $category,
         'configdata' => json_encode([
             'required' => 0,
@@ -54,13 +54,12 @@ function create_user_field() {
 }
 
 /**
- * @package     local_gitlab
- * @category    string
+ * @package     customfield_gitlab
  * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-function xmldb_local_gitlab_install() {
-    create_course_field();
+function xmldb_customfield_gitlab_install() {
     create_user_field();
+    create_course_field();
 }

@@ -1,4 +1,4 @@
-# Local Gitlab #
+# GitLab Custom Fields #
 
 TO-DO Describe the plugin shortly here.
 
@@ -16,7 +16,7 @@ TO-DO Provide more detailed description here.
 
 The plugin can be also installed by putting the contents of this directory to
 
-    {your/moodle/dirroot}/local/gitlab
+    {your/moodle/dirroot}/customfield/field/gitlab
 
 Afterwards, log in to your Moodle site as an admin and go to _Site administration >
 Notifications_ to complete the installation.

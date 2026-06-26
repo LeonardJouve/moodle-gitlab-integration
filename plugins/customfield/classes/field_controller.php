@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - https://moodle.org/
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,20 +12,26 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
- *
- * @package     local_gitlab
+ * @package     customfield_gitlab
+ * @category    string
  * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace customfield_gitlab;
 
-$plugin->component = 'local_gitlab';
-$plugin->release = '0.1.0';
-$plugin->version = 2026042701;
-$plugin->requires = 2025100601;
-$plugin->maturity = MATURITY_ALPHA;
+class field_controller extends \core_customfield\field_controller {
+    /** @var string Plugin type */
+    const TYPE = 'gitlab';
+
+    /**
+     * Add fields for editing a checkbox field.
+     *
+     * @param \MoodleQuickForm $mform
+     */
+    public function config_form_definition(\MoodleQuickForm $mform) {
+    }
+}
