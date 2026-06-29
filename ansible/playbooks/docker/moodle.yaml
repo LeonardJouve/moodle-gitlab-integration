@@ -9,6 +9,11 @@ services:
       MOODLE_DOCKER_WEB_PORT: ""
     labels:
       - "traefik.enable=true"
+
+      - "traefik.http.routers.moodle-webhook.rule=Host(`${WEB_HOST}`) && PathPrefix(`/mod/gitlab/webhook.php`)"
+      - "traefik.http.routers.moodle-webhook.entrypoints=web"
+      - "traefik.http.routers.moodle-webhook.service=moodle"
+
       - "traefik.http.routers.moodle.rule=Host(`${WEB_HOST}`)"
       - "traefik.http.routers.moodle.entrypoints=web"
       - "traefik.http.services.moodle.loadbalancer.server.port=80"
