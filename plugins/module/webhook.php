@@ -81,7 +81,7 @@ if (!$valid) {
     exit;
 }
 
-$content = json_decode($body, true);
+$content = json_decode($body);
 if ($content === null) {
     http_response_code($HTTP_BAD_REQUEST);
     exit;
