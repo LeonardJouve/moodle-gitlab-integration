@@ -56,13 +56,7 @@ if (!$encrypted_secret) {
 }
 
 $secret = encryption::decrypt($encrypted_secret);
-// $secret = 'AxAOgruB2D4EJL4jrFOnRIJAHPSvt6WJ4fmgFIhOSM0=';
 $key = base64_decode($secret, true);
-
-// $key = random_bytes(32);
-// $secret = 'whsec_' . base64_encode($key);
-// $secret = 'whsec_AxAOgruB2D4EJL4jrFOnRIJAHPSvt6WJ4fmgFIhOSM0=';
-// $key = base64_decode(substr($secret, 6), true);
 if ($key === false || strlen($key) !== 32) {
     http_response_code($HTTP_INTERNAL_SERVER_ERROR);
     exit;
