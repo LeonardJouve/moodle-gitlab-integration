@@ -21,6 +21,7 @@
         <FIELD NAME="due_date" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Deadline timestamp for the practical work submission."/>
         <FIELD NAME="reviewers" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="JSON-encoded list of GitLab usernames assigned as reviewers for this activity."/>
         <FIELD NAME="template_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="GitLab template repository ID for this activity instance."/>
+        <FIELD NAME="webhook_secret" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="GitLab webhook signature encrypted secret."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

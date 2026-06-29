@@ -22,6 +22,7 @@
 
 namespace mod_gitlab\local;
 
+use core\url;
 use mod_gitlab\http\Gitlab;
 use mod_gitlab\http\RuntimeException;
 use stdClass;
@@ -54,6 +55,10 @@ class Resources {
 
     public static function submissionMergeRequestLabel(int $group_id) {
         return "group-$group_id";
+    }
+
+    public static function webhookModuleHeader() {
+        return 'module-id';
     }
 
     public function get_gitlab_user_id(int $user_id): ?int {
@@ -143,5 +148,29 @@ class Resources {
 
     public function get_solution_branch(int $repository_id): ?stdClass {
         return $this->client->branch()->get($repository_id, Resources::solutionBranch());
+    }
+
+    public function create_template_webhook(int $template_id, string $secret): stdClass {
+        return $this->client->webhook()->create(
+            $template_id,
+            (new url('/mod/gitlab/webhook.php'))->out(false),
+            [
+                'name' => get_string('webhook_name', 'mod_gitlab'),
+                'signing_token' => 'whsec_' . $secret,
+                'push_events' => true,
+                'branch_filter_strategy' => 'regex',
+                'push_events_branch_filter' => '^' . Resources::defaultBranch() . '$',
+                'enable_ssl_verification' => false,
+            ],
+        );
+    }
+
+    public function add_template_webhook_custom_header(int $module_id, int $hook_id, int $template_id) {
+        return $this->client->webhook()->set_custom_header(
+            $template_id,
+            $hook_id,
+            Resources::webhookModuleHeader(),
+            $module_id,
+        );
     }
 }

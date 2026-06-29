@@ -48,6 +48,7 @@ class Gitlab {
     private MergeRequest $merge_request;
     private Pipeline $pipeline;
     private Commit $commit;
+    private Webhook $webhook;
 
     public function __construct(string $token) {
         $this->curl = new \curl();
@@ -61,12 +62,22 @@ class Gitlab {
         $this->merge_request = new MergeRequest($this);
         $this->pipeline = new Pipeline($this);
         $this->commit = new Commit($this);
+        $this->webhook = new Webhook($this);
     }
 
     public function post(string $endpoint, $data) {
         $this->curl->setHeader(array_merge($this->get_headers(), ['Content-type: application/json']));
 
-        $result = $this->curl->post(gitlab::BASE_URL . $endpoint, json_encode($data));
+        $result = $this->curl->post(Gitlab::BASE_URL . $endpoint, json_encode($data));
+        $this->handle_exceptions();
+
+        return json_decode($result);
+    }
+
+    public function put(string $endpoint, $data) {
+        $this->curl->setHeader(array_merge($this->get_headers(), ['Content-type: application/json']));
+
+        $result = $this->curl->put(Gitlab::BASE_URL . $endpoint, json_encode($data));
         $this->handle_exceptions();
 
         return json_decode($result);
@@ -75,7 +86,7 @@ class Gitlab {
     public function get(string $endpoint, array $params = []) {
         $this->curl->setHeader($this->get_headers());
 
-        $url = gitlab::BASE_URL . $endpoint;
+        $url = Gitlab::BASE_URL . $endpoint;
 
         if (!empty($params)) {
             $url .= '?' . http_build_query($params);
@@ -90,7 +101,7 @@ class Gitlab {
     public function delete(string $endpoint, array $params = []) {
         $this->curl->setHeader($this->get_headers());
 
-        $url = gitlab::BASE_URL . $endpoint;
+        $url = Gitlab::BASE_URL . $endpoint;
 
         if (!empty($params)) {
             $url .= '?' . http_build_query($params);
@@ -103,7 +114,7 @@ class Gitlab {
     }
 
     public function url(string $endpoint, array $params = []) {
-        $url = gitlab::BASE_URL . $endpoint;
+        $url = Gitlab::BASE_URL . $endpoint;
 
         if (!empty($params)) {
             $url .= '?' . http_build_query($params);
@@ -171,5 +182,9 @@ class Gitlab {
 
     public function commit() {
         return $this->commit;
+    }
+
+    public function webhook() {
+        return $this->webhook;
     }
 }

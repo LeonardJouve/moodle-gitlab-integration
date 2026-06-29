@@ -20,6 +20,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\encryption;
+
 require_once(__DIR__ . '/../../config.php');
 
 $HTTP_INTERNAL_SERVER_ERROR = 500;
@@ -37,21 +39,32 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 global $DB;
 
-// $key = random_bytes(32);
-// $secret = 'whsec_' . base64_encode($key);
-$secret = 'whsec_AxAOgruB2D4EJL4jrFOnRIJAHPSvt6WJ4fmgFIhOSM0=';
-$key = base64_decode(substr($secret, 6), true);
-if ($key === false || strlen($key) !== 32) {
-    http_response_code($HTTP_INTERNAL_SERVER_ERROR);
-    exit;
-}
-
+$module_id = $_SERVER['HTTP_MODULE_ID'] ?? '';
 $webhook_id = $_SERVER['HTTP_WEBHOOK_ID'] ?? '';
 $webhook_timestamp = $_SERVER['HTTP_WEBHOOK_TIMESTAMP'] ?? '';
 $webhook_signature = $_SERVER['HTTP_WEBHOOK_SIGNATURE'] ?? '';
 
-if (!$webhook_id || !$webhook_timestamp || !$webhook_signature) {
+if (!$module_id || !$webhook_id || !$webhook_timestamp || !$webhook_signature) {
     http_response_code($HTTP_BAD_REQUEST);
+    exit;
+}
+
+$encrypted_secret = $DB->get_field('gitlab', 'webhook_secret', ['id' => $module_id], IGNORE_MISSING);
+if (!$encrypted_secret) {
+    http_response_code($HTTP_BAD_REQUEST);
+    exit;
+}
+
+$secret = encryption::decrypt($encrypted_secret);
+// $secret = 'AxAOgruB2D4EJL4jrFOnRIJAHPSvt6WJ4fmgFIhOSM0=';
+$key = base64_decode($secret, true);
+
+// $key = random_bytes(32);
+// $secret = 'whsec_' . base64_encode($key);
+// $secret = 'whsec_AxAOgruB2D4EJL4jrFOnRIJAHPSvt6WJ4fmgFIhOSM0=';
+// $key = base64_decode(substr($secret, 6), true);
+if ($key === false || strlen($key) !== 32) {
+    http_response_code($HTTP_INTERNAL_SERVER_ERROR);
     exit;
 }
 
@@ -89,6 +102,9 @@ if ($content === null) {
 
 if ($content->event_name == "push") {
     $moduleinstance = $DB->get_record('gitlab', ['template_id' => $content->project_id], '*');
+
+    // TODO create or update merge request
+
     http_response_code($HTTP_OK);
     echo json_encode($moduleinstance);
     exit;
