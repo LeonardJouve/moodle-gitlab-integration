@@ -22,23 +22,39 @@
 
 require('../../config.php');
 
+$HTTP_INTERNAL_SERVER_ERROR = 500;
+$HTTP_BAD_REQUEST = 400;
+$HTTP_METHOD_NOT_ALLOWED = 405;
+$HTTP_FORBIDDEN = 403;
+$HTTP_OK = 200;
+$WEBHOOK_VALID_TIME_WINDOW = 5 * 60;
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
+    http_response_code($HTTP_METHOD_NOT_ALLOWED);
     exit;
 }
 
 // $key = random_bytes(32);
 // $secret = 'whsec_' . base64_encode($key);
 $secret = 'whsec_AxAOgruB2D4EJL4jrFOnRIJAHPSvt6WJ4fmgFIhOSM0=';
-$key = base64_decode(substr($secret, 6));
+$key = base64_decode(substr($secret, 6), true);
+if ($key === false || strlen($key) !== 32) {
+    http_response_code($HTTP_INTERNAL_SERVER_ERROR);
+    exit;
+}
 
 $webhook_id = $_SERVER['HTTP_WEBHOOK_ID'] ?? '';
 $webhook_timestamp = $_SERVER['HTTP_WEBHOOK_TIMESTAMP'] ?? '';
 $webhook_signature = $_SERVER['HTTP_WEBHOOK_SIGNATURE'] ?? '';
 
 if (!$webhook_id || !$webhook_timestamp || !$webhook_signature) {
-    http_response_code(400);
-    exit('missing headers');
+    http_response_code($HTTP_BAD_REQUEST);
+    exit;
+}
+
+if (abs(time() - (int)$webhook_timestamp) > $WEBHOOK_VALID_TIME_WINDOW) {
+    http_response_code($HTTP_FORBIDDEN);
+    exit;
 }
 
 $body = file_get_contents('php://input');
@@ -58,9 +74,9 @@ foreach ($signatures as $signature) {
 }
 
 if (!$valid) {
-    http_response_code(403);
-    exit('invalid signature');
+    http_response_code($HTTP_FORBIDDEN);
+    exit;
 }
 
-http_response_code(200);
-echo "ok";
+http_response_code($HTTP_OK);
+echo $message;
