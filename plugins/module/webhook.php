@@ -27,6 +27,7 @@ $HTTP_BAD_REQUEST = 400;
 $HTTP_METHOD_NOT_ALLOWED = 405;
 $HTTP_FORBIDDEN = 403;
 $HTTP_OK = 200;
+
 $WEBHOOK_VALID_TIME_WINDOW = 5 * 60;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -58,9 +59,9 @@ if (abs(time() - (int)$webhook_timestamp) > $WEBHOOK_VALID_TIME_WINDOW) {
 }
 
 $body = file_get_contents('php://input');
-$message = $webhook_id . '.' . $webhook_timestamp . '.' . $body;
+$data = $webhook_id . '.' . $webhook_timestamp . '.' . $body;
 
-$digest = hash_hmac('sha256', $message, $key, true);
+$digest = hash_hmac('sha256', $data, $key, true);
 $expected = 'v1,' . base64_encode($digest);
 
 $signatures = explode(' ', $webhook_signature);
@@ -78,5 +79,14 @@ if (!$valid) {
     exit;
 }
 
+$content = json_decode($body, true);
+if ($content === null) {
+    http_response_code($HTTP_BAD_REQUEST);
+    exit;
+}
+
+// $content->project_id
+// "project_id": 83787870,
+
 http_response_code($HTTP_OK);
-echo $message;
+echo json_encode($content);
