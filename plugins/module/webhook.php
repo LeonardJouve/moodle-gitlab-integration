@@ -20,7 +20,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../../config.php');
+require_once(__DIR__ . '/../../config.php');
 
 $HTTP_INTERNAL_SERVER_ERROR = 500;
 $HTTP_BAD_REQUEST = 400;
@@ -34,6 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code($HTTP_METHOD_NOT_ALLOWED);
     exit;
 }
+
+global $DB;
 
 // $key = random_bytes(32);
 // $secret = 'whsec_' . base64_encode($key);
@@ -86,9 +88,11 @@ if ($content === null) {
 }
 
 if ($content->event_name == "push") {
-    // $content->project_id
-    // "project_id": 83787870,
+    $moduleinstance = $DB->get_record('gitlab', ['template_id' => $content->project_id], '*');
+    http_response_code($HTTP_OK);
+    echo json_encode($moduleinstance);
+    exit;
 }
 
 http_response_code($HTTP_OK);
-echo json_encode($content);
+echo 'ok';
