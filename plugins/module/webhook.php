@@ -85,8 +85,10 @@ if ($content === null) {
     exit;
 }
 
-// $content->project_id
-// "project_id": 83787870,
+if ($content->event_name == "push") {
+    // $content->project_id
+    // "project_id": 83787870,
+}
 
 http_response_code($HTTP_OK);
 echo json_encode($content);
