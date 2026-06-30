@@ -22,6 +22,7 @@
 
 namespace mod_gitlab\local;
 
+use core\url;
 use mod_gitlab\http\Gitlab;
 use mod_gitlab\http\RuntimeException;
 use stdClass;
@@ -56,6 +57,14 @@ class Resources {
         return "group-$group_id";
     }
 
+    public static function updateGroupRepositoryMergeRequestLabel() {
+        return 'update-group-repository';
+    }
+
+    public static function webhookModuleHeader() {
+        return 'module-id';
+    }
+
     public function get_gitlab_user_id(int $user_id): ?int {
         $username = Helper::get_user_gitlab_username($user_id);
         if ($username == null) {
@@ -80,6 +89,12 @@ class Resources {
         }
             
         return $issues[0];
+    }
+
+    public function update_instructions_issue(int $project_id, int $issue_iid, string $description) {
+        $this->client->issue()->update($project_id, $issue_iid, [
+            'description' => $description,
+        ]);
     }
 
     public function add_member(int $repository_id, int $user_id, int $access_level) {
@@ -143,5 +158,50 @@ class Resources {
 
     public function get_solution_branch(int $repository_id): ?stdClass {
         return $this->client->branch()->get($repository_id, Resources::solutionBranch());
+    }
+
+    public function create_template_webhook(int $template_id, string $secret): stdClass {
+        return $this->client->webhook()->create(
+            $template_id,
+            (new url('/mod/gitlab/webhook.php'))->out(false),
+            [
+                'name' => get_string('webhook_name', 'mod_gitlab'),
+                'signing_token' => 'whsec_' . $secret,
+                'issues_events' => true,
+                'push_events' => true,
+                'branch_filter_strategy' => 'regex',
+                'push_events_branch_filter' => '^' . Resources::defaultBranch() . '$',
+                'enable_ssl_verification' => false,
+            ],
+        );
+    }
+
+    public function add_template_webhook_custom_header(int $module_id, int $hook_id, int $template_id) {
+        return $this->client->webhook()->set_custom_header(
+            $template_id,
+            $hook_id,
+            Resources::webhookModuleHeader(),
+            $module_id,
+        );
+    }
+
+    public function get_update_group_repository_merge_request(int $repository_id): ?stdClass {
+        return $this->get_merge_request($repository_id, Resources::defaultBranch(), Resources::defaultBranch(), [
+            'labels' => Resources::updateGroupRepositoryMergeRequestLabel(),
+            'state' => 'opened',
+        ]);
+    }
+
+    public function create_update_group_repository_merge_request(int $template_id, int $repository_id) {
+        $this->client->merge_request()->create(
+            $template_id,
+            Resources::defaultBranch(),
+            Resources::defaultBranch(),
+            get_string('update_group_repository_merge_request_title', 'mod_gitlab'),
+            [
+                'target_project_id' => $repository_id,
+                'labels' => Resources::updateGroupRepositoryMergeRequestLabel(),
+            ],
+        );
     }
 }

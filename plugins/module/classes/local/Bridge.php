@@ -23,6 +23,7 @@
 namespace mod_gitlab\local;
 
 use calendar_event;
+use core\encryption;
 use core\task\manager;
 use core\url;
 use core_user;
@@ -60,6 +61,10 @@ class Bridge {
         
         // reviewers
         $this->resources->add_reviewers_as_maintainers($template->id, $moduleinstance->reviewer ?? []);
+        
+        $secret = Webhook::generate_key();
+        $webhook = $this->resources->create_template_webhook($template->id, $secret);
+        $moduleinstance->webhook_secret = encryption::encrypt($secret);
 
         $moduleinstance->reviewers = json_encode($moduleinstance->reviewer ?: [], JSON_UNESCAPED_UNICODE);
         $moduleinstance->timecreated = time();
@@ -67,6 +72,8 @@ class Bridge {
         $moduleinstance->template_id = $template->id;
 
         $moduleinstance->id = $DB->insert_record('gitlab', $moduleinstance);
+
+        $this->resources->add_template_webhook_custom_header($moduleinstance->id, $webhook->id, $template->id);
 
         $this->create_calendar_event($moduleinstance);
 
@@ -323,7 +330,7 @@ class Bridge {
         $message->fullmessagehtml = $content;
         $message->smallmessage = $content;
         $message->notification = 1;
-        $message->contexturl = (new url('/mod/gitlab/view.php', ['g' => $module_id]))->out(false);;
+        $message->contexturl = (new url('/mod/gitlab/view.php', ['g' => $module_id]))->out(false);
         $message->contexturlname = get_string('notification_module_view', 'mod_gitlab');
 
         message_send($message);
