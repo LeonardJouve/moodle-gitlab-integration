@@ -23,6 +23,7 @@
 namespace mod_gitlab\local;
 
 use core\encryption;
+use mod_gitlab\http\Gitlab;
 use stdClass;
 
 class Webhook {
@@ -87,6 +88,24 @@ class Webhook {
         global $DB;
 
         $moduleinstance = $DB->get_record('gitlab', ['template_id' => $event->project_id], '*');
+
+        $token = Helper::get_course_gitlab_token($moduleinstance->course);
+        if ($token == null) {
+            return false;
+        }
+
+        $client = new Gitlab($token);
+        $resources = new Resources($client);
+
+        $groups = Group::get_groups($moduleinstance->id);
+        foreach ($groups as $group) {
+            $update_merge_request = $resources->get_update_group_repository_merge_request($moduleinstance->repository_id);
+            
+            // create merge request only if it does not already exists
+            if ($update_merge_request == null) {
+                $resources->create_update_group_repository_merge_request($moduleinstance->template_id, $group->repository_id);
+            }
+        }
 
         return true;
     }

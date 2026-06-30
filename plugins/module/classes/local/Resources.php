@@ -57,6 +57,10 @@ class Resources {
         return "group-$group_id";
     }
 
+    public static function updateGroupRepositoryMergeRequestLabel() {
+        return 'update-group-repository';
+    }
+
     public static function webhookModuleHeader() {
         return 'module-id';
     }
@@ -171,6 +175,25 @@ class Resources {
             $hook_id,
             Resources::webhookModuleHeader(),
             $module_id,
+        );
+    }
+
+    public function get_update_group_repository_merge_request(int $repository_id): ?stdClass {
+        return $this->get_merge_request($repository_id, Resources::defaultBranch(), Resources::defaultBranch(), [
+            'labels' => Resources::updateGroupRepositoryMergeRequestLabel(),
+        ]);
+    }
+
+    public function create_update_group_repository_merge_request(int $template_id, int $repository_id) {
+        $this->client->merge_request()->create(
+            $template_id,
+            Resources::defaultBranch(),
+            Resources::defaultBranch(),
+            get_string('update_group_repository_merge_request_title', 'mod_gitlab'),
+            [
+                'target_project_id' => $repository_id,
+                'labels' => Resources::updateGroupRepositoryMergeRequestLabel(),
+            ],
         );
     }
 }
