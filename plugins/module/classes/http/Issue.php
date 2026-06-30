@@ -64,4 +64,8 @@ class Issue {
 
         return $this->client->post("/projects/" . $project_id . "/issues/" . $issue_id . "/notes", $data);
     }
+
+    public function update(int $project_id, int $issue_iid, array $data) {
+        return $this->client->put("/projects/" . $project_id . "/issues/" . $issue_iid, $data);
+    }
 }

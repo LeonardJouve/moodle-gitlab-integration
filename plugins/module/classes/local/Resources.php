@@ -91,6 +91,12 @@ class Resources {
         return $issues[0];
     }
 
+    public function update_instructions_issue(int $project_id, int $issue_iid, string $description) {
+        $this->client->issue()->update($project_id, $issue_iid, [
+            'description' => $description,
+        ]);
+    }
+
     public function add_member(int $repository_id, int $user_id, int $access_level) {
         $username = Helper::get_user_gitlab_username($user_id);
 

@@ -125,9 +125,16 @@ class Webhook {
 
         $groups = Group::get_groups($moduleinstance->id);
         foreach ($groups as $group) {
-            // TODO
-            // $event->object_attributes->id
-            // $event->object_attributes->description
+            $issue = $resources->get_instructions_issue($group->repository_id);
+            if ($issue == null) {
+                continue;
+            }
+
+            $resources->update_instructions_issue(
+                $group->repository_id,
+                $issue->iid,
+                $event->object_attributes->description,
+            );
         }
 
         return true;
