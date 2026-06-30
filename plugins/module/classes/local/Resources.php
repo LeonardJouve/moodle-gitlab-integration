@@ -161,6 +161,7 @@ class Resources {
             [
                 'name' => get_string('webhook_name', 'mod_gitlab'),
                 'signing_token' => 'whsec_' . $secret,
+                'issues_events' => true,
                 'push_events' => true,
                 'branch_filter_strategy' => 'regex',
                 'push_events_branch_filter' => '^' . Resources::defaultBranch() . '$',

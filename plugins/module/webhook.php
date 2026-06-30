@@ -66,8 +66,13 @@ if ($content == null) {
 }
 
 $ok = true;
-if ($content->event_name == "push") {
+switch ($content->object_kind) {
+case 'push':
     $ok = Webhook::handle_push_event($content);
+    break;
+case 'issue':
+    $ok = Webhook::handle_issue_event($content);
+    break;
 }
 
 if (!$ok) {

@@ -109,4 +109,27 @@ class Webhook {
 
         return true;
     }
+
+    public static function handle_issue_event(stdClass $event): bool {
+        global $DB;
+
+        $moduleinstance = $DB->get_record('gitlab', ['template_id' => $event->project->id], '*');
+
+        $token = Helper::get_course_gitlab_token($moduleinstance->course);
+        if ($token == null) {
+            return false;
+        }
+
+        $client = new Gitlab($token);
+        $resources = new Resources($client);
+
+        $groups = Group::get_groups($moduleinstance->id);
+        foreach ($groups as $group) {
+            // TODO
+            // $event->object_attributes->id
+            // $event->object_attributes->description
+        }
+
+        return true;
+    }
 }
