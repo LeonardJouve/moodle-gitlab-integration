@@ -123,6 +123,11 @@ class Webhook {
         $client = new Gitlab($token);
         $resources = new Resources($client);
 
+        $template_issue = $resources->get_instructions_issue($moduleinstance->template_id);
+        if ($template_issue == null || $template_issue->id != $event->object_attributes->id) {
+            return false;
+        }
+
         $groups = Group::get_groups($moduleinstance->id);
         foreach ($groups as $group) {
             $issue = $resources->get_instructions_issue($group->repository_id);
