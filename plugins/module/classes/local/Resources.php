@@ -181,6 +181,7 @@ class Resources {
     public function get_update_group_repository_merge_request(int $repository_id): ?stdClass {
         return $this->get_merge_request($repository_id, Resources::defaultBranch(), Resources::defaultBranch(), [
             'labels' => Resources::updateGroupRepositoryMergeRequestLabel(),
+            'state' => 'opened',
         ]);
     }
 
