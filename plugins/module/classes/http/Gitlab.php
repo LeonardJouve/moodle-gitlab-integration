@@ -86,13 +86,7 @@ class Gitlab {
     public function get(string $endpoint, array $params = []) {
         $this->curl->setHeader($this->get_headers());
 
-        $url = Gitlab::BASE_URL . $endpoint;
-
-        if (!empty($params)) {
-            $url .= '?' . http_build_query($params);
-        }
-        
-        $result = $this->curl->get($url);
+        $result = $this->curl->get(Gitlab::BASE_URL . $endpoint, $params);
         $this->handle_exceptions();
 
         return json_decode($result);
