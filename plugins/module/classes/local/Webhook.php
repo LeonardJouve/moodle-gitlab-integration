@@ -97,6 +97,8 @@ class Webhook {
         $client = new Gitlab($token);
         $resources = new Resources($client);
 
+        $log = '';
+
         $groups = Group::get_groups($moduleinstance->id);
         foreach ($groups as $group) {
             $update_merge_request = $resources->get_update_group_repository_merge_request($group->repository_id);
@@ -104,8 +106,14 @@ class Webhook {
             // create merge request only if it does not already exists
             if ($update_merge_request == null) {
                 $resources->create_update_group_repository_merge_request($moduleinstance->template_id, $group->repository_id);
+                $log .= 'create';
+            } else {
+                $log .= $update_merge_request->id;
             }
         }
+
+        http_response_code(200);
+        echo $log;
 
         return true;
     }
