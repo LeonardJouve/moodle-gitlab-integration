@@ -99,7 +99,7 @@ class Webhook {
 
         $groups = Group::get_groups($moduleinstance->id);
         foreach ($groups as $group) {
-            $update_merge_request = $resources->get_update_group_repository_merge_request($moduleinstance->repository_id);
+            $update_merge_request = $resources->get_update_group_repository_merge_request($group->repository_id);
             
             // create merge request only if it does not already exists
             if ($update_merge_request == null) {
