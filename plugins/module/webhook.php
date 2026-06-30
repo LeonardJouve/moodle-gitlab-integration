@@ -20,17 +20,14 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use core\encryption;
+use mod_gitlab\local\Webhook;
 
 require_once(__DIR__ . '/../../config.php');
 
-$HTTP_INTERNAL_SERVER_ERROR = 500;
 $HTTP_BAD_REQUEST = 400;
 $HTTP_METHOD_NOT_ALLOWED = 405;
 $HTTP_FORBIDDEN = 403;
 $HTTP_OK = 200;
-
-$WEBHOOK_VALID_TIME_WINDOW = 5 * 60;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code($HTTP_METHOD_NOT_ALLOWED);
@@ -43,64 +40,38 @@ $module_id = $_SERVER['HTTP_MODULE_ID'] ?? '';
 $webhook_id = $_SERVER['HTTP_WEBHOOK_ID'] ?? '';
 $webhook_timestamp = $_SERVER['HTTP_WEBHOOK_TIMESTAMP'] ?? '';
 $webhook_signature = $_SERVER['HTTP_WEBHOOK_SIGNATURE'] ?? '';
-
-if (!$module_id || !$webhook_id || !$webhook_timestamp || !$webhook_signature) {
-    http_response_code($HTTP_BAD_REQUEST);
-    exit;
-}
-
-$encrypted_secret = $DB->get_field('gitlab', 'webhook_secret', ['id' => $module_id], IGNORE_MISSING);
-if (!$encrypted_secret) {
-    http_response_code($HTTP_BAD_REQUEST);
-    exit;
-}
-
-$secret = encryption::decrypt($encrypted_secret);
-$key = base64_decode($secret, true);
-if ($key === false || strlen($key) !== 32) {
-    http_response_code($HTTP_INTERNAL_SERVER_ERROR);
-    exit;
-}
-
-if (abs(time() - (int)$webhook_timestamp) > $WEBHOOK_VALID_TIME_WINDOW) {
-    http_response_code($HTTP_FORBIDDEN);
-    exit;
-}
-
 $body = file_get_contents('php://input');
-$data = $webhook_id . '.' . $webhook_timestamp . '.' . $body;
 
-$digest = hash_hmac('sha256', $data, $key, true);
-$expected = 'v1,' . base64_encode($digest);
-
-$signatures = explode(' ', $webhook_signature);
-
-$valid = false;
-foreach ($signatures as $signature) {
-    if (hash_equals($expected, $signature)) {
-        $valid = true;
-        break;
-    }
-}
-
-if (!$valid) {
-    http_response_code($HTTP_FORBIDDEN);
-    exit;
-}
-
-$content = json_decode($body);
-if ($content === null) {
+if (!$module_id || !$webhook_id || !$webhook_timestamp || !$webhook_signature || !$body) {
     http_response_code($HTTP_BAD_REQUEST);
     exit;
 }
 
+$key = Webhook::get_module_key($module_id);
+if ($key == null) {
+    http_response_code($HTTP_BAD_REQUEST);
+    exit;
+}
+
+$is_valid = Webhook::is_valid($webhook_id, (int) $webhook_timestamp, $webhook_signature, $body, $key);
+if (!$is_valid) {
+    http_response_code($HTTP_FORBIDDEN);
+    exit;
+}
+
+$content = Webhook::get_content($body);
+if ($content == null) {
+    http_response_code($HTTP_BAD_REQUEST);
+    exit;
+}
+
+$ok = true;
 if ($content->event_name == "push") {
-    $moduleinstance = $DB->get_record('gitlab', ['template_id' => $content->project_id], '*');
+    $ok = Webhook::handle_push_event($content);
+}
 
-    // TODO create or update merge request
-
-    http_response_code($HTTP_OK);
-    echo json_encode($moduleinstance);
+if (!$ok) {
+    http_response_code($HTTP_BAD_REQUEST);
     exit;
 }
 

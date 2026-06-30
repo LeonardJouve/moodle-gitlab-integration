@@ -1,0 +1,93 @@
+<?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
+/**
+ * @package     mod_gitlab
+ * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace mod_gitlab\local;
+
+use core\encryption;
+use stdClass;
+
+class Webhook {
+    private static int $WEBHOOK_VALID_TIME_WINDOW = 5 * 60; 
+
+    public static function get_module_key(int $module_id): ?string {
+        global $DB;
+
+        $encrypted_secret = $DB->get_field('gitlab', 'webhook_secret', ['id' => $module_id], IGNORE_MISSING);
+        if (!$encrypted_secret) {
+            return null;
+        }
+
+        $secret = encryption::decrypt($encrypted_secret);
+        $key = base64_decode($secret, true);
+        if ($key === false || strlen($key) !== 32) {
+            return null;
+        }
+
+        return $key;
+    }
+
+    public static function generate_key() {
+        return base64_encode(random_bytes(32));
+    }
+
+    public static function get_signature(string $webhook_id, int $webhook_timestamp, string $body, string $key): string {
+        $data = $webhook_id . '.' . $webhook_timestamp . '.' . $body;
+        $digest = hash_hmac('sha256', $data, $key, true);
+
+        return 'v1,' . base64_encode($digest);
+    }
+
+    public static function is_valid(string $webhook_id, int $webhook_timestamp, string $webhook_signature, string $body, string $key): bool {
+        $expected = Webhook::get_signature($webhook_id, $webhook_timestamp, $body, $key);
+
+        $valid = false;
+        $signatures = explode(' ', $webhook_signature);
+        foreach ($signatures as $signature) {
+            if (hash_equals($expected, $signature)) {
+                $valid = true;
+                break;
+            }
+        }
+
+        if (!$valid) {
+            return false;
+        }
+
+        if (abs(time() - $webhook_timestamp) > Webhook::$WEBHOOK_VALID_TIME_WINDOW) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static function get_content(string $body): ?stdClass {
+        return json_decode($body);
+    }
+
+    public static function handle_push_event(stdClass $event): bool {
+        global $DB;
+
+        $moduleinstance = $DB->get_record('gitlab', ['template_id' => $event->project_id], '*');
+
+        return true;
+    }
+}

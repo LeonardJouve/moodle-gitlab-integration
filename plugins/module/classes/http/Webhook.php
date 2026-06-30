@@ -15,8 +15,6 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Display information about all the mod_gitlab modules in the requested course.
- *
  * @package     mod_gitlab
  * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
