@@ -69,7 +69,6 @@ $ok = true;
 switch ($content->object_kind) {
 case 'push':
     $ok = Webhook::handle_push_event($content);
-    exit;
     break;
 case 'issue':
     $ok = Webhook::handle_issue_event($content);
