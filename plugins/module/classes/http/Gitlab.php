@@ -49,6 +49,7 @@ class Gitlab {
     private Pipeline $pipeline;
     private Commit $commit;
     private Webhook $webhook;
+    private File $file;
 
     public function __construct(string $token) {
         $this->curl = new \curl();
@@ -63,6 +64,7 @@ class Gitlab {
         $this->pipeline = new Pipeline($this);
         $this->commit = new Commit($this);
         $this->webhook = new Webhook($this);
+        $this->file = new File($this);
     }
 
     public function post(string $endpoint, $data) {
@@ -180,5 +182,9 @@ class Gitlab {
 
     public function webhook() {
         return $this->webhook;
+    }
+
+    public function file() {
+        return $this->file;
     }
 }
