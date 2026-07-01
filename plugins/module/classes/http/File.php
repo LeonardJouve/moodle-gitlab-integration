@@ -45,6 +45,6 @@ class File {
             'commit_message' => $commit_message,
         ], $extra);
 
-        return $this->client->post("/projects/$project_id/repository/files/$name", $data);
+        return $this->client->post('/projects/' . $project_id . '/repository/files/' . urlencode($name), $data);
     }
 }
