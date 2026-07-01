@@ -61,7 +61,10 @@ class Bridge {
         
         // reviewers
         $this->resources->add_reviewers_as_maintainers($template->id, $moduleinstance->reviewer ?? []);
-        
+
+        // protected files ci
+        $this->resources->create_template_protected_files_ci($template->id);
+
         $secret = Webhook::generate_key();
         $webhook = $this->resources->create_template_webhook($template->id, $secret);
         $moduleinstance->webhook_secret = encryption::encrypt($secret);
