@@ -204,4 +204,24 @@ class Resources {
             ],
         );
     }
+
+    public function create_template_protected_files_ci(int $template_id) {
+        global $PAGE;
+
+        $this->client->file()->create(
+            $template_id,
+            '.gitlab-ci.yml',
+            $PAGE->get_renderer('core')->render_from_template('mod_gitlab/gitlab-ci', []),
+            Resources::defaultBranch(),
+            get_string('commit_create_ci_file', 'mod_gitlab'),
+        );
+
+        $this->client->file()->create(
+            $template_id,
+            '.gitlab/protected-files',
+            $PAGE->get_renderer('core')->render_from_template('mod_gitlab/protected-files', []),
+            Resources::defaultBranch(),
+            get_string('commit_create_protected_files', 'mod_gitlab'),
+        );
+    }
 }
