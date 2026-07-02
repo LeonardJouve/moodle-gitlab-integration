@@ -23,13 +23,17 @@
  */
 
 use core\output\html_writer;
+use core\task\manager;
 use core\url;
 use mod_gitlab\http\Gitlab;
 use mod_gitlab\http\RuntimeException;
 use mod_gitlab\local\Bridge;
+use mod_gitlab\local\FinalizeGroupCreationTask;
 use mod_gitlab\local\Helper;
 use mod_gitlab\local\Group;
 use mod_gitlab\local\Resources;
+use mod_gitlab\local\SubmissionSoonTask;
+use mod_gitlab\local\SubmissionTask;
 
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
@@ -334,6 +338,18 @@ function student_group(Gitlab $client, Resources $resources, int $instance_id, i
 }
 
 echo $OUTPUT->header();
+
+$classnames = [
+    FinalizeGroupCreationTask::class,
+    SubmissionSoonTask::class,
+    SubmissionTask::class,
+];
+foreach ($classnames as $classname) {
+    $tasks = manager::get_adhoc_tasks($classname);
+    foreach ($tasks as $task) {
+        echo '' . $task->id;
+    }
+}
 
 $username = Helper::get_user_gitlab_username($USER->id);
 
