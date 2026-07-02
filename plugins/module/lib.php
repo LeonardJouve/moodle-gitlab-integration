@@ -121,9 +121,11 @@ function gitlab_delete_instance($id) {
         $tasks = manager::get_adhoc_tasks($classname);
         foreach ($tasks as $task) {
             $customdata = $task->get_custom_data();
-            if (!isset($customdata->module_id) || (int)$customdata->module_id !== $id) {
+            if (!isset($customdata->module_id) || $customdata->module_id != $id) {
                 continue;
             }
+
+            throw new Exception('delete task ' . $task->id);
 
             manager::delete_adhoc_task($task->id);
         }
