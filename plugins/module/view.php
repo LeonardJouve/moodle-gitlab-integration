@@ -347,6 +347,10 @@ $classnames = [
 foreach ($classnames as $classname) {
     $tasks = manager::get_adhoc_tasks($classname);
     foreach ($tasks as $task) {
+        $customdata = $task->get_custom_data();
+        if (!isset($customdata->module_id) || $customdata->module_id != $moduleinstance->id) {
+            continue;
+        }
         echo ' ' . $task->get_id();
     }
 }
