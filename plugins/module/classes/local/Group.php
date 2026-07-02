@@ -222,7 +222,7 @@ class Group {
         global $DB;
     
         $DB->delete_records('gitlab_group_members', ['group_id' => $group_id]);
-        $DB->delete_record('gitlab_groups', ['id' => $group_id]);
+        $DB->delete_records('gitlab_groups', ['id' => $group_id]);
 
         return true;
     }

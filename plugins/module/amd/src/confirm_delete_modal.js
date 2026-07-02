@@ -16,8 +16,6 @@ const showModal = async (groupId) => {
             methodname: "mod_gitlab_delete_group",
             args: {groupid: groupId}
         }])[0].then(() => window.location.reload());
-
-
     });
 
     modal.show();
