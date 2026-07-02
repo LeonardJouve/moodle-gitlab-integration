@@ -106,7 +106,7 @@ function gitlab_update_instance($moduleinstance, $mform = null) {
 function gitlab_delete_instance($id) {
     global $DB;
 
-    throw new Exception('test');
+    return false;
 
     $moduleinstance = $DB->get_record('gitlab', ['id' => $id]);
     if (!$moduleinstance) {
