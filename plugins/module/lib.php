@@ -22,9 +22,13 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\task\manager;
 use mod_gitlab\local\Helper;
 use mod_gitlab\http\Gitlab;
 use mod_gitlab\local\Bridge;
+use mod_gitlab\local\FinalizeGroupCreationTask;
+use mod_gitlab\local\SubmissionSoonTask;
+use mod_gitlab\local\SubmissionTask;
 
 /**
  * Return if the plugin supports $feature.
@@ -102,11 +106,59 @@ function gitlab_update_instance($moduleinstance, $mform = null) {
 function gitlab_delete_instance($id) {
     global $DB;
 
-    $exists = $DB->get_record('gitlab', ['id' => $id]);
-    if (!$exists) {
+    $moduleinstance = $DB->get_record('gitlab', ['id' => $id]);
+    if (!$moduleinstance) {
         return false;
     }
 
+    // delete adhoc tasks
+    $classnames = [
+        FinalizeGroupCreationTask::class,
+        SubmissionSoonTask::class,
+        SubmissionTask::class,
+    ];
+    foreach ($classnames as $classname) {
+        $tasks = manager::get_adhoc_tasks($classname);
+        foreach ($tasks as $task) {
+            $customdata = $task->get_custom_data();
+            if (!isset($customdata->module_id) || (int)$customdata->module_id !== $id) {
+                continue;
+            }
+
+            manager::delete_adhoc_task($task->id);
+        }
+    }
+
+    // delete calendar events
+    $event_ids = $DB->get_fieldset('event', 'id', [
+        'modulename' => 'gitlab',
+        'instance'   => $id,
+    ], IGNORE_MISSING);
+
+    foreach ($event_ids as $event_id) {
+        $event = calendar_event::load($event_id);
+        $event->delete();
+    }
+
+    // delete members
+    $group_ids = $DB->get_fieldset(
+        'gitlab_groups',
+        'id',
+        ['module_id' => $id],
+    );
+
+    list($in_sql, $params) = $DB->get_in_or_equal($group_ids, SQL_PARAMS_NAMED, '', true, NULL);
+
+    $DB->delete_records_select(
+        'gitlab_group_members',
+        "group_id $in_sql",
+        $params,
+    );
+
+    // delete groups
+    $DB->delete_records('gitlab_groups', ['module_id' => $id]);
+
+    // delete module
     $DB->delete_records('gitlab', ['id' => $id]);
 
     return true;
