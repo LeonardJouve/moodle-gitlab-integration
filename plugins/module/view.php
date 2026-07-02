@@ -339,22 +339,6 @@ function student_group(Gitlab $client, Resources $resources, int $instance_id, i
 
 echo $OUTPUT->header();
 
-$classnames = [
-    FinalizeGroupCreationTask::class,
-    SubmissionSoonTask::class,
-    SubmissionTask::class,
-];
-foreach ($classnames as $classname) {
-    $tasks = manager::get_adhoc_tasks($classname);
-    foreach ($tasks as $task) {
-        $customdata = $task->get_custom_data();
-        if (!isset($customdata->module_id) || $customdata->module_id != $moduleinstance->id) {
-            continue;
-        }
-        echo ' ' . $task->get_id();
-    }
-}
-
 $username = Helper::get_user_gitlab_username($USER->id);
 
 if ($username == null) {
