@@ -347,7 +347,7 @@ $classnames = [
 foreach ($classnames as $classname) {
     $tasks = manager::get_adhoc_tasks($classname);
     foreach ($tasks as $task) {
-        echo '' . $task->id;
+        echo ' ' . $task->get_id();
     }
 }
 

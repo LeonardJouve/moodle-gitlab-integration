@@ -106,8 +106,6 @@ function gitlab_update_instance($moduleinstance, $mform = null) {
 function gitlab_delete_instance($id) {
     global $DB;
 
-    return false;
-
     $moduleinstance = $DB->get_record('gitlab', ['id' => $id]);
     if (!$moduleinstance) {
         return false;
@@ -120,18 +118,14 @@ function gitlab_delete_instance($id) {
         SubmissionTask::class,
     ];
     foreach ($classnames as $classname) {
-        throw new Exception(manager::get_canonical_class_name($classname));
         $tasks = manager::get_adhoc_tasks($classname);
         foreach ($tasks as $task) {
-            throw new Exception('task data ' . $task->get_custom_data_as_string());
             $customdata = $task->get_custom_data();
             if (!isset($customdata->module_id) || $customdata->module_id != $id) {
                 continue;
             }
 
-            throw new Exception('delete task ' . $task->id);
-
-            manager::delete_adhoc_task($task->id);
+            manager::delete_adhoc_task($task->get_id());
         }
     }
 
