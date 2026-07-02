@@ -118,6 +118,7 @@ function gitlab_delete_instance($id) {
         SubmissionTask::class,
     ];
     foreach ($classnames as $classname) {
+        throw new Exception(manager::get_canonical_class_name($classname));
         $tasks = manager::get_adhoc_tasks($classname);
         foreach ($tasks as $task) {
             throw new Exception('task data ' . $task->get_custom_data_as_string());
