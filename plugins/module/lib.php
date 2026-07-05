@@ -90,9 +90,21 @@ function gitlab_add_instance($moduleinstance, $mform = null) {
 function gitlab_update_instance($moduleinstance, $mform = null) {
     global $DB;
 
-    $moduleinstance->reviewers = json_encode($moduleinstance->reviewer ?: [], JSON_UNESCAPED_UNICODE);
     $moduleinstance->timemodified = time();
     $moduleinstance->id = $moduleinstance->instance;
+
+    $moduleinstance->reviewers = json_encode($moduleinstance->reviewer ?: [], JSON_UNESCAPED_UNICODE);
+    
+    // add reviewers as maintainers
+    // $this->resources->add_reviewers_as_maintainers($template->id, $moduleinstance->reviewer ?? []);
+    
+    // group size
+
+    // issue due date
+
+    // update tasks
+
+    // update calendar events
 
     return $DB->update_record('gitlab', $moduleinstance);
 }
