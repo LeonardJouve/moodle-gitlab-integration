@@ -248,6 +248,33 @@ class Bridge {
         return Group::set_group_members($members, $max_member, $group_id);
     }
 
+    public function set_module_reviewers(int $module_id, int $template_id, array $old_reviewers, array $new_reviewers) {
+        global $DB;
+
+        $repositories = $DB->get_fieldset('gitlab_groups', 'repository_id', ['module_id' => $module_id]);
+
+        $removed = array_diff($old_reviewers, $new_reviewers);
+        $added = array_diff($new_reviewers, $old_reviewers);
+
+        foreach ($removed as $reviewer) {
+            $user_id = $this->resources->get_gitlab_user_id($reviewer);
+                    
+            $this->client->member()->remove($template_id, $user_id);
+
+            foreach ($repositories as $repository) {
+                $this->client->member()->remove($repository, $user_id);
+            }
+        }
+
+        foreach ($added as $reviewer) {
+            $this->resources->add_member($template_id, $reviewer, Resources::$maintainer_access_level);
+
+            foreach ($repositories as $repository) {
+                $this->resources->add_member($repository, $reviewer, Resources::$maintainer_access_level);
+            }
+        }
+    }
+
     public function create_calendar_event(stdClass $moduleinstance) {
         global $DB;
 

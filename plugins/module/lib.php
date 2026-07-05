@@ -27,6 +27,7 @@ use mod_gitlab\local\Helper;
 use mod_gitlab\http\Gitlab;
 use mod_gitlab\local\Bridge;
 use mod_gitlab\local\FinalizeGroupCreationTask;
+use mod_gitlab\local\Resources;
 use mod_gitlab\local\SubmissionSoonTask;
 use mod_gitlab\local\SubmissionTask;
 
@@ -92,19 +93,72 @@ function gitlab_update_instance($moduleinstance, $mform = null) {
 
     $moduleinstance->timemodified = time();
     $moduleinstance->id = $moduleinstance->instance;
-
-    $moduleinstance->reviewers = json_encode($moduleinstance->reviewer ?: [], JSON_UNESCAPED_UNICODE);
+    $new_reviewers = $moduleinstance->reviewer ?: [];
+    $moduleinstance->reviewers = json_encode($new_reviewers, JSON_UNESCAPED_UNICODE);
     
-    // add reviewers as maintainers
-    // $this->resources->add_reviewers_as_maintainers($template->id, $moduleinstance->reviewer ?? []);
-    
-    // group size
+    $oldinstance = $DB->get_record('gitlab', ['id' => $moduleinstance->id], '*', MUST_EXIST);
 
-    // issue due date
+    $token = Helper::get_course_gitlab_token($oldinstance->course);
+    $client = new Gitlab($token);
+    $bridge = new Bridge($client);
+    $resources = new Resources($client);
 
-    // update tasks
+    // update reviewers
+    $old_reviewers = json_decode($oldinstance->reviewers, true) ?? [];
+    $bridge->set_module_reviewers($moduleinstance->id, $moduleinstance->template_id, $old_reviewers, $new_reviewers);
+
+    // update issues due date
+    $issue = $resources->get_instructions_issue($oldinstance->template_id);
+    if ($issue != null) {
+        $client->issue()->update($oldinstance->template_id, $issue->iid, [
+            'due_date' => date('Y-m-d', $moduleinstance->due_date),
+        ]);
+    }
+
+    $repositories = $DB->get_fieldset('gitlab_groups', 'repository_id', ['module_id' => $moduleinstance->id]);
+    foreach ($repositories as $repository) {
+        $issue = $resources->get_instructions_issue($repository);
+        if ($issue != null) {
+            $client->issue()->update($repository, $issue->iid, [
+                'due_date' => date('Y-m-d', $moduleinstance->due_date),
+            ]);
+        }
+    }
+
+    // reschedule tasks
+    $SECONDS_IN_DAY = 60 * 60 * 24;
+    $tasks = manager::get_adhoc_tasks(SubmissionSoonTask::class, false, true);
+    foreach ($tasks as $task) {
+        $customdata = $task->get_custom_data();
+        if (!isset($customdata->module_id) || $customdata->module_id != $moduleinstance->id) {
+            continue;
+        }
+
+        $task->set_next_run_time($moduleinstance->due_date - $SECONDS_IN_DAY);
+        manager::reschedule_or_queue_adhoc_task($task);
+    }
+
+    $tasks = manager::get_adhoc_tasks(SubmissionTask::class, false, true);
+    foreach ($tasks as $task) {
+        $customdata = $task->get_custom_data();
+        if (!isset($customdata->module_id) || $customdata->module_id != $moduleinstance->id) {
+            continue;
+        }
+
+        $task->set_next_run_time($moduleinstance->due_date);
+        manager::reschedule_or_queue_adhoc_task($task);
+    }
 
     // update calendar events
+    $event_ids = $DB->get_fieldset('event', 'id', [
+        'modulename' => 'gitlab',
+        'instance'   => $moduleinstance->id,
+    ]);
+
+    foreach ($event_ids as $event_id) {
+        $event = calendar_event::load($event_id);
+        $event->update(['timestart' => $moduleinstance->due_date], false);
+    }
 
     return $DB->update_record('gitlab', $moduleinstance);
 }
@@ -145,7 +199,7 @@ function gitlab_delete_instance($id) {
     $event_ids = $DB->get_fieldset('event', 'id', [
         'modulename' => 'gitlab',
         'instance'   => $id,
-    ], IGNORE_MISSING);
+    ]);
 
     foreach ($event_ids as $event_id) {
         $event = calendar_event::load($event_id);
