@@ -105,7 +105,7 @@ function gitlab_update_instance($moduleinstance, $mform = null) {
 
     // update reviewers
     $old_reviewers = json_decode($oldinstance->reviewers, true) ?? [];
-    $bridge->set_module_reviewers($moduleinstance->id, $moduleinstance->template_id, $old_reviewers, $new_reviewers);
+    $bridge->set_module_reviewers($moduleinstance->id, $oldinstance->template_id, $old_reviewers, $new_reviewers);
 
     // update issues due date
     $issue = $resources->get_instructions_issue($oldinstance->template_id);
