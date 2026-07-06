@@ -20,7 +20,7 @@ After the module due date, the template’s solution branch is automatically sub
 
 Changes made in group repositories are also propagated back to the template repository via merge requests.
 
-See the features [documentation](features.md) for a more detailed list of available features.
+See the features [documentation](../../docs/features.md) for a more detailed list of available features.
 
 ## Code
 ```
