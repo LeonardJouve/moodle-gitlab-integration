@@ -33,7 +33,67 @@ php admin/cli/upgrade.php
 
 to complete the installation from the command line.
 
-# Collaborate
+# Developer
+
+## Contributions
+
+Contributions to this project are welcome.
+
+You should first fork the repository. All changes should then be submitted via pull requests.
+
+Bug reports and feature requests can be submitted via the issue tracker.
+
+## Infrastructure
+
+This repository includes a simple Terraform configuration to provision an AWS EC2 instance capable of hosting a Moodle instance.
+
+```bash
+cd terraform
+terraform init
+terraform apply
+```
+
+## Installation
+
+### Manual
+
+### Ansible
+
+[!WARNING]
+These playbooks are still Work In Progress.
+Some Manual configuration must be done as described below.
+
+This repository includes Ansible playbooks to provision a server with ssh access with a Moodle instance
+
+First modify `ansible/inventory.ini` with your SSH credentials.
+
+Then modify `ansible/group_vars/all.yaml` with your host and url
+
+I personaly used [DuckDNS](https://www.duckdns.org/) for an easy to setup and free to use DNS record.
+
+Finally modifiy `ansible/playbooks/res/moodle-authentik.yaml` with your host and url
+
+You can now run Ansible playbooks
+
+```
+cd ansible
+ansible-playbook -i inventory.ini playbooks/base.yaml
+ansible-playbook -i inventory.ini playbooks/traefik.yaml
+ansible-playbook -i inventory.ini playbooks/authentik.yaml
+ansible-playbook -i inventory.ini playbooks/moodle.yaml
+```
+
+Setup authentik by browsing `http://<authentik_external_host>/if/flow/initial-setup/`
+
+If the authentik blueprint apply failed, run it once again after your authentik account creation
+```
+ansible-playbook -i inventory.ini playbooks/authentik.yaml
+```
+
+You might also have to remove `moodle` outpost created and expose the Moodle application on the `default` outpost.
+Finally enable `Local Docker connection` integration on the outpost used.
+
+Your app should now be running and accessible with `http://<moodle_external_host>`.
 
 # Configuration
 
