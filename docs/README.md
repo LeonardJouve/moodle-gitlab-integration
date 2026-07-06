@@ -2,7 +2,7 @@
 
 This project is an exten­sible integration between Moodle and GitLab through Moodle plugins and the GitLab REST API.
 
-Both platforms are widely used in Computer Science education but operate indepen­dently, resulting in fragmented workflows for both students and teachers.
+Both platforms are widely used in Computer Science education but operate independently, which can result in fragmented workflows for both students and teachers.
 
 The integration consists of two Moodle plugins that work together:
 - module
@@ -39,7 +39,7 @@ to complete the installation from the command line.
 
 Contributions to this project are welcome.
 
-You should first fork the repository. All changes should then be submitted via pull requests.
+First, fork the repository. All changes should then be submitted via pull requests.
 
 Bug reports and feature requests can be submitted via the issue tracker.
 
@@ -47,7 +47,7 @@ Bug reports and feature requests can be submitted via the issue tracker.
 
 This repository includes a simple Terraform configuration to provision an AWS EC2 instance capable of hosting a Moodle instance.
 
-If you already own a machine with SSH access or want to run it in local, you can skip this step.
+If you already have a machine with SSH access or want to run it locally, you can skip this step.
 
 ```bash
 cd terraform
@@ -105,8 +105,7 @@ docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
 ### Ansible
 
 > [!WARNING]
-> These playbooks are still work in progress.
-> Some manual configuration is still required, as described below.
+> These playbooks are still a work in progress and require manual configuration.
 
 ![IaC](./iac.svg)
 
@@ -114,7 +113,7 @@ This repository includes Ansible playbooks to provision a server with SSH access
 
 First modify `ansible/inventory.ini` with your host and URL configuration.
 
-Then update `ansible/group_vars/all.yaml` with your host and url
+Then update `ansible/group_vars/all.yaml` with your host and URL configuration.
 
 For DNS, you can use a service such as [DuckDNS](https://www.duckdns.org/), which provides an easy-to-setup and free dynamic DNS solution.
 
