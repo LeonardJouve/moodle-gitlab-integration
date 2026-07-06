@@ -16,12 +16,12 @@ The project targets **Moodle version 5**.
 
 # Installation
 
-Both plugins are located in the [plugins](plugins/) directory.
+Both plugins are located in the [plugins](../plugins/) directory.
 
 To install them, copy each plugin to the appropriate Moodle directory and rename each directory to `gitlab`:
 
-- [**customfield**](plugins/customfield) → `public/customfield/field`.
-- [**module**](plugins/module) → `public/mod`.
+- [**customfield**](../plugins/customfield) → `public/customfield/field`.
+- [**module**](../plugins/module) → `public/mod`.
 
 Once both plugins have been copied to their respective locations, navigate to your Moodle instance and complete the installation by following the Moodle plugin installation prompts.
 
