@@ -23,7 +23,15 @@ To install them, copy each plugin to the appropriate Moodle directory and rename
 - [**customfield**](../plugins/customfield) → `public/customfield/field`.
 - [**module**](../plugins/module) → `public/mod`.
 
-Once both plugins have been copied to their respective locations, navigate to your Moodle instance and complete the installation by following the Moodle plugin installation prompts.
+Once both plugins have been copied to their respective locations, log in to your Moodle site as an admin and go to _Site administration_ → _Notifications_ to complete the installation.
+
+Alternatively, you can run
+
+```
+php admin/cli/upgrade.php
+```
+
+to complete the installation from the command line.
 
 # Collaborate
 
