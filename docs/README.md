@@ -47,6 +47,7 @@ This will send:
 - One notification on the due date
 
 You can enable this under:
+
 _Site administration_ → _Messaging_ → _Notification settings_ → _gitlab_
 
 ## Webhooks
@@ -66,6 +67,7 @@ If any form of authentication blocks access to the endpoint, GitLab will not be 
 Assignment due dates are interpreted according to the Moodle instance timezone.
 
 You can configure this under:
+
 _Site administration_ → _Location_ → _Location settings_ → _Default timezone_
 
 # Code
