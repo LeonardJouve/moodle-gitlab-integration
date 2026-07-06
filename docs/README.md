@@ -186,6 +186,8 @@ _Site administration_ → _Location_ → _Location settings_ → _Default timezo
 
 # Features
 
+> On GitLab.com, you must use the GitLab UI to create groups without a parent group. You cannot use the API to do this. [cf](https://docs.gitlab.com/api/groups/#create-a-group)
+
 # Code
 
 Each plugin documents its code structure in its own `README.md` file:
