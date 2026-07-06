@@ -6,16 +6,39 @@ Learn more about Moodle module plugin in the official [documentation](https://mo
 
 ## Code
 ```
+├── amd
+│   ├── build
+│   └── src
+├── classes
+│   ├── external
+│   ├── http
+│   └── local
 ├── db
-│   └── install.php
 ├── lang
-│   └── en
-│       └── gitlab.php
-└── version.php
+├── pix
+├── templates
+├── index.php
+├── lib.php
+├── mod_form.php
+├── version.php
+├── view.php
+└── webhook.php
 ```
 
-- `db/install.php` – Handles creation of custom fields during installation
-- `lang/en/gitlab.php` – English language strings
+- `amd/build` – AMD Javascript modules minified
+- `amd/src` – AMD Javascript modules source
+- `classes/external` – External services exposed
+- `classes/http` – GitLab HTTP Client
+- `classes/local` – Other plugin internal classes
+- `db` – Define database schemas, services, notifications, access, migrations
+- `lang` – Language strings
+- `pix` – Assets
+- `templates` – Mustache templates
+- `index.php` – List all instances of a module
+- `lib.php` – Handles module creation / update / deletion
+- `mod_form.php` – Module creation / edition form
+- `view.php` – Module view page
+- `webhook.php` – Webhook page
 - `version.php` – Plugin metadata (version, dependencies, compatibility)
 
 ## Installing via uploaded ZIP file ##
