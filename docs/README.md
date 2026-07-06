@@ -33,7 +33,7 @@ php admin/cli/upgrade.php
 
 to complete the installation from the command line.
 
-# Developer
+# Development
 
 ## Contributions
 
@@ -55,7 +55,46 @@ terraform apply
 
 ## Installation
 
+You can choose between two installation options. The manual installation only sets up Moodle, while the Ansible-based installation also configures Moodle behind [Authentik](https://goauthentik.io/) as an authentication provider.
+
 ### Manual
+
+A simplified Moodle development environment is available via my [fork](https://github.com/LeonardJouve/moodle-docker) of [moodle-docker](https://github.com/moodlehq/moodle-docker).
+
+#### Clone repositories
+
+```bash
+git clone https://github.com/LeonardJouve/moodle-docker.git
+cd moodle-docker
+git clone https://github.com/LeonardJouve/moodle-gitlab-integration.git
+```
+
+#### Docker override configuration
+
+Create a file named `docker-compose.override.yml` in the `moodle-docker` directory:
+
+```yml
+services:
+  webserver:
+    volumes:
+      - "./moodle-gitlab-integration/plugins/module:/var/www/html/public/mod/gitlab"
+      - "./moodle-gitlab-integration/plugins/customfield:/var/www/html/public/customfield/field/gitlab"
+    environment:
+      MOODLE_DOCKER_WEB_PORT: ""
+      DB_USER: "<db_user>"
+      DB_NAME: "<db_name>"
+      DB_PASSWORD: "<db_password>"
+      DB_PORT: <db_port>
+      WEB_HOST: "<moodle_external_host>"
+      WEB_PORT: <web_port>
+```
+
+#### Start the stack
+
+Run the following command to start the environment:
+```bash
+docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
+```
 
 ### Ansible
 
@@ -139,6 +178,8 @@ Assignment due dates are interpreted according to the Moodle instance timezone.
 You can configure this under:
 
 _Site administration_ → _Location_ → _Location settings_ → _Default timezone_
+
+# Features
 
 # Code
 
