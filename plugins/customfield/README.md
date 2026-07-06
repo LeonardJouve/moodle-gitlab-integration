@@ -12,6 +12,8 @@ The plugin also defines two custom fields:
 - a course-level field for storing a course-specific GitLab token
 - a user-level field for storing the user's GitLab username
 
+The GitLab token field uses the newly created custom field type to encrypt data before storing it in the database.
+
 ## Code
 ```
 ├── classes
