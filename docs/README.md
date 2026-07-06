@@ -37,12 +37,40 @@ to complete the installation from the command line.
 
 # Configuration
 
-Web notifications should be enabled for both "Notification of GitLab submissions" under _Site administration_ -> _Messaging_ -> _Notification settings_ -> _gitlab_
+## Notifications
 
-Endpoint `/mod/gitlab/webhook.php` must not be protected behind any authentication layer as this will be used by GitLab webhooks.
+To enable student web notifications for assignment deadlines, configure _Notification of GitLab submissions_.
+
+This will send:
+
+- One notification 1 day before the assignment due date
+- One notification on the due date
+
+You can enable this under:
+_Site administration_ → _Messaging_ → _Notification settings_ → _gitlab_
+
+## Webhooks
+
+The module plugin exposes a webhook endpoint that must be publicly accessible without authentication, as it is called directly by GitLab.
+
+```
+https://<moodle-host>/mod/gitlab/webhook.php
+```
+
+The received data is signed by GitLab, and the signature is verified by the Moodle plugin. This ensures that the payload authenticity and integrity.
+
+If any form of authentication blocks access to the endpoint, GitLab will not be able to trigger webhooks.
+
+## Timezone
+
+Assignment due dates are interpreted according to the Moodle instance timezone.
+
+You can configure this under:
+_Site administration_ → _Location_ → _Location settings_ → _Default timezone_
 
 # Code
 
-## Customfield
+Each plugin documents its own code structure in its respective `README.md` file:
 
-## Module
+- [**customfield**](../plugins/customfield)
+- [**module**](../plugins/module)
