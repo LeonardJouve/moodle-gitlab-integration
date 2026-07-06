@@ -1,8 +1,35 @@
 # GitLab Custom Fields #
 
-TO-DO Describe the plugin shortly here.
+Learn more about Moodle custom fields in the official [documentation](https://moodledev.io/docs/5.0/apis/plugintypes/customfield).
 
-TO-DO Provide more detailed description here.
+## Purpose
+
+This plugin adds a new custom field type for storing sensitive content.
+
+Data are encrypted using `\core\encryption` class before being stored into the database and decrypted when read.
+
+The plugin also defines two custom fields:
+- a course-level field for storing a course-specific GitLab token
+- a user-level field for storing the user's GitLab username
+
+## Code
+```
+├── classes
+│   ├── data_controller.php
+│   └── field_controller.php
+├── db
+│   └── install.php
+├── lang
+│   └── en
+│       └── customfield_gitlab.php
+└── version.php
+```
+
+- `classes/data_controller.php` – Handles encryption and retrieval of custom field data  
+- `classes/field_controller.php` – Required by custom field plugins but currently unused  
+- `db/install.php` – Handles creation of custom fields during installation  
+- `lang/en/customfield_gitlab.php` – English language strings  
+- `version.php` – Plugin metadata (version, dependencies, compatibility)
 
 ## Installing via uploaded ZIP file ##
 
