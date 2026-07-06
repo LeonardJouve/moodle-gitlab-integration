@@ -1,8 +1,22 @@
-# gitlab #
+# GitLab Module #
 
-TO-DO Describe the plugin shortly here.
+Learn more about Moodle module plugin in the official [documentation](https://moodledev.io/docs/5.0/apis/plugintypes/mod).
 
-TO-DO Provide more detailed description here.
+## Purpose
+
+## Code
+```
+├── db
+│   └── install.php
+├── lang
+│   └── en
+│       └── gitlab.php
+└── version.php
+```
+
+- `db/install.php` – Handles creation of custom fields during installation
+- `lang/en/gitlab.php` – English language strings
+- `version.php` – Plugin metadata (version, dependencies, compatibility)
 
 ## Installing via uploaded ZIP file ##
 

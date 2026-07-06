@@ -1,6 +1,6 @@
 # GitLab Custom Fields #
 
-Learn more about Moodle custom fields in the official [documentation](https://moodledev.io/docs/5.0/apis/plugintypes/customfield).
+Learn more about Moodle custom fields plugin in the official [documentation](https://moodledev.io/docs/5.0/apis/plugintypes/customfield).
 
 ## Purpose
 
@@ -27,10 +27,10 @@ The GitLab token field uses the newly created custom field type to encrypt data 
 └── version.php
 ```
 
-- `classes/data_controller.php` – Handles encryption and retrieval of custom field data  
-- `classes/field_controller.php` – Required by custom field plugins but currently unused  
-- `db/install.php` – Handles creation of custom fields during installation  
-- `lang/en/customfield_gitlab.php` – English language strings  
+- `classes/data_controller.php` – Handles encryption and retrieval of custom field data
+- `classes/field_controller.php` – Required by custom field plugins but currently unused
+- `db/install.php` – Handles creation of custom fields during installation
+- `lang/en/customfield_gitlab.php` – English language strings
 - `version.php` – Plugin metadata (version, dependencies, compatibility)
 
 ## Installing via uploaded ZIP file ##
