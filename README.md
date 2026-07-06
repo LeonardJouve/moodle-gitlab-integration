@@ -1,6 +1,10 @@
+See the usage [documentation](docs/).
+
 Simplified Moodle for development [fork](https://github.com/LeonardJouve/moodle-docker) on docker
 
-Web notifications should be enabled for both "Notification of GitLab submissions" under _Site administration_ -> _Messaging_ -> _Notification settings_ -> _gitlab_ 
+Web notifications should be enabled for both "Notification of GitLab submissions" under _Site administration_ -> _Messaging_ -> _Notification settings_ -> _gitlab_
+
+Timezone should be configured in Moodle settings
 
 Endpoint `/mod/gitlab/webhook.php` must not be protected behind any authentication layer as this will be used by GitLab webhooks. 
 
