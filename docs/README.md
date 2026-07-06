@@ -59,21 +59,23 @@ terraform apply
 
 ### Ansible
 
-[!WARNING]
-These playbooks are still Work In Progress.
-Some Manual configuration must be done as described below.
+> [!WARNING]
+> These playbooks are still work in progress.
+> Some manual configuration is still required, as described below.
 
-This repository includes Ansible playbooks to provision a server with ssh access with a Moodle instance
+![IaC](./iac.svg)
 
-First modify `ansible/inventory.ini` with your SSH credentials.
+This repository includes Ansible playbooks to provision a server with SSH access and a Moodle instance.
 
-Then modify `ansible/group_vars/all.yaml` with your host and url
+First modify `ansible/inventory.ini` with your host and URL configuration.
 
-I personaly used [DuckDNS](https://www.duckdns.org/) for an easy to setup and free to use DNS record.
+Then update `ansible/group_vars/all.yaml` with your host and url
 
-Finally modifiy `ansible/playbooks/res/moodle-authentik.yaml` with your host and url
+For DNS, you can use a service such as [DuckDNS](https://www.duckdns.org/), which provides an easy-to-setup and free dynamic DNS solution.
 
-You can now run Ansible playbooks
+Finally modifiy `ansible/playbooks/res/moodle-authentik.yaml` with your host and URL settings.
+
+You can now run Ansible playbooks:
 
 ```
 cd ansible
@@ -83,17 +85,25 @@ ansible-playbook -i inventory.ini playbooks/authentik.yaml
 ansible-playbook -i inventory.ini playbooks/moodle.yaml
 ```
 
-Setup authentik by browsing `http://<authentik_external_host>/if/flow/initial-setup/`
+After deployment, complete the Authentik setup by visiting:
+```
+http://<authentik_external_host>/if/flow/initial-setup/`
+```
 
-If the authentik blueprint apply failed, run it once again after your authentik account creation
+If the authentik blueprint apply failed, rerun the playbook after creating your Authentik account:
 ```
 ansible-playbook -i inventory.ini playbooks/authentik.yaml
 ```
 
-You might also have to remove `moodle` outpost created and expose the Moodle application on the `default` outpost.
-Finally enable `Local Docker connection` integration on the outpost used.
+You may also need to:
+- Remove the automatically created moodle outpost
+- Expose the Moodle application using the default outpost
+- Enable the Local Docker connection integration on the selected outpost
 
-Your app should now be running and accessible with `http://<moodle_external_host>`.
+Your app should now be running and accessible at:
+```
+http://<moodle_external_host>
+```
 
 # Configuration
 
