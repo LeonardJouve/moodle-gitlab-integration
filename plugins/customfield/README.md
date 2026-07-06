@@ -1,6 +1,6 @@
 # GitLab Custom Fields #
 
-Learn more about Moodle custom fields plugin in the official [documentation](https://moodledev.io/docs/5.0/apis/plugintypes/customfield).
+Learn more about Moodle custom field plugins in the official [documentation](https://moodledev.io/docs/5.0/apis/plugintypes/customfield).
 
 ## Purpose
 

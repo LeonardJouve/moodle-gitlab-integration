@@ -1,8 +1,26 @@
 # GitLab Module #
 
-Learn more about Moodle module plugin in the official [documentation](https://moodledev.io/docs/5.0/apis/plugintypes/mod).
+Learn more about Moodle module plugins in the official [documentation](https://moodledev.io/docs/5.0/apis/plugintypes/mod).
 
 ## Purpose
+
+This plugin adds a new Moodle module type called _GitLab_.
+
+This module is the central component of the integration.
+
+Creating the module requires a GitLab token defined at the course level, as well as a GitLab username for each user in order to access the module.
+
+Once created, the module provides teachers and listed reviewers with access to a GitLab template repository.
+
+Students and teachers can create groups, and students can join existing groups.
+
+Each group has its own repository, which is a fork of the template repository.
+
+After the module due date, the template’s solution branch is automatically submitted to each group repository as a merge request.
+
+Changes made in group repositories are also propagated back to the template repository via merge requests.
+
+See the features [documentation](features.md) for a more detailed list of available features.
 
 ## Code
 ```
