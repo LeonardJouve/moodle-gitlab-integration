@@ -8,11 +8,11 @@ The integration consists of two Moodle plugins that work together:
 - module
 - customfield
 
-These plugins enable direct interaction with GitLab features from within Moodle while automating repetitive tasks.
+These plugins enable direct interaction with GitLab features from within Moodle while automating repetitive workflows.
 
-The result is a unified platform where users can access relevant information and perform common GitLab related actions without leaving Moodle.
+The result is a unified platform where users can access relevant information and perform common GitLab-related actions without leaving Moodle.
 
-The project targets **Moodle version 5**.
+The project targets **Moodle version 5.x**.
 
 # Installation
 
@@ -47,29 +47,31 @@ Bug reports and feature requests can be submitted via the issue tracker.
 
 This repository includes a simple Terraform configuration to provision an AWS EC2 instance capable of hosting a Moodle instance.
 
+If you already own a machine with SSH access or want to run it in local, you can skip this step.
+
 ```bash
 cd terraform
 terraform init
 terraform apply
 ```
 
-## Installation
+## Deployment
 
-You can choose between two installation options. The manual installation only sets up Moodle, while the Ansible-based installation also configures Moodle behind [Authentik](https://goauthentik.io/) as an authentication provider.
+You can choose between two deployment options.
+
+The manual deployment only sets up Moodle, while the Ansible-based deployment also configures Moodle behind [Authentik](https://goauthentik.io/) as an authentication provider.
 
 ### Manual
 
 A simplified Moodle development environment is available via my [fork](https://github.com/LeonardJouve/moodle-docker) of [moodle-docker](https://github.com/moodlehq/moodle-docker).
 
-#### Clone repositories
+Clone repositories
 
 ```bash
 git clone https://github.com/LeonardJouve/moodle-docker.git
 cd moodle-docker
 git clone https://github.com/LeonardJouve/moodle-gitlab-integration.git
 ```
-
-#### Docker override configuration
 
 Create a file named `docker-compose.override.yml` in the `moodle-docker` directory:
 
@@ -81,17 +83,21 @@ services:
       - "./moodle-gitlab-integration/plugins/customfield:/var/www/html/public/customfield/field/gitlab"
     environment:
       MOODLE_DOCKER_WEB_PORT: ""
-      DB_USER: "<db_user>"
-      DB_NAME: "<db_name>"
-      DB_PASSWORD: "<db_password>"
-      DB_PORT: <db_port>
-      WEB_HOST: "<moodle_external_host>"
-      WEB_PORT: <web_port>
 ```
 
-#### Start the stack
+Create a `.env` file in the `moodle-docker` directory:
+
+```
+DB_USER=<db_user>
+DB_NAME=<db_name>
+DB_PASSWORD=<db_password>
+DB_PORT=<db_port>
+WEB_HOST=<moodle_external_host>
+WEB_PORT=<web_port>
+```
 
 Run the following command to start the environment:
+
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
 ```
@@ -126,7 +132,7 @@ ansible-playbook -i inventory.ini playbooks/moodle.yaml
 
 After deployment, complete the Authentik setup by visiting:
 ```
-http://<authentik_external_host>/if/flow/initial-setup/`
+http://<authentik_external_host>/if/flow/initial-setup/
 ```
 
 If the authentik blueprint apply failed, rerun the playbook after creating your Authentik account:
@@ -167,7 +173,7 @@ The module plugin exposes a webhook endpoint that must be publicly accessible wi
 https://<moodle-host>/mod/gitlab/webhook.php
 ```
 
-The received data is signed by GitLab, and the signature is verified by the Moodle plugin. This ensures that the payload authenticity and integrity.
+The received data is signed by GitLab, and the signature is verified by the Moodle plugin. This ensures payload authenticity and integrity.
 
 If any form of authentication blocks access to the endpoint, GitLab will not be able to trigger webhooks.
 
@@ -183,7 +189,7 @@ _Site administration_ → _Location_ → _Location settings_ → _Default timezo
 
 # Code
 
-Each plugin documents its own code structure in its respective `README.md` file:
+Each plugin documents its code structure in its own `README.md` file:
 
 - [**customfield**](../plugins/customfield)
 - [**module**](../plugins/module)
