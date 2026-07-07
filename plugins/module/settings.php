@@ -30,7 +30,7 @@ if ($hassiteconfig) {
 
     if ($ADMIN->fulltree) {
         $settings->add(new admin_setting_configtext(
-            'mod_gitlab/gitlab_host',
+            'gitlab/gitlab_host',
             get_string('setting_gitlab_host', 'mod_gitlab'),
             get_string('setting_gitlab_host_desc', 'mod_gitlab'),
             'https://gitlab.com',
