@@ -59,6 +59,54 @@ See the features [documentation](../../docs/features.md) for a more detailed lis
 - `webhook.php` – Webhook page
 - `version.php` – Plugin metadata (version, dependencies, compatibility)
 
+## Database schemas
+
+# Database schema
+
+The plugin stores its data in three main tables. The following tables contain the configuration of Moodle activity instances, GitLab resources, and group memberships.
+
+## `gitlab`
+
+Stores GitLab activity module instances.
+
+| Field            | Description                                                  |
+| ---------------- | ------------------------------------------------------------ |
+| `id`             | Unique identifier of the activity instance.                  |
+| `course`         | ID of the Moodle course containing the activity.             |
+| `name`           | Name of the activity instance.                               |
+| `timecreated`    | Timestamp when the activity instance was created.            |
+| `timemodified`   | Timestamp when the activity instance was last modified.      |
+| `intro`          | Activity description.                                        |
+| `introformat`    | Format of the activity description.                          |
+| `group_id`       | GitLab group ID created or linked to the activity instance.  |
+| `parent_group`   | GitLab parent group ID where resources are created.          |
+| `group_size`     | Maximum number of members allowed per group.                 |
+| `due_date`       | Submission deadline timestamp.                               |
+| `reviewers`      | JSON-encoded list of GitLab usernames assigned as reviewers. |
+| `template_id`    | GitLab template repository ID associated with the activity.  |
+| `webhook_secret` | Encrypted secret used to verify GitLab webhook payloads.     |
+
+## `gitlab_groups`
+
+Stores GitLab groups associated with an activity instance.
+
+| Field           | Description                                     |
+| --------------- | ----------------------------------------------- |
+| `id`            | Unique identifier of the group record.          |
+| `module_id`     | ID of the associated GitLab activity instance.  |
+| `repository_id` | GitLab repository ID associated with the group. |
+
+## `gitlab_group_members`
+
+Stores the relationship between GitLab groups and Moodle users.
+
+| Field      | Description                                   |
+| ---------- | --------------------------------------------- |
+| `id`       | Unique identifier of the membership record.   |
+| `group_id` | ID of the associated GitLab group.            |
+| `user_id`  | ID of the Moodle user belonging to the group. |
+
+
 ## Installing via uploaded ZIP file ##
 
 1. Log in to your Moodle site as an admin and go to _Site administration >

@@ -91,7 +91,7 @@ docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
 > [!WARNING]
 > These playbooks are still a work in progress and require manual configuration.
 
-![IaC](./iac.svg)
+![IaC](./images/iac.svg)
 
 This repository includes Ansible playbooks to provision a server with SSH access and a Moodle instance.
 
