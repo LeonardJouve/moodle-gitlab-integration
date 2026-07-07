@@ -61,8 +61,6 @@ See the features [documentation](../../docs/features.md) for a more detailed lis
 
 ## Database schemas
 
-# Database schema
-
 The plugin stores its data in three main tables. The following tables contain the configuration of Moodle activity instances, GitLab resources, and group memberships.
 
 ## `gitlab`
