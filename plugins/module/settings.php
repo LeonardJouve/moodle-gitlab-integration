@@ -1,4 +1,4 @@
-<?php
+<!-- <?php
 // This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -32,7 +32,6 @@ $section = 'modsettinggitlab';
     // $settings = new admin_settingpage($section, get_string('modulename', 'mod_gitlab'));
 
     if ($ADMIN->fulltree) {
-        require_once($CFG->dirroot.'/mod/gitlab/lib.php');
 
         $settings->add(new admin_setting_configtext(
             'gitlab/gitlab_host',
@@ -43,4 +42,4 @@ $section = 'modsettinggitlab';
     }
 
     // $ADMIN->add($section, $settings);
-// }
+// } -->
