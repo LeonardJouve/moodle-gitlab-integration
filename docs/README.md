@@ -7,7 +7,7 @@ To install them, copy each plugin to the appropriate Moodle directory and rename
 - [**customfield**](../plugins/customfield) → `public/customfield/field`.
 - [**module**](../plugins/module) → `public/mod`.
 
-Once both plugins have been copied to their respective locations, log in to your Moodle site as an admin and go to _Site administration_ → _Notifications_ to complete the installation.
+Once both plugins have been copied to their respective locations, log in to your Moodle site as an admin and go to _Site administration_ → _General_ → _Notifications_ to complete the installation.
 
 Alternatively, you can run
 
@@ -146,7 +146,7 @@ This will send:
 
 You can enable this under:
 
-_Site administration_ → _Messaging_ → _Notification settings_ → _gitlab_
+_Site administration_ → _General_ → _Messaging_ → _Notification settings_ → _gitlab_
 
 ## Webhooks
 
@@ -166,4 +166,12 @@ Assignment due dates are interpreted according to the Moodle instance timezone.
 
 You can configure this under:
 
-_Site administration_ → _Location_ → _Location settings_ → _Default timezone_
+_Site administration_ → _General_ → _Location_ → _Location settings_ → _Default timezone_
+
+## GitLab host
+
+If your GitLab instance is hosted on a different domain, you can configure a custom GitLab URL in Moodle under:
+
+_Site administration_ → _Plugins_ → _Activity modules_ → _gitlab_
+
+![Moodle GitLab settings](./images/moodle_gitlab_settings.png)
