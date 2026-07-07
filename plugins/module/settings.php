@@ -25,8 +25,8 @@ defined('MOODLE_INTERNAL') || die();
 global $ADMIN, $hassiteconfig;
 
 if ($hassiteconfig) {
-    $ADMIN->add('modsettings', new admin_category('mod_gitlab', get_string('modulename', 'mod_gitlab')));
-    $settingspage = new admin_settingpage('mod_gitlab', get_string('modulename', 'mod_gitlab'));
+    $ADMIN->add('modsettings', new admin_category('mod_gitlab_category', get_string('modulename', 'mod_gitlab')));
+    $settingspage = new admin_settingpage('mod_gitlab_page', get_string('modulename', 'mod_gitlab'));
 
     if ($ADMIN->fulltree) {
         $settingspage->add(new admin_setting_configtext(
