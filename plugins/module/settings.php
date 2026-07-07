@@ -24,11 +24,18 @@ defined('MOODLE_INTERNAL') || die();
 
 global $ADMIN, $settings;
 
-if ($ADMIN->fulltree) {
-    $settings->add(new admin_setting_configtext(
-        'mod_gitlab/gitlab_host',
-        get_string('setting_gitlab_host', 'mod_gitlab'),
-        get_string('setting_gitlab_host_desc', 'mod_gitlab'),
-        'https://gitlab.com',
-    ));
+if ($hassiteconfig) {
+    $ADMIN->add('localplugins', new admin_category('settings_gitlab', 'GitLab'));
+    $settingspage = new admin_settingpage('gitlab', 'gitlab');
+
+    if ($ADMIN->fulltree) {
+        $settingspage->add(new admin_setting_configtext(
+            'mod_gitlab/gitlab_host',
+            get_string('setting_gitlab_host', 'mod_gitlab'),
+            get_string('setting_gitlab_host_desc', 'mod_gitlab'),
+            'https://gitlab.com',
+        ));
+    }
+
+    $ADMIN->add('localplugins', $settingspage);
 }
