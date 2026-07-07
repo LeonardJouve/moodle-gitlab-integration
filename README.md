@@ -19,7 +19,7 @@ See the usage [documentation](docs/).
 
 # Features
 
-See the features [documentation](docs/features.md)
+See the features [documentation](docs/features.md).
 
 # Code
 
