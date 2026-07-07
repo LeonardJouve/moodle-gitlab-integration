@@ -30,6 +30,8 @@ use core\output\html_writer;
 use core_table\output\html_table;
 use core\url;
 
+global $DB, $PAGE, $OUTPUT;
+
 $id = required_param('id', PARAM_INT);
 
 $course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
@@ -56,16 +58,8 @@ if (empty($gitlabs)) {
 $table = new html_table();
 $table->attributes['class'] = 'generaltable mod_index';
 
-if ($course->format == 'weeks') {
-    $table->head  = [get_string('week'), get_string('name')];
-    $table->align = ['center', 'left'];
-} else if ($course->format == 'topics') {
-    $table->head  = [get_string('topic'), get_string('name')];
-    $table->align = ['center', 'left', 'left', 'left'];
-} else {
-    $table->head  = [get_string('name')];
-    $table->align = ['left', 'left', 'left'];
-}
+$table->head  = [get_string('name')];
+$table->align = ['center'];
 
 foreach ($gitlabs as $gitlab) {
     if (!$gitlab->visible) {
@@ -81,11 +75,7 @@ foreach ($gitlabs as $gitlab) {
         );
     }
 
-    if ($course->format == 'weeks' || $course->format == 'topics') {
-        $table->data[] = [$gitlab->section, $link];
-    } else {
-        $table->data[] = [$link];
-    }
+    $table->data[] = [$link];
 }
 
 echo html_writer::table($table);
