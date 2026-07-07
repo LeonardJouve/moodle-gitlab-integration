@@ -65,6 +65,9 @@ require_login($course, true, $cm);
 
 $modulecontext = context_module::instance($cm->id);
 require_capability('mod/gitlab:view', $modulecontext);
+
+$reviewers = json_decode($moduleinstance->reviewers, true) ?: [];
+$is_reviewer = in_array($USER->id, $reviewers);
 $is_teacher = has_capability('mod/gitlab:addinstance', $modulecontext);
 
 $PAGE->set_url('/mod/gitlab/view.php', ['id' => $cm->id]);
@@ -100,7 +103,7 @@ case 'creategroup':
             return;
         }
 
-        if (!$is_teacher) {
+        if (!$is_teacher && !$is_reviewer) {
             $bridge->join_group($group_id, $USER->id, $moduleinstance);
         }
 
@@ -342,8 +345,8 @@ if ($username == null) {
         get_string('no_gitlab_username_err', 'mod_gitlab'),
         'alert alert-danger'
     );
-} else if ($is_teacher) {
-    template($client, $resources, $moduleinstance->template_id, $moduleinstance->due_date, json_decode($moduleinstance->reviewers, true) ?: []);
+} else if ($is_teacher || $is_reviewer) {
+    template($client, $resources, $moduleinstance->template_id, $moduleinstance->due_date, $reviewers);
     list_teacher_groups($client, $resources, $moduleinstance->id, $moduleinstance->template_id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
 } else {
     $has_group = Group::has_group($moduleinstance->id, $USER->id);
