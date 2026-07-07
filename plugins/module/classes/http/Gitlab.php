@@ -36,7 +36,7 @@ require_once($CFG->libdir . '/filelib.php');
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class Gitlab {
-    private const BASE_URL = 'https://gitlab.com/api/v4';
+    private string $base_url;
     private \curl $curl;
     private string $token;
     private Group $group;
@@ -52,6 +52,7 @@ class Gitlab {
     private File $file;
 
     public function __construct(string $token) {
+        $this->base_url = get_config('mod_gitlab', 'gitlab_host') . '/api/v4';
         $this->curl = new \curl();
         $this->token = $token;
         $this->group = new Group($this);
@@ -70,7 +71,7 @@ class Gitlab {
     public function post(string $endpoint, $data) {
         $this->curl->setHeader(array_merge($this->get_headers(), ['Content-type: application/json']));
 
-        $result = $this->curl->post(Gitlab::BASE_URL . $endpoint, json_encode($data));
+        $result = $this->curl->post($this->base_url . $endpoint, json_encode($data));
         $this->handle_exceptions();
 
         return json_decode($result);
@@ -79,7 +80,7 @@ class Gitlab {
     public function put(string $endpoint, $data) {
         $this->curl->setHeader(array_merge($this->get_headers(), ['Content-type: application/json']));
 
-        $result = $this->curl->put(Gitlab::BASE_URL . $endpoint, json_encode($data));
+        $result = $this->curl->put($this->base_url . $endpoint, json_encode($data));
         $this->handle_exceptions();
 
         return json_decode($result);
@@ -88,7 +89,7 @@ class Gitlab {
     public function get(string $endpoint, array $params = []) {
         $this->curl->setHeader($this->get_headers());
 
-        $result = $this->curl->get(Gitlab::BASE_URL . $endpoint, $params);
+        $result = $this->curl->get($this->base_url . $endpoint, $params);
         $this->handle_exceptions();
 
         return json_decode($result);
@@ -97,7 +98,7 @@ class Gitlab {
     public function delete(string $endpoint, array $params = []) {
         $this->curl->setHeader($this->get_headers());
 
-        $url = Gitlab::BASE_URL . $endpoint;
+        $url = $this->base_url . $endpoint;
 
         if (!empty($params)) {
             $url .= '?' . http_build_query($params);
@@ -110,7 +111,7 @@ class Gitlab {
     }
 
     public function url(string $endpoint, array $params = []) {
-        $url = Gitlab::BASE_URL . $endpoint;
+        $url = $this->base_url . $endpoint;
 
         if (!empty($params)) {
             $url .= '?' . http_build_query($params);
