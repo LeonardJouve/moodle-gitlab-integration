@@ -22,7 +22,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-global $ADMIN, $hassiteconfig, $section;
+global $ADMIN, $hassiteconfig;
+
+$section = 'modsettinggitlab';
 
 if ($hassiteconfig) {
     // $category = $ADMIN->locate('modsettinggitlab');
