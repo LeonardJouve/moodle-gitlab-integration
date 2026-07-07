@@ -24,10 +24,10 @@ defined('MOODLE_INTERNAL') || die();
 
 global $settings;
 
-$settings->add(new admin_setting_configtext(
-    'mod_gitlab/gitlab_host',
-    get_string('setting_gitlab_host', 'mod_gitlab'),
-    get_string('setting_gitlab_host_desc', 'mod_gitlab'),
-    'https://gitlab.com',
-    PARAM_TEXT,
-));
+// $settings->add(new admin_setting_configtext(
+//     'mod_gitlab/gitlab_host',
+//     get_string('setting_gitlab_host', 'mod_gitlab'),
+//     get_string('setting_gitlab_host_desc', 'mod_gitlab'),
+//     'https://gitlab.com',
+//     PARAM_TEXT,
+// ));
