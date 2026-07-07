@@ -32,6 +32,8 @@ $section = 'modsettinggitlab';
     // $settings = new admin_settingpage($section, get_string('modulename', 'mod_gitlab'));
 
     if ($ADMIN->fulltree) {
+        require_once($CFG->dirroot.'/mod/gitlab/lib.php');
+
         $settings->add(new admin_setting_configtext(
             'gitlab/gitlab_host',
             get_string('setting_gitlab_host', 'mod_gitlab'),
