@@ -1,48 +1,29 @@
-Simplified Moodle for development [fork](https://github.com/LeonardJouve/moodle-docker) on docker
+# Introduction
 
-Web notifications should be enabled for both "Notification of GitLab submissions" under _Site administration_ -> _Messaging_ -> _Notification settings_ -> _gitlab_ 
+This project is an exten­sible integration between Moodle and GitLab through Moodle plugins and the GitLab REST API.
 
-Endpoint `/mod/gitlab/webhook.php` must not be protected behind any authentication layer as this will be used by GitLab webhooks. 
+Both platforms are widely used in Computer Science education but operate independently, which can result in fragmented workflows for both students and teachers.
 
-> On GitLab.com, you must use the GitLab UI to create groups without a parent group. You cannot use the API to do this. [cf](https://docs.gitlab.com/api/groups/#create-a-group)
+The integration consists of two Moodle plugins that work together:
+- module
+- customfield
 
-Gitlab API [documentation](https://docs.gitlab.com/api/api_resources)
+These plugins enable direct interaction with GitLab features from within Moodle while automating repetitive workflows.
 
-## Deployment
+The result is a unified platform where users can access relevant information and perform common GitLab-related actions without leaving Moodle.
 
-Create EC2 t3.medium with terraform or if you already own a machine with SSH access skip this step
+The project targets **Moodle version 5.x**.
 
-```bash
-cd terraform
-terraform init
-terraform apply
-```
+# Documentation
+See the usage [documentation](docs/).
 
-Configure the instance using Ansible
+# Features
 
-First modify `ansible/inventory.ini` with your SSH credentials
+See the features [documentation](docs/features.md)
 
-Then modify `ansible/group_vars/all.yaml` with your host and url
+# Code
 
-Finally modifiy `ansible/playbooks/res/moodle-authentik.yaml` with your host and url
+Each plugin documents its code structure in its own `README.md` file:
 
-You can now run Ansible playbooks
-
-```
-cd ansible
-ansible-playbook -i inventory.ini playbooks/base.yaml
-ansible-playbook -i inventory.ini playbooks/traefik.yaml
-ansible-playbook -i inventory.ini playbooks/authentik.yaml
-ansible-playbook -i inventory.ini playbooks/moodle.yaml
-```
-
-Setup authentik by browsing `http://<authentik_external_host>/if/flow/initial-setup/`
-
-If the authentik blueprint apply failed, run it once again after your authentik account creation
-```
-ansible-playbook -i inventory.ini playbooks/authentik.yaml
-```
-
-You might also have to set the authentik moodle application outpost to `default`
-
-Your app should now be running and accessible with `http://<moodle_external_host>`
+- [**customfield**](plugins/customfield)
+- [**module**](plugins/module)
