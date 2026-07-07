@@ -22,7 +22,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// global $settings;
+/** @var \admin_settingpage $settings */
 
 $settings->add(new admin_setting_configtext(
     'mod_gitlab/gitlab_host',
