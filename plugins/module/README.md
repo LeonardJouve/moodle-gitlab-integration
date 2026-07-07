@@ -63,7 +63,7 @@ See the features [documentation](../../docs/features.md) for a more detailed lis
 
 The plugin stores its data in three main tables. The following tables contain the configuration of Moodle activity instances, GitLab resources, and group memberships.
 
-## `gitlab`
+### `gitlab`
 
 Stores GitLab activity module instances.
 
@@ -84,7 +84,7 @@ Stores GitLab activity module instances.
 | `template_id`    | GitLab template repository ID associated with the activity.  |
 | `webhook_secret` | Encrypted secret used to verify GitLab webhook payloads.     |
 
-## `gitlab_groups`
+### `gitlab_groups`
 
 Stores GitLab groups associated with an activity instance.
 
@@ -94,7 +94,7 @@ Stores GitLab groups associated with an activity instance.
 | `module_id`     | ID of the associated GitLab activity instance.  |
 | `repository_id` | GitLab repository ID associated with the group. |
 
-## `gitlab_group_members`
+### `gitlab_group_members`
 
 Stores the relationship between GitLab groups and Moodle users.
 
