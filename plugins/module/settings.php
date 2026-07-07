@@ -22,28 +22,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-global $ADMIN, $hassiteconfig, $settings;
+global $settings;
 
-$section = 'modsettinggitlab';
-
-if ($hassiteconfig) {
-    $settings = new admin_settingpage('mod_gitlab', get_string('modulename', 'mod_gitlab'));
-
-    $ADMIN->add('modsettings', $settings);
-    // $category = $ADMIN->locate('modsettinggitlab');
-//     $ADMIN->add('modsettings', new admin_category('modgitlabcategory', get_string('modulename', 'mod_gitlab')));
-    // $settings = new admin_settingpage($section, get_string('modulename', 'mod_gitlab'));
-
-    // if ($ADMIN->fulltree) {
-
-        $settings->add(new admin_setting_configtext(
-            'mod_gitlab/gitlab_host',
-            get_string('setting_gitlab_host', 'mod_gitlab'),
-            get_string('setting_gitlab_host_desc', 'mod_gitlab'),
-            'https://gitlab.com',
-            PARAM_TEXT,
-        ));
-    // }
-
-    // $ADMIN->add($section, $settings);
-}
+$settings->add(new admin_setting_configtext(
+    'mod_gitlab/gitlab_host',
+    get_string('setting_gitlab_host', 'mod_gitlab'),
+    get_string('setting_gitlab_host_desc', 'mod_gitlab'),
+    'https://gitlab.com',
+    PARAM_TEXT,
+));
