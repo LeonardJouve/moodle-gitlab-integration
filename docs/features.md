@@ -92,6 +92,12 @@ Once a student is part of a group, the available group options become accessible
 
 ![Moodle student group](./images/moodle_student_group.png)
 
+## Evaluation
+
+To evaluate each group, reviewers should add their comments directly to the student repository submission merge request and close the merge request once the evaluation is complete.
+
+The group status will then be automatically updated to "graded" in the Moodle interface.
+
 # GitLab resources
 
 The plugin automatically creates the following GitLab resources.
