@@ -24,6 +24,7 @@ namespace mod_gitlab\local;
 
 use core\task\adhoc_task;
 use mod_gitlab\http\Gitlab;
+use mod_gitlab\http\RuntimeException;
 
 class FinalizeGroupCreationTask extends adhoc_task {
     public static function instance(int $repository_id, int $module_id): self {
@@ -56,12 +57,17 @@ class FinalizeGroupCreationTask extends adhoc_task {
         do {
             $repository = $client->project()->get($repository_id);
 
-            if ($repository->import_status === 'finished') {
-                break;
-            }
-
             if ($repository->import_status === 'failed' || time() > $timeout) {
                 throw new \RuntimeException("GitLab import failed");
+            }
+
+            if ($repository->import_status === 'finished') {
+                try {
+                    $branch = $client->branch()->get($repository_id, Resources::defaultBranch());
+                    if ($branch->protected && $branch->default) {
+                        break;
+                    }
+                } catch (RuntimeException $e) {} 
             }
 
             sleep($interval);
