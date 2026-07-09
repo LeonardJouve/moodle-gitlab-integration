@@ -30,12 +30,28 @@ const showModal = async (contextId, groupId, name) => {
     modal.show();
 };
 
+const displayError = async (modal) => {
+    const message = await Str.get_string('modal_delete_group_mismatch', 'mod_gitlab');
+    const form = modal.getRoot().find("form");
+
+    if (form.find(".gitlab-confirm-error").length === 0) {
+        form.append(`<div class="alert alert-danger gitlab-confirm-error" role="alert">${message}</div>`);
+    }
+};
+
+function removeError(modal) {
+    modal.getRoot().find(".gitlab-confirm-error").remove();
+};
+
 const submitForm = (modal, groupId, name) => {
+    removeError(modal);
+    
     const form = modal.getRoot().find("form")[0];
     const formData = new FormData(form);
     const confirm = formData.get("confirmationname");
 
     if (confirm !== name) {
+        displayError(modal);
         return;
     }
 
@@ -51,7 +67,7 @@ const submitForm = (modal, groupId, name) => {
 export const init = ({contextId, groupId, name}) => {
     Prefetch.prefetchStrings("mod_gitlab", [
         "modal_delete_group_title",
-        "modal_delete_group_help",
+        "modal_delete_group_mismatch",
     ]);
 
     const button = document.getElementById(`delete-group-${groupId}`);
