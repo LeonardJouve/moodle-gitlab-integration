@@ -27,4 +27,7 @@ $messageproviders = [
     'submission' => [
         'capability' => 'mod/gitlab:view',
     ],
+    'graded' => [
+        'capability' => 'mod/gitlab:view',
+    ],
 ];

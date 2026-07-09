@@ -76,7 +76,7 @@ class Bridge {
 
         $moduleinstance->id = $DB->insert_record('gitlab', $moduleinstance);
 
-        $this->resources->add_template_webhook_custom_header($moduleinstance->id, $webhook->id, $template->id);
+        $this->resources->add_webhook_custom_header($moduleinstance->id, $webhook->id, $template->id);
 
         $this->create_calendar_event($moduleinstance);
 
@@ -125,7 +125,7 @@ class Bridge {
         ];
     }
 
-    public function finalize_create_group(int $repository_id, array $reviewers, int $template_id, int $due_date) {
+    public function finalize_create_group(int $repository_id, array $reviewers, int $template_id, int $due_date, int $module_id) {
         $this->client->branch()->unprotect($repository_id, Resources::defaultBranch());
 
         // base branch
@@ -142,6 +142,13 @@ class Bridge {
         $issue = $this->resources->get_instructions_issue($template_id);
         if ($issue != null) {
             $this->resources->create_instructions_issue($repository_id, $issue->description, $due_date);
+        }
+
+        $secret = Webhook::get_module_key($module_id);
+        if ($secret != null) {
+            $webhook = $this->resources->create_group_webhook($repository_id, base64_encode($secret));
+    
+            $this->resources->add_webhook_custom_header($module_id, $webhook->id, $repository_id);
         }
     }
 

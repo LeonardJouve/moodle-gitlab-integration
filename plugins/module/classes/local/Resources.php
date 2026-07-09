@@ -176,12 +176,25 @@ class Resources {
         );
     }
 
-    public function add_template_webhook_custom_header(int $module_id, int $hook_id, int $template_id) {
+    public function add_webhook_custom_header(int $module_id, int $hook_id, int $repository_id) {
         return $this->client->webhook()->set_custom_header(
-            $template_id,
+            $repository_id,
             $hook_id,
             Resources::webhookModuleHeader(),
             $module_id,
+        );
+    }
+
+    public function create_group_webhook(int $repository_id, string $secret): stdClass {
+        return $this->client->webhook()->create(
+            $repository_id,
+            (new url('/mod/gitlab/webhook.php'))->out(false),
+            [
+                'name' => get_string('webhook_name', 'mod_gitlab'),
+                'signing_token' => 'whsec_' . $secret,
+                'merge_requests_events' => true,
+                'enable_ssl_verification' => false,
+            ],
         );
     }
 
