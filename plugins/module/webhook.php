@@ -47,6 +47,13 @@ if (!$module_id || !$webhook_id || !$webhook_timestamp || !$webhook_signature ||
     exit;
 }
 
+global $PAGE;
+
+$course_id = $DB->get_field('gitlab', 'course', ['id' => $module_id], MUST_EXIST);
+$cm = get_coursemodule_from_instance('gitlab', $module_id, $course_id, false, MUST_EXIST);
+$modulecontext = context_module::instance($cm->id);
+$PAGE->set_context($modulecontext);
+
 $key = Webhook::get_module_key($module_id);
 if ($key == null) {
     http_response_code($HTTP_BAD_REQUEST);

@@ -83,6 +83,7 @@ $string['template_teacher_template_download_source'] = 'Download source code';
 $string['button_create_repository'] = 'Create GitLab Repository';
 $string['no_gitlab_username_err'] = 'Your GitLab username is not configured. Please set it under: Profile → User details → Edit profile → GitLab → GitLab Username.';
 $string['messageprovider:submission'] = 'Notification of GitLab submissions';
+$string['messageprovider:graded'] = 'Notification of GitLab grading';
 $string['notification_module_view'] = 'Module view';
 $string['notification_submission_title'] = 'Assignment due on {$a->due_date}: {$a->name}';
 $string['notification_submission_soon_description'] = 'The assignment {$a->name} in the course {$a->course} is due soon.<br>Due date : {$a->due_date}';
