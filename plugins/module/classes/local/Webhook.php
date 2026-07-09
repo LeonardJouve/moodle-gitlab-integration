@@ -162,7 +162,7 @@ class Webhook {
         $resources = new Resources($client);
 
         $merge_request = $resources->get_student_submission_merge_request($group->repository_id);
-        if ($merge_request->id !== $event->id || $event->action !== 'close') {
+        if ($merge_request->id !== $event->object_attributes->id || $event->object_attributes->action !== 'close') {
             return false;
         }
 
