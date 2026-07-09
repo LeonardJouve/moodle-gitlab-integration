@@ -253,3 +253,27 @@ function mod_gitlab_output_fragment_manage_group_form($args) {
 
     return $o;
 }
+
+/**
+ * Serve the manual enrol users form as a fragment.
+ *
+ * @param array $args List of named arguments for the fragment loader.
+ * @return string
+ */
+function mod_gitlab_output_fragment_confirm_delete_form($args) {
+    $args = (object) $args;
+    $context = $args->context;
+    $o = '';
+
+    // TODO
+    // require_capability('mod/gitlab:deletegroup', $context);
+
+    $mform = new mod_gitlab_confirm_delete_form(null, $args);
+
+    ob_start();
+    $mform->display();
+    $o .= ob_get_contents();
+    ob_end_clean();
+
+    return $o;
+}
