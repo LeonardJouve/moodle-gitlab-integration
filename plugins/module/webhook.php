@@ -73,6 +73,9 @@ case 'push':
 case 'issue':
     $ok = Webhook::handle_issue_event($content);
     break;
+case 'merge_request':
+    $ok = Webhook::handle_merge_request_event($content);
+    break;
 }
 
 if (!$ok) {

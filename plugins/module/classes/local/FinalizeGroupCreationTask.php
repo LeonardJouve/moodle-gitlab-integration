@@ -73,7 +73,7 @@ class FinalizeGroupCreationTask extends adhoc_task {
             sleep($interval);
         } while (true);
 
-        $bridge->finalize_create_group($repository->id, $reviewers, $module->template_id, $module->due_date);
+        $bridge->finalize_create_group($repository->id, $reviewers, $module->template_id, $module->due_date, $module->id);
     }
 
     public function retry_until_success(): bool {

@@ -23,6 +23,8 @@
 namespace mod_gitlab\local;
 
 use core\encryption;
+use core\url;
+use core_user;
 use mod_gitlab\http\Gitlab;
 use stdClass;
 
@@ -140,6 +142,59 @@ class Webhook {
                 $issue->iid,
                 $event->object_attributes->description,
             );
+        }
+
+        return true;
+    }
+
+    public static function handle_merge_request_event(stdClass $event): bool {
+        global $DB;
+
+        $group = $DB->get_record('gitlab_groups', ['repository_id' => $event->project->id], '*');
+        $moduleinstance = $DB->get_record('gitlab', ['id' => $group->module_id], '*');
+
+        $token = Helper::get_course_gitlab_token($moduleinstance->course);
+        if ($token == null) {
+            return false;
+        }
+
+        $client = new Gitlab($token);
+        $resources = new Resources($client);
+
+        $merge_request = $resources->get_student_submission_merge_request($group->repository_id);
+        if ($merge_request->id !== $event->id || $event->action !== 'close') {
+            return false;
+        }
+
+        $members = $DB->get_fieldset('gitlab_group_members', 'user_id', ['group_id' => $group->id]);
+        $course = $DB->get_field('course', 'fullname', ['id' => $moduleinstance->course], MUST_EXIST);
+
+        $subject = get_string('notification_graded_title', 'mod_gitlab', [
+            'name' => $moduleinstance->name,
+        ]);
+        $content = get_string('notification_graded_description', 'mod_gitlab', [
+            'name' => $moduleinstance->name,
+            'course' => $course,
+        ]);
+
+        foreach ($members as $user_id) {
+            $user = $DB->get_record('user', ['id' => $user_id], '*');
+    
+            $message = new \core\message\message();
+            $message->component = 'mod_gitlab';
+            $message->name = 'graded';
+            $message->userfrom = core_user::get_noreply_user();
+            $message->userto = $user;
+            $message->subject = $subject;
+            $message->fullmessage = $content;
+            $message->fullmessageformat = FORMAT_HTML;
+            $message->fullmessagehtml = $content;
+            $message->smallmessage = $content;
+            $message->notification = 1;
+            $message->contexturl = (new url('/mod/gitlab/view.php', ['g' => $moduleinstance->id]))->out(false);
+            $message->contexturlname = get_string('notification_module_view', 'mod_gitlab');
+    
+            message_send($message);
         }
 
         return true;
