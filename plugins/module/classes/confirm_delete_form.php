@@ -59,6 +59,14 @@ class mod_gitlab_confirm_delete_form extends moodleform {
      *         or an empty array if everything is OK (true allowed for backwards compatibility too).
      */
     public function validation($data, $files) {
-        return [];
+        $errors = parent::validation($data, $files);
+
+        $expected = $this->_customdata->name;
+
+        if ($data['confirmationname'] !== $expected) {
+            $errors['confirmationname'] = get_string('modal_delete_group_mismatch', 'mod_gitlab');
+        }
+
+        return $errors;
     }
 }
