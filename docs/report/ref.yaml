@@ -183,3 +183,13 @@ python_gitlab:
   type: Web
   title: Python GitLab
   url: https://python-gitlab.readthedocs.io
+
+moodle_encryption:
+  type: Web
+  title: Moodle encryption
+  url: https://wimski.org/api/5.0/d4/d91/classcore_1_1encryption.html
+
+moodle_cron:
+  type: Web
+  title: Moodle Cron
+  url: https://docs.moodle.org/502/en/Cron

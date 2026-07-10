@@ -43,7 +43,6 @@ The remainder of this report is organized as follows:
 - *Specifications* defines the project's objectives, deliverables, requirements, and expected outcomes.
 - *System Architecture* describes the architectural design chosen.
 - *Features* presents a detailed description of the functionalities provided by the developed integration.
-- *Integration Flows* provide graphical representations of the interactions between the different components of the system.
 - *Development Process* outlines the main stages of the project's development and implementation process.
 - *Solution* details the final delivered solution.
 - *Lessons Learned and Future Work* summarizes the project's outcomes, discusses the challenges encountered and the lessons learned, and presents potential improvements and directions for future development.
@@ -206,6 +205,7 @@ It is a project in 3 parts:
 - GitLab API
 - Moodle API
 - Moodle - GitLab integration API
+
 All 3 projects are open source and written in Haskell.
 
 The study investigated the experiences of Computer Science educators and students using Canvas and GitLab through a survey, identifying challenges caused by the lack of integration between the two platforms. The results showed that educators faced significant administrative workloads, including manually tracking student activity, linking GitLab projects with coursework, and monitoring student engagement. Students also reported difficulties associating coursework on Canvas with their GitLab projects and having to frequently switch between the two systems.
@@ -257,21 +257,100 @@ It should be released as open source to allow others to access, use, and build u
 
 = System architecture
 
-TODO add more
+As mentioned previously, one of Moodle's main strengths is its modularity and extensibility. It was designed around a comprehensive plugin architecture, allowing developers to extend its functionality through a wide range of plugin types. The appropriate plugin type should be selected based on the specific requirements of the desired functionality.
 
-The developed plugin(s) sit within the Moodle plugins layer and acts as the central bridge between the two platforms. It communicates with Moodle Core to read course data and create activity modules while a GitLab Client subcomponent handles all communication with GitLab. This client reaches GitLab REST API, through which it provisions and manages the GitLab resources to match the desired state. The REST API keeps both platforms fully decoupled: Moodle has no direct knowledge of GitLab internals, and GitLab requires no Moodle specific configuration.
+Some of the available plugin types include:
+
+- *Activity modules* – Provide learning activities within courses (e.g., Forum, Quiz, Assignment).
+- *Custom field* – Define custom field types used in course / profile custom fields.
+- *Web service* – Implement new protocols for web service communication.
+- *Assignment submission* – Provide additional methods for students to submit assignments.
+
+For this project, the development focused on two plugin types:
+
+- *Activity modules*
+- *Custom field*
+
+Plugins must be placed in a directory corresponding to their plugin type. The Moodle core automatically detects and registers these plugins during installation or upgrade. Once registered, their code is loaded and executed whenever the associated functionality is required.
+
+#figure(
+  image("images/moodle_architecture.svg"),
+  caption: [Moodle plugin architecture]
+)
+
+== Custom fields
+
+The *Custom field* plugin adds a new custom field type for storing sensitive content. The field data are encrypted using Moodle #underline[builtin encryption] @moodle_encryption mechanism before being stored into the database and decrypted when accessed.
+
+Custom fields are additional pieces of information that can be configured and filled in through the Moodle interface. They can be added at different levels:
+
+- *User* level
+- *Course* level
+- *Group* level
+
+Each custom field can store different types of data, including:
+
+- *Boolean* values
+- *Text*
+- *Integer* values
+- The newly introduced *encrypted text* type
+
+The plugin defines two custom fields:
+
+- A *course-level* field used to store a course-specific GitLab token.
+- A *user-level* field used to store the user's GitLab username.
+
+#figure(
+  image("images/moodle_course_token.png"),
+  caption: [Course custom field for GitLab token]
+)
+
+#figure(
+  image("images/moodle_gitlab_username.png"),
+  caption: [User custom field for GitLab username]
+)
+
+The GitLab token field uses the newly created encrypted text field type to encrypt the token before it is stored in the database. This ensures that sensitive credentials are not stored in plaintext and cannot be directly accessed through database inspection.
+
+The encryption is implemented using the PHP Sodium extension, which provides the XSalsa20 stream cipher for encryption and the Poly1305 message authentication code (MAC) for integrity verification. The encryption key is stored in a file external to the database, preventing exposure of the key in the event of a database compromise.
+
+== Activity module
+
+The *Activity module* plugin introduces a new Moodle activity type called GitLab. This module is the central component of the integration between Moodle and GitLab. Creating a GitLab activity requires a GitLab token defined at the course level, as well as a GitLab username for each user who accesses the activity.
+
+#figure(
+  image("images/moodle_select_module.png"),
+  caption: [new *GitLab* activity module]
+)
+
+This plugin acts as the main bridge between Moodle and GitLab. It communicates with Moodle Core to retrieve course and user data, create activity instances, and manage Moodle-side information. A dedicated GitLab Client component is responsible for all communication with GitLab.
+
+The GitLab Client interacts with the GitLab REST API, which is used to provision and manage GitLab resources according to the desired state. Using the REST API keeps both platforms decoupled: Moodle does not need to know about GitLab's internal implementation, and GitLab does not require any Moodle-specific configuration.
+
+This plugin acts as the central bridge between GitLab and Moodle. It communicates with Moodle Core to read course data and create activity modules while a GitLab Client subcomponent handling all communication with GitLab. This client reaches GitLab REST API, through which it provisions and manages the GitLab resources to match the desired state. The REST API keeps both platforms fully decoupled: Moodle has no direct knowledge of GitLab internals, and GitLab requires no Moodle specific configuration.
 
 #figure(
   image("images/integration.svg"),
   caption: [Moodle with GitLab integration]
 )
 
+The plugin is divided into multiple components:
+- The *Bridge* component handles the coordination between Moodle and GitLab and manages the creation of required resources on both platforms.
+- The *Resources* component manages the creation and configuration of GitLab resources.
+- The *GitLab Client* provides a simplified interface over the GitLab REST API endpoints.
+
+The Bridge component delegates GitLab-related operations to the Resources component and updates the corresponding Moodle database records to maintain synchronization between both systems.
+
+#figure(
+  image("images/moodle_module_plugin_components.svg"),
+  caption: [Components interactions during group creation]
+)
+
 #pagebreak()
 
 = Features
 
-The integration will be made with a Moodle plugin.
-The plugin will add an #underline[activity module]@activity_module named #underline[GitLab].
+The following features represent the initial requirements identified for the integration. These requirements define the expected behavior and scope of the solution, including the management of GitLab resources, the interaction between Moodle and GitLab, and the handling of user and course-specific data.
 
 #figure(
   image("images/module.svg", width: 60%),
@@ -354,16 +433,19 @@ Potential candidates include assessment platforms such as #underline[Gradescope]
 
 #pagebreak()
 
-= Integration Flows
-TODO provide graphical representations of the interactions between the different components of the system
-
 = Development Process
+
+This project was carried out over the course of one academic semester, with a total workload of 450 hours dedicated to the different activities required to complete the project. These activities included the initial research phase, specification and design of the solution, implementation and testing, as well as the documentation. This chapter presents the main stages of the development process and describes the progression of the work throughout the project.
+
+== Research and Specification
 
 The first months were mainly focused on establishing the requirements, the planning and the feasible features for the project.
 
 I came out of this with a well defined feature list, Gantt chart @appendix_planning and Kanban board @appendix_board.
 
-I also defined the development workflow to use on this project would be a Git feature branch strategy to ensure isolated and traceable changes. Each feature is implemented in a separate Git branch, allowing for review before integration into the main codebase.
+== Workflow
+
+The development workflow defined for this project follows a Git feature branch strategy to ensure isolated, organized, and traceable changes. Each feature is implemented in a separate Git branch, allowing for review before integration into the main codebase.
 The task management is handled through a #underline[Kanban board] @kanban. Items are organized by priority and annotated with their dependencies. This ensures critical tasks are addressed first and visibility over blocking / critical tasks.
 
 == Proof Of Concept
@@ -375,8 +457,7 @@ I then realized as a proof of concept @poc a simple GitLab integration within Mo
   caption: [Modal for adding resources has a new *GitLab* type of module]
 )
 
-While editing this resource, the teacher must define a GitLab API token.
-This will be used to perform API calls and create / configure the GitLab resources like repositories.
+The teacher must provide a GitLab token at the resource creation time.
 
 Once created, the students can open the module created and view a button which triggers the creating of a GitLab repository. They can also see a list of existing repositories in the GitLab group with a direct link to them.
 
@@ -390,11 +471,17 @@ Once created, the students can open the module created and view a button which t
   caption: [Resulting repository created on the selected GitLab group]
 )
 
-I added #underline[Continuous Deployment] @cd to provide a full featured reproducible development and testing environment.
+== Reproducibility
 
-I created an Infrastructure as Code using #underline[Terraform] @terraform allowing to create an AWS EC2 instance.
+To provide a full featured reproducible development and testing environment, I added #underline[Continuous Deployment] @cd.
 
-To setup the instance, I added Configuration as Code with #underline[Ansible] @ansible playbooks. It runs a Moodle instance and places it behind the #underline[Authentik] @authentik authenticity provider. It uses the #underline[Traefik] @traefik reverse proxy to manage communication between all applications and the ingress.
+To provide a reproducible and automated deployment environment, an Infrastructure as Code approach was adopted using #underline[Terraform] @terraform. Terraform uses a declarative configuration model, allowing the desired state of the infrastructure to be described rather than specifying the sequence of operations required to achieve it. It was used to define and provision the required cloud infrastructure, including the creation and configuration of an AWS EC2 instance bound to an Elastic IP.
+
+Once the infrastructure was provisioned, Configuration as Code principles were applied using #underline[Ansible] @ansible. Ansible playbooks were created to automate the installation and configuration of the software environment. This approach ensures that the deployment process is repeatable and maintainable.
+
+The deployed environment consists of a Moodle instance protected by #underline[Authentik] @authentik as an identity provider. Authentik was selected as it provides an open-source authentication solution supporting modern authentication protocols and I was already familiar with it, reducing the complexity.
+
+To handle communication between the different services, #underline[Traefik] @traefik was used as a reverse proxy and ingress controller. Traefik is particularly suited for containerized environments due to its ease of use and ability to dynamically configure routing rules based on running services.
 
 #figure(
   image("images/iac.svg", width: 70%),
@@ -403,14 +490,237 @@ To setup the instance, I added Configuration as Code with #underline[Ansible] @a
 
 I finally added a GitHub action to automate the updates after each push on the main branch of the project.
 
-TODO
-outlines the main stages of the project's development and implementation process.
+== Solution design
+
+The solution was designed around a modular architecture separating Moodle-specific logic, GitLab resource management, and API communication. It follows the Moodle Activity module plugin structure and naming conventions described in the official documentation.
+
+The main design goals were to keep Moodle and GitLab independent through the use of the GitLab REST API, centralize GitLab communication inside a dedicated client component, and follow, as much as possible, the design principles and coding practices used within the Moodle codebase.
+
+== GitLab client
+
+The GitLab client component provides an abstraction layer over the GitLab REST API. It centralizes all communication with GitLab and exposes high-level methods for interacting with GitLab resources.
+
+This abstraction isolates GitLab-specific implementation details from the rest of the plugin. It simplifies resource management, improves maintainability, and allows future changes to the GitLab API communication layer to be handled independently from the Moodle integration logic.
+
+The client manages authentication by attaching the given GitLab token to each request and provides access to dedicated components responsible for different GitLab resource types.
+
+The design of the GitLab client was inspired by the structure and usage patterns of the previously introduced #underline[GitLab PHP API Client] @gitlab_php_api_client library.
+
+The `Gitlab` class acts as the main entry point and exposes dedicated objects for different GitLab resource types:
+- `group()` handles GitLab groups
+- `project()` handles repositories/projects
+- `user()` handles users
+- `branch()` handles branches
+- `member()` handles permissions and memberships
+- `issue()` handles issues
+- `merge_request()` handles merge requests
+- `pipeline()` handles CI/CD pipelines
+- `webhook()` handles webhooks
+- `file()` handles repository files
+
+This means that other parts of the Moodle plugin can write code like:
+
+```php
+$client->group()->create($name, $parent_id, $extra);
+$client->project()->fork($repository_id, $name, $group_id, $extra);
+```
+
+== Module creation
+
+The activity module implementation introduces the GitLab activity type into Moodle. The module stores the configuration required for each activity instance, including the name, description, selected GitLab parent group, maximum group size, reviewers, submission due date.
+
+#figure(
+  image("images/moodle_configure_module.png"),
+  caption: [Configure GitLab activity module]
+)
+
+== Custom fields
+
+Custom fields were implemented to store additional information required by the integration within the appropriate Moodle contexts.
+
+Two custom fields were introduced:
+- A course-level field storing the GitLab token used to manage resources for a specific course.
+- A user-level field storing the GitLab username associated with a Moodle user.
+
+The integration links Moodle users with their GitLab identities through the configured GitLab username field.
+
+This association allows the plugin to automatically assign GitLab permissions when creating repositories and groups.
+
+Repository permissions are configured according to user roles:
+- Students receive access to their group repository with the *developer* access level.
+- Teachers and reviewers receive the *maintainer access level*.
+
+== Database design
+
+The plugin uses dedicated database tables to store the relationships between Moodle activities and GitLab resources.
+
+The following tables contain the data required for the plugin operation:
+
+#figure(
+  image("images/moodle_database_schema.svg"),
+  caption: [Module plugin database schema]
+)
+
+== Teacher dashboard
+
+The teacher interface provides access to the main activity settings, including the module name and description, the GitLab parent group where resources are created, the assigned reviewers, and the submission due date. All deadlines are interpreted using the configured Moodle instance timezone to ensure consistency.
+
+Teachers and reviewers have direct access to the GitLab template repository associated with the activity. This repository acts as a central workspace for preparing practical work by defining the initial project structure, instructions, and required resources before group repositories are generated.
+
+#figure(
+  image("images/moodle_teacher_template.png"),
+  caption: [Teacher dashboard template repository],
+)
+
+The interface also provides an overview of the student groups associated with the activity. Teachers can create and manage groups, assign members, and access the corresponding GitLab repositories and submission information.
+
+#figure(
+  image("images/moodle_teacher_group.png"),
+  caption: [Teacher dashboard's student groups list],
+)
+
+For evaluation purposes, reviewers and teachers can retrieve group submissions using different methods. They can clone repositories using SSH or HTTPS, inspect the exact repository state at the submission deadline by checking out the corresponding commit, review submissions through merge requests centralized in the template repository, or download the source code as a ZIP archive.
+
+#figure(
+  image("images/moodle_get_code.png"),
+  caption: [Different ways to retrieve group code],
+)
+
+
+== Student view
+
+The student interface provides access to GitLab-related information directly from Moodle.
+
+Students who are not assigned to a group can view available groups, create a new group, or join an existing group that has not reached its maximum capacity.
+
+#figure(
+  image("images/moodle_student_groups.png"),
+  caption: [Student group selection interface],
+)
+
+Once a student becomes a member of a group, additional options become available, including access to the group's GitLab repository and submission-related information.
+
+The integration allows students to follow the complete submission workflow from Moodle without requiring them to manually switch between Moodle and GitLab.
+
+#figure(
+  image("images/moodle_student_group.png"),
+  caption: [Student group interface],
+)
+
+The interface also provides information about the submission status of each group. Students can identify whether their work has been graded, submitted on time, or submitted after the deadline.
+
+After the submission deadline, students can also access the solution provided by teachers directly from the Moodle interface.
+
+== Automate GitLab workflows
+
+The plugin automates the creation and management of GitLab resources required for practical assignments.
+
+For each activity, the plugin automatically creates a dedicated GitLab group inside the selected parent group. This group acts as a container for all resources associated with the Moodle activity.
+
+A template repository is also created for the practical work. This repository is accessible by the GitLab token owner and the selected reviewers and provides the initial project structure used to generate student repositories. It contains the practical work instructions as an issue, which is replicated to each group repository, as well as two branches: the `main` branch used as the template for initializing group repositories and the `solution` branch containing the reference solution. After the submission deadline, the solution branch is proposed to each group through a merge request.
+
+For each student group, the plugin creates a fork of the template repository and configures access permissions according to the user's role. Group members receive Developer access, the GitLab token owner receives Owner access, and selected reviewers receive Maintainer access.
+
+#figure(
+  image("images/gitlab_created_resources.png"),
+  caption: [GitLab created group containing the template repository and a group repository]
+)
+
+Each group repository contains a copy of the practical work instructions issue and two branches: the `main` branch used by students to submit their work and the `base` branch used as a protected baseline for tracking modifications. A merge request from `main` to `base` is automatically created to simplify the review process.
+
+After the submission deadline, each group submission merge request is also mirrored to the template repository, allowing reviewers to access all submissions from a single location.
+
+This automation removes repetitive manual configuration, ensures consistency across assignments, and provides a standardized workflow for managing practical work.
+
+== Bind Moodle user interface with GitLab
+
+In the previous steps, links between Moodle and GitLab resources were represented using placeholders. The goal of this step was to replace these placeholder values with the actual links corresponding to the GitLab resources created during the workflow.
+
+== Notifications, Calendar events and Adhoc Tasks
+
+The plugin integrates with Moodle notification and calendar systems to provide deadline reminders and keep users informed about relevant events.
+
+Submission due dates are added to the Moodle calendar, allowing students to track upcoming deadlines directly from the Moodle interface.
+
+#figure(
+  image("images/moodle_calendar.png"),
+  caption: [A Moodle submission calendar event]
+)
+
+Notifications are generated for different events, including:
+- One day before the submission deadline.
+- The submission deadline date.
+- Submission evaluation completion after the submission merge request is closed.
+
+#figure(
+  image("images/moodle_notification.png"),
+  caption: [A Moodle submission reminder notification]
+)
+
+The plugin also uses Moodle Core's Adhoc Tasks mechanism to execute asynchronous operations. This allows developers to schedule tasks for later execution while Moodle manages their execution through the `cron.php` script.
+
+The cron.php script is a required component of any Moodle instance and must be executed regularly using a system cron job, as described in the official #underline[documentation] @moodle_cron.
+
+== Webhooks
+
+Webhooks were implemented to synchronize GitLab events with Moodle and keep both platforms consistent. The are automatically created and configured in the repositories provisioned by the plugin.
+
+GitLab sends signed webhook requests to the Moodle endpoint:
+
+```
+https://<moodle-host>/mod/gitlab/webhook.php
+```
+
+To ensure the authenticity and integrity of webhook requests, GitLab signs each payload using a module-specific secret generated by Moodle. This secret is stored encrypted in the Moodle database using the same encryption method as for the GitLab tokens. It is used by the plugin to verify each incoming webhook request before processing the event.
+
+The webhook endpoint must be publicly accessible without any authentication layer on top, as requests are sent directly by GitLab. If authentication cannot be disabled, additional authentication information can be configured through custom headers manually in the GitLab webhook settings.
+
+Two webhook types are used: template repository webhooks and group repository webhooks.
+
+A webhook is automatically created for the template repository. It listens for issue events and push events affecting the `main` branch. When one of these events occurs, GitLab notifies Moodle that the template repository has been updated. Moodle then propagates these changes to all group repositories. Updates to the practical work instructions issue are applied directly to the corresponding issue in each group repository, while changes pushed to the `main` branch are propagated through merge requests, allowing groups to incorporate the latest updates. This mechanism allows teachers and reviewers to modify the practical work even after student repositories have been created.
+
+#figure(
+  image("images/gitlab_webhook.png"),
+)
+
+A webhook is also created for each group repository to monitor submission merge request events. It listens for close actions on submission merge requests. When a merge request is closed, GitLab notifies Moodle, which identifies the corresponding group submission and updates the submission status. This allows grading-related events to be reflected automatically within Moodle and enables students to be informed when their work has been evaluated.
+
+== Protected files
+
+A GitLab CI verification job is automatically created in every repository to detect modifications to protected files.
+
+The job runs during merge request pipelines and compares the files modified by the merge request against a list of protected file patterns.
+
+The `.gitlab/protected-files` file contains one protected file or pattern per line, allowing teachers to define which files should not be modified as part of the assignment.
+
+If a modified file matches one of the protected patterns, the pipeline fails and reports the affected file. This provides immediate feedback to students when they modify a protected file and helps reviewers identify changes that may require additional attention during the evaluation process.
+
+#figure(
+  image("images/gitlab_protected_files.png"),
+  caption: [GitLab CI protected files pipeline]
+)
+
+This mechanism is intended as an informational safeguard rather than a security feature. It assists reviewers in identifying potentially sensitive modifications but does not prevent users from modifying the CI configuration itself.
+
+== Custom GitLab host
+
+The integration supports custom GitLab host by adding a configuration to specify a GitLab URL different from the default GitLab instance. The configured host is used by the GitLab client when communicating with the REST API, allowing the plugin to work with self-hosted GitLab deployments.
+
+#figure(
+  image("images/moodle_custom_gitlab_host.png"),
+  caption: [Plugin custom GitLab host configuration]
+)
 
 = Solution
-TODO details the final delivered solution.
+TODO details the final delivered solution and features
+
+== Integration Flows
+
+TODO provide graphical representations of the interactions between the different components of the system
 
 = Lessons Learned and Future Work
 TODO summarizes the project's outcomes, discusses the challenges encountered and the lessons learned, and presents potential improvements and directions for future development.
+TODO contribution (ce qui existait / ajouté)
 
 #pagebreak()
 
