@@ -30,7 +30,7 @@ use \core_external\external_multiple_structure;
 use \core_external\external_value;
 use context_course;
 use mod_gitlab\http\Gitlab;
-use mod_gitlab\local\Bridge;
+use mod_gitlab\local\bridge\Bridge;
 use mod_gitlab\local\Helper;
 use moodle_exception;
 
@@ -56,6 +56,7 @@ class set_group_members extends external_api {
         ]);
 
         $moduleinstance = $DB->get_record('gitlab', ['id' => $module_id], '*', MUST_EXIST);
+        /** @var \core\context $coursecontext */
         $coursecontext = context_course::instance($moduleinstance->course);
 
         foreach ($members as $user_id) {

@@ -20,7 +20,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_gitlab\local;
+namespace mod_gitlab\local\bridge;
 
 use calendar_event;
 use core\encryption;
@@ -28,6 +28,11 @@ use core\task\manager;
 use core\url;
 use core_user;
 use mod_gitlab\http\Gitlab;
+use mod_gitlab\local\Helper;
+use mod_gitlab\local\task\FinalizeGroupCreationTask;
+use mod_gitlab\local\task\SubmissionSoonTask;
+use mod_gitlab\local\task\SubmissionTask;
+use mod_gitlab\local\Webhook;
 use stdClass;
 
 require_once($CFG->dirroot.'/calendar/lib.php');
@@ -182,7 +187,7 @@ class Bridge {
         $groups = Group::get_groups($module_id);
         foreach ($groups as $group) {
             $label = Resources::submissionMergeRequestLabel($group->id);
-            $name = implode("-", explode(',', trim($group->members, '{}'))) . ':' . $label;
+            $name = implode("-", Helper::parse_group_members($group->members)) . ':' . $label;
         
             $this->client->merge_request()->create(
                 $group->repository_id,
@@ -341,7 +346,7 @@ class Bridge {
         );
 
         foreach ($groups as $group) {
-            $members = array_map('intval', explode(',', trim($group->members, '{}')));
+            $members = array_map('intval', Helper::parse_group_members($group));
             foreach ($members as $member) {
                 $this->send_submission_notification($moduleinstance->id, $member, $moduleinstance->name, $moduleinstance->due_date, $content);
             }

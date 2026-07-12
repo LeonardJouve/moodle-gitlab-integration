@@ -24,6 +24,8 @@
 
 namespace mod_gitlab\local;
 
+use stdClass;
+
 class Helper {
     public static function get_course_gitlab_token(int $courseid): ?string {
         $handler = \core_customfield\handler::get_handler('core_course', 'course');
@@ -53,5 +55,10 @@ class Helper {
         ]);
 
         return $username ?: null;
+    }
+
+    public static function parse_group_members(stdClass $group) {
+        $members = trim($group->members, '{}');
+        return $members !== '' ? explode(',', $members) : [];
     }
 }

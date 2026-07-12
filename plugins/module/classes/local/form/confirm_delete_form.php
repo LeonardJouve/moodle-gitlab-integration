@@ -20,6 +20,11 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_gitlab\local\form;
+
+use html_writer;
+use moodleform;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;

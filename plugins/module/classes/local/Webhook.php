@@ -26,6 +26,8 @@ use core\encryption;
 use core\url;
 use core_user;
 use mod_gitlab\http\Gitlab;
+use mod_gitlab\local\bridge\Group;
+use mod_gitlab\local\bridge\Resources;
 use stdClass;
 
 class Webhook {

@@ -46,7 +46,10 @@ class mod_gitlab_mod_form extends moodleform_mod {
 
         $mform = $this->_form;
 
-        $token = Helper::get_course_gitlab_token($this->get_course()->id);
+        /** @var mixed $course */
+        $course = $this->get_course();
+
+        $token = Helper::get_course_gitlab_token($course->id);
         if ($token === null) {
             $mform->addElement(
                 'html',
@@ -145,7 +148,7 @@ class mod_gitlab_mod_form extends moodleform_mod {
         $options = array(
             'ajax' => 'mod_gitlab/reviewer_selector',
             'multiple' => true,
-            'courseid' => $this->get_course()->id,
+            'courseid' => $course->id,
         );
         $mform->addElement('autocomplete', 'reviewer', get_string('form_reviewer', 'mod_gitlab'), $existants, $options);
         if (!empty($existants)) {
@@ -180,7 +183,10 @@ class mod_gitlab_mod_form extends moodleform_mod {
             $errors['group_size'] = get_string('form_group_size_negative_err', 'mod_gitlab');
         }
 
-        $token = Helper::get_course_gitlab_token($this->get_course()->id);
+        /** @var mixed $course */
+        $course = $this->get_course();
+        
+        $token = Helper::get_course_gitlab_token($course->id);
 
         // Token
         if ($token === null) {

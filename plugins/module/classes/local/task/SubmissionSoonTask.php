@@ -20,10 +20,12 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_gitlab\local;
+namespace mod_gitlab\local\task;
 
 use core\task\adhoc_task;
 use mod_gitlab\http\Gitlab;
+use mod_gitlab\local\bridge\Bridge;
+use mod_gitlab\local\Helper;
 
 class SubmissionSoonTask extends adhoc_task {
     public static function instance(int $module_id): self {
