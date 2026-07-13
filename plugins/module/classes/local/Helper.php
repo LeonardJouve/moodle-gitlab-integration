@@ -56,9 +56,4 @@ class Helper {
 
         return $username ?: null;
     }
-
-    public static function parse_group_members(stdClass $group) {
-        $members = trim($group->members, '{}');
-        return $members !== '' ? explode(',', $members) : [];
-    }
 }

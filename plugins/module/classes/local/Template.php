@@ -50,7 +50,7 @@ class Template {
         $group = Group::group_with_members($instance_id, $user_id);
         
         $data = new stdClass();
-        $data->members = Helper::parse_group_members($group);
+        $data->members = $group->members;
         $data->id = $group->id;
         $data->name = Template::get_group_name($group->members);
         $data->max_member = $max_member;
@@ -152,7 +152,6 @@ class Template {
             'action' => 'creategroup',
         ]))->out(false);
         $data->groups = array_map(function($group) use ($client, $resources, $module_id, $template_id, $due_date) {
-            $group->members = Helper::parse_group_members($group);
             $group->member_count = count($group->members);
             $group->name = Template::get_group_name($group->members);
             
@@ -228,16 +227,15 @@ class Template {
         ]))->out(false);
         $data->max_member = $max_member;
         $data->groups = array_map(function($group) use ($module_id, $max_member) {
-            $members = Helper::parse_group_members($group);
-        
-            $group->member_count = count($members);
+            $group->member_count = count($group->members);
             $group->can_join_group = $group->member_count < $max_member;
             $group->join_group_url = (new url('/mod/gitlab/view.php', [
                 'g' => $module_id,
                 'action' => 'joingroup',
                 'group_id' => $group->id,
             ]))->out(false);
-            $group->name = Template::get_group_name($members);
+            $group->name = Template::get_group_name($group->members);
+
             return $group;
         }, Group::get_groups($module_id));
 

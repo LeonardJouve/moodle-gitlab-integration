@@ -187,7 +187,7 @@ class Bridge {
         $groups = Group::get_groups($module_id);
         foreach ($groups as $group) {
             $label = Resources::submissionMergeRequestLabel($group->id);
-            $name = implode("-", Helper::parse_group_members($group->members)) . ':' . $label;
+            $name = implode("-", $group->members) . ':' . $label;
         
             $this->client->merge_request()->create(
                 $group->repository_id,
@@ -320,19 +320,34 @@ class Bridge {
         global $DB;    
 
         $course = $DB->get_field('course', 'fullname', ['id' => $moduleinstance->course], MUST_EXIST);
-        $groups = $DB->get_records_sql("
+        $memberships = $DB->get_records_sql("
             SELECT
                 g.id,
                 g.repository_id,
-                COALESCE(array_agg(m.user_id) FILTER (WHERE m.user_id IS NOT NULL), ARRAY[]::int[]) AS members
+                m.user_id
             FROM {gitlab_groups} g
             LEFT JOIN {gitlab_group_members} m
                 ON m.group_id = g.id
             WHERE g.module_id = :module_id
-            GROUP BY g.id
         ", [
             'module_id' => $moduleinstance->id,
         ]);
+
+        $groups = [];
+
+        foreach ($memberships as $membership) {
+            if (!isset($groups[$membership->id])) {
+                $groups[$membership->id] = (object) [
+                    'id' => $membership->id,
+                    'repository_id' => $membership->repository_id,
+                    'members' => [],
+                ];
+            }
+
+            if ($membership->user_id) {
+                $groups[$membership->id]->members[] = $membership->user_id;
+            }
+        }
 
         $content = get_string(
             $soon ?
@@ -346,8 +361,7 @@ class Bridge {
         );
 
         foreach ($groups as $group) {
-            $members = array_map('intval', Helper::parse_group_members($group));
-            foreach ($members as $member) {
+            foreach ($group->members as $member) {
                 $this->send_submission_notification($moduleinstance->id, $member, $moduleinstance->name, $moduleinstance->due_date, $content);
             }
         }
