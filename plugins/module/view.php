@@ -118,11 +118,6 @@ case 'creategroup':
     break;
 }
 
-function parse_group_members(stdClass $group) {
-    $members = trim($group->members, '{}');
-    return $members !== '' ? explode(',', $members) : [];
-}
-
 function get_group_name(array $members) {
     return count($members) > 0 ?
         get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]) :
@@ -134,16 +129,14 @@ function list_student_groups(int $module_id, int $max_member) {
 
     echo $OUTPUT->render_from_template('mod_gitlab/student_groups', [
         'groups' => array_map(function($group) use ($module_id, $max_member) {
-            $members = parse_group_members($group);
-        
-            $group->member_count = count($members);
+            $group->member_count = count($group->members);
             $group->can_join_group = $group->member_count < $max_member;
             $group->join_group_url = (new url('/mod/gitlab/view.php', [
                 'g' => $module_id,
                 'action' => 'joingroup',
                 'group_id' => $group->id,
             ]))->out(false);
-            $group->name = get_group_name($members);
+            $group->name = get_group_name($group->members);
             return $group;
         }, Group::get_groups($module_id)),
         'create_group_url' => (new url('/mod/gitlab/view.php', [
@@ -159,7 +152,6 @@ function list_teacher_groups(Gitlab $client, Resources $resources, int $module_i
     
     echo $OUTPUT->render_from_template('mod_gitlab/teacher_groups', [
         'groups' => array_map(function($group) use ($client, $resources, $module_id, $template_id, $due_date) {
-            $group->members = parse_group_members($group);
             $group->member_count = count($group->members);
             $group->name = get_group_name($group->members);
             
@@ -274,7 +266,6 @@ function student_group(Gitlab $client, Resources $resources, int $instance_id, i
     global $OUTPUT;
 
     $group = Group::group_with_members($instance_id, $user_id);
-    $members = parse_group_members($group);
 
     try {
         $repository = $client->project()->get($group->repository_id);
@@ -315,10 +306,10 @@ function student_group(Gitlab $client, Resources $resources, int $instance_id, i
     // TODO improve: some data array values are undefined
     echo $OUTPUT->render_from_template('mod_gitlab/student_group', [
         'id' => $group->id,
-        'name' => get_group_name($members),
+        'name' => get_group_name($group->members),
         'max_member' => $max_member,
-        'member_count' => count($members),
-        'members' => $members,
+        'member_count' => count($group->members),
+        'members' => $group->members,
         'due_date' => userdate($due_date, get_string('strftimedaydatetime', 'langconfig')),
         'repository_url' => $repository->web_url,
         'is_graded' => $is_graded,
