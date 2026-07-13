@@ -193,3 +193,8 @@ moodle_cron:
   type: Web
   title: Moodle Cron
   url: https://docs.moodle.org/502/en/Cron
+
+project_documentation:
+  type: Web
+  title: Project documentation
+  url: https://github.com/LeonardJouve/moodle-gitlab-integration/blob/main/README.md

@@ -35,6 +35,8 @@ The integration will automate workflows involved in programming assignments. Thi
 
 From an architectural perspective, the solution is designed to be modular and extensible. While initially focused on GitLab, the system will be structured in a way that allows future support for other Git repository hosting services. This ensures long-term adaptability and encourages community contributions.
 
+#pagebreak()
+
 = Structure
 
 The remainder of this report is organized as follows:
@@ -45,7 +47,7 @@ The remainder of this report is organized as follows:
 - *Features* presents a detailed description of the functionalities provided by the developed integration.
 - *Development Process* outlines the main stages of the project's development and implementation process.
 - *Solution* details the final delivered solution.
-- *Lessons Learned and Future Work* summarizes the project's outcomes, discusses the challenges encountered and the lessons learned, and presents potential improvements and directions for future development.
+- *Contribution and Future Work* summarizes the project's contributions, presents potential improvements and directions for future development.
 - *Appendices* contain the supplementary material accompanying this report.
 
 #pagebreak()
@@ -122,8 +124,6 @@ However, Moodle plugins are designed to be self-contained and should avoid intro
 Existing Moodle plugins provide various extensions to the platform, including additional activities, external integrations, and workflow automation. However, no widely adopted solution currently provides a complete integration between Moodle and Git repository hosting platforms.
 
 This lack of an existing comprehensive solution motivates the development of a dedicated plugin capable of bridging Moodle with Git-based development platforms while following Moodle's plugin architecture and extension principles.
-
-#pagebreak()
 
 == Integrations
 
@@ -711,16 +711,113 @@ The integration supports custom GitLab host by adding a configuration to specify
   caption: [Plugin custom GitLab host configuration]
 )
 
+#pagebreak()
+
 = Solution
-TODO details the final delivered solution and features
+
+This chapter presents the final solution delivered by the project. It summarizes the main components of the developed Moodle activity module, the features available to teachers and students, and the resulting GitLab integration.
+
+== Overview
+
+The plugins provide a GitLab Activity module to automate group management, GitLab resources provisioning and other labors. It also acts as the central point to access all the important informations. All the useful informations such as instructions, reviews, submission, starter code are available in a single GitLab repository per group and are all accessible within Moodle directly. Both platforms keep synchronized using bidirectional communication.
+
+The developed solution provides a Moodle activity module that integrates GitLab into the management of practical assignments. It automates the creation and management of student groups, the provisioning of GitLab resources, and the configuration of the associated development workflow, significantly reducing the manual effort required from teachers.
+
+The activity module acts as the central entry point for both teachers and students. All information related to an assignment—including the project description, starter code, repositories, submissions, reviews, and the reference solution—is accessible directly from Moodle.
+
+Each student group is provided with a dedicated GitLab repository that serves as the collaborative workspace for the assignment. In addition, teachers have access to a private template repository used to prepare the practical work. This repository contains the starter code distributed to student groups as well as the reference solution used for evaluation and published to students after the submission deadline.
+
+The integration maintains synchronization between Moodle and GitLab through bidirectional communication. Actions performed on either platform, such as repository submissions, or evaluations, are propagated automatically, ensuring that both systems remain consistent throughout the assignment lifecycle.
+
+== Teacher Features
+
+The GitLab activity module provides teachers with a centralized interface for creating and managing assignments. When creating an activity, teachers can define the assignment properties, including its name, description, instructions, submission deadline, maximum group size, and the reviewers responsible for the evaluation.
+
+For each activity, the module automatically provisions a dedicated GitLab group composed of a private template repository and one repository for each student group. The repository structure is organized consistently across all assignments, while repository permissions are configured automatically according to the assigned roles. Students receive access only to their group's repository, whereas reviewers are granted the permissions required to evaluate submissions.
+
+The template repository serves as the reference for preparing the practical assignment. Teachers can maintain the starter code, assignment instructions, and reference solution from a single location. Any updates to the starter code or instructions can be propagated to existing group repositories, allowing corrections or improvements to be distributed even after student repositories have been created. Group modifications can also be reviewed from a merge request in the template repository, giving access to all the submissions from a single repository. This reduces administrative overhead and simplifies the management of large numbers of student repositories.
+
+The activity dashboard provides an overview of all student groups and their associated repositories. Teachers can create, modify, or remove groups, monitor participation, and access each group's repository directly from Moodle. The dashboard also centralizes submission information, allowing reviewers to determine whether submissions were made before or after the submission deadline, inspect the latest CI/CD pipeline results, review merge requests, retrieve the project source code for local evaluation, and identify groups whose submissions have already been graded.
+
+Once the evaluation is complete, teachers can publish the reference solution and automatically notify students that their work has been reviewed.
+
+== Student Features
+
+Students can create or join groups by accessing the list of available. Each group is provided with access to a dedicated GitLab repository, where members can collaborate on the assignment, manage their code, and submit their work. The practical work instructions and due date are also available in a GitLab issue.
+
+Additionally, students are informed when modifications are made to protected files, helping them identify changes that may affect their implementation.
+
+Students can also access assignment due dates through the Moodle calendar and receive reminder notifications to help them manage their workload and complete submissions in time.
+
+Once grading is completed, students are notified on Moodle and can access feedback through GitLab merge requests, allowing them to associate evaluation comments directly with their submitted code.
+
+Following the completion of the assignment, the reference solution is published and made available to students. This allows them to compare their implementation with the expected solution, better understand the intended approach, and identify possible improvements in their work.
 
 == Integration Flows
 
-TODO provide graphical representations of the interactions between the different components of the system
+The integration relies on a set of automated workflows to provision GitLab resources and react to GitLab hooks. These workflows cover the main stages of the practical assignment lifecycle, from module initialization and group creation to repository synchronization and grading notifications.
 
-= Lessons Learned and Future Work
-TODO summarizes the project's outcomes, discusses the challenges encountered and the lessons learned, and presents potential improvements and directions for future development.
-TODO contribution (ce qui existait / ajouté)
+The following sequence diagrams illustrate the main integration flows:
+
+=== Module creation
+
+The module creation flow describes the automated initialization of a practical assignment, including the creation of the GitLab group, template repository, configuration of permissions, protected files, webhooks, and Moodle scheduling tasks.
+
+#figure(
+  image("images/flow_create_module.svg"),
+  caption: [Module creation flow]
+)
+
+=== Group creation
+
+The group creation flow presents the provisioning of student workspaces, including repository forking, branch configuration, merge request setup, permission assignment, and synchronization of assignment instructions.
+
+#figure(
+  image("images/flow_create_group.svg"),
+  caption: [Group creation flow]
+)
+
+=== Template repository webhook
+
+The template repository webhook flow illustrates how updates made to the template repository are propagated to group repositories. It handles synchronization events such as code updates and instruction changes while avoiding duplicate merge requests.
+
+#figure(
+  image("images/flow_template_webhook.svg"),
+  caption: [Template repository webhook flow]
+)
+
+=== Group repository webhook
+
+The group repository webhook flow describes the grading notification process triggered by merge request events. Once a submission is reviewed and the merge request is closed, notifications are sent to the corresponding group members.
+
+#figure(
+  image("images/flow_group_webhook.svg"),
+  caption: [Group repository webhook flow]
+)
+
+== Result
+
+The project achieved a seamless integration between Moodle and GitLab, providing a unified workflow for the creation, management, submission, and evaluation of practical assignments. By automating repository provisioning, synchronization, permission management, and feedback workflows, the system significantly reduces the amount of manual administration required from teachers. The integration acts as a bridge between the Learning Management System (LMS) and Version Control System (VCS), reducing platform fragmentation and establishing a reference workflow for managing practical assignments.
+
+Overall, the solution standardizes practical assignment management and improves collaboration between students and teachers. It automates repetitive administrative tasks as much as possible while preserving the flexibility and customization required to adapt assignments to different teaching contexts and requirements.
+
+#pagebreak()
+
+= Contribution and Future Work
+
+== Project Contribution
+
+Before this project, practical assignment management often required manual coordination between Moodle and GitLab, including repository creation, permission configuration, assignment setup, and synchronization of updates. While existing solutions provided partial automation or integration capabilities, they generally lacked deep Learning Management System (LMS) integration or relied on proprietary platforms.
+
+This project extends the existing workflow by introducing an open-source, Moodle-native integration that connects Moodle and GitLab into a unified assignment management process. The proposed solution automates repetitive administrative tasks while preserving the flexibility and customization required for different teaching contexts, avoiding the limitations often introduced by overly rigid automation systems. By reducing platform fragmentation and providing a reference workflow for practical assignment management, the solution improves the consistency and maintainability of computer science education practices.
+
+== Future Work
+
+Several areas could be improved in future iterations of the project. First, additional work is required to strengthen error handling and improve user feedback. Providing clearer error messages and guidance would help users better understand the cause of failures and facilitate troubleshooting.
+
+Another improvement area concerns Moodle permission management. Each action should have its required permissions explicitly defined and validated. Moodle provides a capability-based permission system that allows fine-grained control through custom capabilities, which should be integrated to ensure better security, and modularity of the plugin.
+
+Finally, future development could focus on extending support to additional Version Control Systems (VCS), such as GitHub. Supporting multiple VCS platforms would increase the flexibility of the solution and allow institutions to adopt the solution within different technical environments.
 
 #pagebreak()
 
@@ -737,10 +834,12 @@ See #underline[reports.pdf]
 == Source code <appendix_code>
 #underline[GitHub Repository] @code
 
+== Project documentation <appendix_doc>
+#underline[Documentation] @project_documentation
+
 == Kanban Board <appendix_board>
 #underline[Kanban Board] @kanban
 
 #pagebreak()
-
 
 #bibliography("ref.yaml")

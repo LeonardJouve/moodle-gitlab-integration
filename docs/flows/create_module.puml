@@ -1,0 +1,44 @@
+@startuml
+title Create Module
+
+actor Teacher
+participant Moodle
+participant Plugin
+participant GitLab
+participant Group
+participant Template
+
+Teacher -> Moodle: Create GitLab module
+Moodle -> Plugin: Create module
+
+Plugin -> GitLab: Create GitLab group
+GitLab --> Plugin: Group created
+
+Plugin -> Group: Create template repository
+Group --> Plugin: Repository created
+
+Plugin -> Template: Create solution branch
+Template --> Plugin: Solution branch created
+
+Plugin -> Template: Create instructions issue
+Template --> Plugin: Issue created
+
+Plugin -> Template: Add reviewers as maintainers
+Template --> Plugin: Permissions configured
+
+Plugin -> Template: Push protected files pipeline
+Template --> Plugin: Pipeline created
+
+Plugin -> Template: Create sync webhook
+Template --> Plugin: Webhook registered
+
+Plugin -> Moodle: Create calendar event
+Moodle --> Plugin: Calendar event created
+
+Plugin -> Moodle: Schedule submission tasks
+Moodle --> Plugin: Tasks scheduled
+
+Plugin --> Moodle: Module created
+
+Moodle --> Teacher: Update UI
+@enduml
