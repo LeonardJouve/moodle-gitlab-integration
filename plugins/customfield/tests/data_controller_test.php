@@ -53,7 +53,7 @@ class data_controller_test extends advanced_testcase {
         $fieldrecord->name = 'GitLab Token';
         $fieldrecord->shortname = 'gitlab_token';
         $fieldrecord->type = 'gitlab';
-        $fieldrecord->configdata = '{}';
+        $fieldrecord->configdata = '{"required": 1}';
 
         return field_controller::create(0, $fieldrecord, $category);
     }
