@@ -413,7 +413,7 @@ class gitlab_client_test extends advanced_testcase {
             ->method('setHeader');
         $curl->expects($this->once())
             ->method('post')
-            ->with('https://example.com/api/v4/projects/12/repository/files/README%2Emd', '{"branch":"main","content":"hello","commit_message":"Add file"}')
+            ->with(urlencode('https://example.com/api/v4/projects/12/repository/files/README.md'), '{"branch":"main","content":"hello","commit_message":"Add file"}')
             ->willReturn('{"file_path":"README.md"}');
         $curl->expects($this->once())
             ->method('get_info')
