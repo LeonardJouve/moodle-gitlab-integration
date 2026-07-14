@@ -22,7 +22,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_gitlab\local;
+namespace mod_gitlab\local\bridge;
 
 use stdClass;
 use Throwable;

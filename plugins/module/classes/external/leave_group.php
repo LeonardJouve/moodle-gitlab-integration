@@ -28,7 +28,7 @@ use \core_external\external_api;
 use \core_external\external_function_parameters;
 use \core_external\external_value;
 use mod_gitlab\http\Gitlab;
-use mod_gitlab\local\Bridge;
+use mod_gitlab\local\bridge\Bridge;
 use mod_gitlab\local\Helper;
 
 class leave_group extends external_api {

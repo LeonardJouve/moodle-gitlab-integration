@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 use \core_external\external_api;
 use \core_external\external_function_parameters;
 use \core_external\external_value;
-use mod_gitlab\local\Group;
+use mod_gitlab\local\bridge\Group;
 
 class delete_group extends external_api {
     public static function execute_parameters() {

@@ -20,7 +20,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_gitlab\local;
+namespace mod_gitlab\local\bridge;
 
 use calendar_event;
 use core\encryption;
@@ -28,6 +28,11 @@ use core\task\manager;
 use core\url;
 use core_user;
 use mod_gitlab\http\Gitlab;
+use mod_gitlab\local\Helper;
+use mod_gitlab\local\task\FinalizeGroupCreationTask;
+use mod_gitlab\local\task\SubmissionSoonTask;
+use mod_gitlab\local\task\SubmissionTask;
+use mod_gitlab\local\Webhook;
 use stdClass;
 
 require_once($CFG->dirroot.'/calendar/lib.php');

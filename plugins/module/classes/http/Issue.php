@@ -29,8 +29,6 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/filelib.php');
 
 /**
- * Group Gitlab client
- *
  * @package     mod_gitlab
  * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

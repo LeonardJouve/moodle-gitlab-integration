@@ -25,11 +25,11 @@
 use core\task\manager;
 use mod_gitlab\local\Helper;
 use mod_gitlab\http\Gitlab;
-use mod_gitlab\local\Bridge;
-use mod_gitlab\local\FinalizeGroupCreationTask;
-use mod_gitlab\local\Resources;
-use mod_gitlab\local\SubmissionSoonTask;
-use mod_gitlab\local\SubmissionTask;
+use mod_gitlab\local\bridge\Bridge;
+use mod_gitlab\local\bridge\Resources;
+use mod_gitlab\local\task\FinalizeGroupCreationTask;
+use mod_gitlab\local\task\SubmissionSoonTask;
+use mod_gitlab\local\task\SubmissionTask;
 
 /**
  * Return if the plugin supports $feature.

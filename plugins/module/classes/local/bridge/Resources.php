@@ -20,11 +20,12 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_gitlab\local;
+namespace mod_gitlab\local\bridge;
 
 use core\url;
 use mod_gitlab\http\Gitlab;
 use mod_gitlab\http\RuntimeException;
+use mod_gitlab\local\Helper;
 use stdClass;
 
 class Resources {
