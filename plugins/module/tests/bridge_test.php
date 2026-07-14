@@ -26,6 +26,7 @@ namespace mod_gitlab\local\bridge;
 
 use advanced_testcase;
 use PHPUnit\Framework\MockObject\MockObject;
+use TestHelper;
 
 /**
  * Unit tests for Bridge class
@@ -72,11 +73,9 @@ class bridge_test extends advanced_testcase {
         $course = $this->getDataGenerator()->create_course();
         $user = $this->getDataGenerator()->create_user();
         
-        $module = new \stdClass();
+        $module = TestHelper::mock_module();
         $module->course = $course->id;
         $module->name = 'Test Module';
-        $module->intro = '';
-        $module->introformat = FORMAT_HTML;
         $module->group_size = 3;
         $moduleid = $DB->insert_record('gitlab', $module);
 
@@ -102,11 +101,9 @@ class bridge_test extends advanced_testcase {
         global $DB;
 
         $course = $this->getDataGenerator()->create_course();
-        $module = new \stdClass();
+        $module = TestHelper::mock_module();
         $module->course = $course->id;
         $module->name = 'Test Module';
-        $module->intro = '';
-        $module->introformat = FORMAT_HTML;
         $module->group_size = 3;
         $moduleid = $DB->insert_record('gitlab', $module);
 
@@ -133,11 +130,9 @@ class bridge_test extends advanced_testcase {
         global $DB;
 
         $course = $this->getDataGenerator()->create_course();
-        $module = new \stdClass();
+        $module = TestHelper::mock_module();
         $module->course = $course->id;
         $module->name = 'Test Module';
-        $module->intro = '';
-        $module->introformat = FORMAT_HTML;
         $module->group_size = 3;
         $moduleid = $DB->insert_record('gitlab', $module);
 
@@ -159,11 +154,9 @@ class bridge_test extends advanced_testcase {
         global $DB;
 
         $course = $this->getDataGenerator()->create_course();
-        $module = new \stdClass();
+        $module = TestHelper::mock_module();
         $module->course = $course->id;
         $module->name = 'Test Module';
-        $module->intro = '';
-        $module->introformat = FORMAT_HTML;
         $module->group_size = 3;
         $module->due_date = time() + (7 * 24 * 60 * 60);
         $moduleid = $DB->insert_record('gitlab', $module);
@@ -193,11 +186,9 @@ class bridge_test extends advanced_testcase {
         $course = $this->getDataGenerator()->create_course();
         $user = $this->getDataGenerator()->create_user();
 
-        $module = new \stdClass();
+        $module = TestHelper::mock_module();
         $module->course = $course->id;
         $module->name = 'Test Module';
-        $module->intro = '';
-        $module->introformat = FORMAT_HTML;
         $module->group_size = 3;
         $moduleid = $DB->insert_record('gitlab', $module);
 
@@ -226,11 +217,9 @@ class bridge_test extends advanced_testcase {
         global $DB;
 
         $course = $this->getDataGenerator()->create_course();
-        $module = new \stdClass();
+        $module = TestHelper::mock_module();
         $module->course = $course->id;
         $module->name = 'Test Module';
-        $module->intro = '';
-        $module->introformat = FORMAT_HTML;
         $module->group_size = 3;
         $moduleid = $DB->insert_record('gitlab', $module);
 

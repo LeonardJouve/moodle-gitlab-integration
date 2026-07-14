@@ -26,6 +26,7 @@ namespace mod_gitlab\local;
 
 use advanced_testcase;
 use core\encryption;
+use TestHelper;
 
 /**
  * Unit tests for Webhook class
@@ -80,17 +81,9 @@ class webhook_test extends advanced_testcase {
         global $DB;
 
         $course = $this->getDataGenerator()->create_course();
-        $module = new \stdClass();
+        $module = TestHelper::mock_module();
         $module->course = $course->id;
         $module->name = 'Test Module';
-        $module->intro = '';
-        $module->introformat = FORMAT_HTML;
-        $module->group_id = 1;
-        $module->parent_group = 1;
-        $module->group_size = 1;
-        $module->due_date = time();
-        $module->reviewers = json_encode([]);
-        $module->template_id = 1;
         $module->webhook_secret = '';
         $moduleid = $DB->insert_record('gitlab', $module);
 
@@ -108,17 +101,9 @@ class webhook_test extends advanced_testcase {
 
         $secretkey = Webhook::generate_key();
 
-        $module = new \stdClass();
+        $module = TestHelper::mock_module();
         $module->course = $course->id;
         $module->name = 'Test Module';
-        $module->intro = '';
-        $module->introformat = FORMAT_HTML;
-        $module->group_id = 1;
-        $module->parent_group = 1;
-        $module->group_size = 1;
-        $module->due_date = time();
-        $module->reviewers = json_encode([]);
-        $module->template_id = 1;
         $module->webhook_secret = encryption::encrypt($secretkey);
         $moduleid = $DB->insert_record('gitlab', $module);
 

@@ -26,6 +26,7 @@ namespace mod_gitlab\local;
 
 use advanced_testcase;
 use PHPUnit\Framework\MockObject\MockObject;
+use TestHelper;
 
 /**
  * Unit tests for Action class
@@ -59,11 +60,9 @@ class action_test extends advanced_testcase {
     private function create_module_instance(int $courseid): \stdClass {
         global $DB;
 
-        $module = new \stdClass();
+        $module = TestHelper::mock_module();
         $module->course = $courseid;
         $module->name = 'Test Module';
-        $module->intro = '';
-        $module->introformat = FORMAT_HTML;
         $module->group_size = 3;
         $module->due_date = time() + (7 * 24 * 60 * 60);
         $module->id = $DB->insert_record('gitlab', $module);
