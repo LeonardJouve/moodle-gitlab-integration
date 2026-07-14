@@ -26,7 +26,7 @@ namespace mod_gitlab\local;
 
 use advanced_testcase;
 use core\encryption;
-use mod_gitlab\TestHelper;
+use mod_gitlab\local\TestHelper;
 
 /**
  * Unit tests for Webhook class

@@ -26,7 +26,7 @@ namespace mod_gitlab\local\bridge;
 
 use advanced_testcase;
 use PHPUnit\Framework\MockObject\MockObject;
-use mod_gitlab\TestHelper;
+use mod_gitlab\local\TestHelper;
 
 /**
  * Unit tests for Bridge class
