@@ -174,10 +174,10 @@ class data_controller_test extends advanced_testcase {
             ->onlyMethods(['save', 'get_form_element_name'])
             ->getMock();
 
-        $controllermock->field = $field;
-
         $controllermock->expects($this->once())->method('get_form_element_name')
             ->willReturn('customfield_gitlab_token');
+        $controllermock->expects($this->once())->method('get_field')
+            ->willReturn($field);
         $controllermock->expects($this->once())->method('save');
 
         // This should not throw an exception
