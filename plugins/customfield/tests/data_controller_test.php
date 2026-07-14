@@ -55,7 +55,7 @@ class data_controller_test extends advanced_testcase {
         $datarecord = new \stdClass();
         $datarecord->fieldid = 0;
 
-        $controller = new data_controller(0, $datarecord, $field);
+        $controller = data_controller::create(0, $datarecord, $field);
 
         $this->assertEquals('value', $controller->datafield());
     }
@@ -74,7 +74,7 @@ class data_controller_test extends advanced_testcase {
         $datarecord = new \stdClass();
         $datarecord->fieldid = 0;
 
-        $controller = new data_controller(0, $datarecord, $field);
+        $controller = data_controller::create(0, $datarecord, $field);
 
         $this->assertEquals('', $controller->get_default_value());
     }
@@ -93,7 +93,7 @@ class data_controller_test extends advanced_testcase {
         $datarecord = new \stdClass();
         $datarecord->fieldid = 0;
 
-        $controller = new data_controller(0, $datarecord, $field);
+        $controller = data_controller::create(0, $datarecord, $field);
 
         $this->assertNull($controller->export_value());
     }
@@ -112,7 +112,7 @@ class data_controller_test extends advanced_testcase {
         $datarecord = new \stdClass();
         $datarecord->fieldid = 0;
 
-        $controller = new data_controller(0, $datarecord, $field);
+        $controller = data_controller::create(0, $datarecord, $field);
 
         $mform = $this->createMock(\MoodleQuickForm::class);
         $mform->expects($this->once())->method('addElement');
@@ -136,7 +136,7 @@ class data_controller_test extends advanced_testcase {
         $datarecord = new \stdClass();
         $datarecord->fieldid = 0;
 
-        $controller = new data_controller(0, $datarecord, $field);
+        $controller = data_controller::create(0, $datarecord, $field);
 
         $mform = $this->createMock(\MoodleQuickForm::class);
         $mform->expects($this->once())->method('addElement');
@@ -165,7 +165,7 @@ class data_controller_test extends advanced_testcase {
         $datarecord->fieldid = 0;
         $datarecord->value = $encryptedvalue;
 
-        $controller = new data_controller(0, $datarecord, $field);
+        $controller = data_controller::create(0, $datarecord, $field);
         $decryptedvalue = $controller->get_value();
 
         $this->assertEquals($originalvalue, $decryptedvalue);
@@ -187,7 +187,7 @@ class data_controller_test extends advanced_testcase {
         $datarecord->id = 0;
         $datarecord->value = '';
 
-        $controller = new data_controller(0, $datarecord, $field);
+        $controller = data_controller::create(0, $datarecord, $field);
 
         $formdata = new \stdClass();
         $formdata->customfield_gitlab_token = 'my_secret_token';
@@ -220,7 +220,7 @@ class data_controller_test extends advanced_testcase {
         $datarecord = new \stdClass();
         $datarecord->fieldid = 0;
 
-        $controller = new data_controller(0, $datarecord, $field);
+        $controller = data_controller::create(0, $datarecord, $field);
 
         $formdata = new \stdClass();
         // Don't add the form element
