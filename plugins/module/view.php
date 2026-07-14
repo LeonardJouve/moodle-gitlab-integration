@@ -72,6 +72,8 @@ $client = new Gitlab($token);
 $bridge = new Bridge($client);
 $resources = new Resources($client);
 
+$ok = true;
+
 // TODO handle perm
 switch ($action) {
 case 'joingroup':
