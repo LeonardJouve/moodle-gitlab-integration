@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+namespace mod_gitlab;
+
 /**
  * Helper test class
  *
@@ -21,7 +23,6 @@
  * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class TestHelper {
     public static function mock_module(): stdClass {
         $module = new stdClass();
