@@ -114,7 +114,7 @@ class bridge_test extends advanced_testcase {
 
         $client = $this->create_mock_gitlab_client();
         $client->method('member')->willReturnSelf();
-        $client->expects($this->never())->method('add');
+        $client->expects($this->never())->method('post');
 
         $bridge = new Bridge($client);
 
@@ -138,8 +138,8 @@ class bridge_test extends advanced_testcase {
 
         $client = $this->create_mock_gitlab_client();
         $client->method('member')->willReturnSelf();
-        $client->expects($this->never())->method('remove');
-        $client->expects($this->never())->method('add');
+        $client->expects($this->never())->method('delete');
+        $client->expects($this->never())->method('post');
 
         $bridge = new Bridge($client);
 
