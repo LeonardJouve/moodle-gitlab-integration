@@ -151,7 +151,7 @@ class gitlab_client_test extends advanced_testcase {
             ]);
         $curl->expects($this->once())
             ->method('delete')
-            ->with('https://example.com/api/v4/projects?confirm=true')
+            ->with('https://example.com/api/v4/projects?confirm=1')
             ->willReturn('{"status":"deleted"}');
         $curl->expects($this->once())
             ->method('get_info')
