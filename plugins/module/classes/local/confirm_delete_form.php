@@ -20,45 +20,39 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_gitlab\local\form;
+namespace mod_gitlab\local;
 
+use html_writer;
 use moodleform;
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
-require_once($CFG->libdir.'/formslib.php');
+require_once($CFG->libdir . '/formslib.php');
 
-class mod_gitlab_manage_group_form extends moodleform {
+class mod_gitlab_confirm_delete_form extends moodleform {
     public function definition() {
-        global $DB, $PAGE;
-    
         $mform = $this->_form;
-        $context = $this->_customdata->context;
-        $coursecontext = $context->get_course_context();
 
-        $users = $DB->get_records_sql("
-            SELECT DISTINCT u.id, u.firstname, u.lastname
-            FROM {user} u
-            JOIN {gitlab_group_members} gm ON gm.user_id = u.id
-            WHERE gm.group_id = :group_id
-        ", [
-            'group_id' => $this->_customdata->groupid,
-        ]);
+        $name = $this->_customdata->name;
 
-        $existants = [];
-        foreach ($users as $user) {
-            $existants[$user->id] = $PAGE->get_renderer('core')->render_from_template('mod_gitlab/form_user_selector', $user);
-        }
-        $options = array(
-            'ajax' => 'mod_gitlab/form_user_selector',
-            'multiple' => true,
-            'courseid' => $coursecontext->instanceid,
-            'groupid' => $this->_customdata->groupid,
+        $mform->addElement(
+            'static',
+            'confirmation',
+            '',
+            html_writer::div(
+                get_string('modal_delete_group_help', 'mod_gitlab', ['name' => $name]),
+                'alert alert-warning'
+            ),
         );
-        $mform->addElement('autocomplete', 'userlist', get_string('modal_group_members_field', 'mod_gitlab'), $existants, $options);
-        $mform->setDefault('userlist', array_keys($existants));
+
+        $mform->addElement(
+            'text',
+            'confirmationname',
+            get_string('modal_delete_group_field', 'mod_gitlab')
+        );
+        $mform->setType('confirmationname', PARAM_TEXT);
     }
 
     /**
@@ -70,6 +64,14 @@ class mod_gitlab_manage_group_form extends moodleform {
      *         or an empty array if everything is OK (true allowed for backwards compatibility too).
      */
     public function validation($data, $files) {
-        return [];
+        $errors = parent::validation($data, $files);
+
+        $expected = $this->_customdata->name;
+
+        if ($data['confirmationname'] !== $expected) {
+            $errors['confirmationname'] = get_string('modal_delete_group_mismatch', 'mod_gitlab');
+        }
+
+        return $errors;
     }
 }
