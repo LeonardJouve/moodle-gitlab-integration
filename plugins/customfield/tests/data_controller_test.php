@@ -142,6 +142,7 @@ class data_controller_test extends advanced_testcase {
         $field = $this->mock_field_controller();
         $controller = $this->mock_data_controller($field, [
             'value' => $encryptedvalue,
+            'id' => 1,
         ]);
 
         $decryptedvalue = $controller->get_value();
