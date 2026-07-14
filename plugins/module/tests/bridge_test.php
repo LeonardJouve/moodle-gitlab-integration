@@ -125,7 +125,7 @@ class bridge_test extends advanced_testcase {
 
         $result = $bridge->set_group_members([], 3, $groupid);
 
-        $this->assertIsObject($result);
+        $this->assertTrue($result);
     }
 
     /**
