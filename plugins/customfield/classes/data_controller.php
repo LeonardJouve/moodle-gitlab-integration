@@ -91,7 +91,6 @@ class data_controller extends \core_customfield\data_controller {
         $value = encryption::encrypt($datanew->{$elementname});
 
         $this->data->set($datafield, $value);
-        $this->data->set('value', $value);
 
         // Set component, area and itemid from the handler.
         $category = $this->field->get_category();

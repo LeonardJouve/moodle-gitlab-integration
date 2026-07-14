@@ -54,7 +54,6 @@ class data_controller_test extends advanced_testcase {
         $fieldrecord->shortname = 'gitlab_token';
         $fieldrecord->type = 'gitlab';
         $fieldrecord->configdata = '{}';
-        $fieldrecord->category = $category;
 
         return field_controller::create(0, $fieldrecord, $category);
     }
@@ -155,14 +154,16 @@ class data_controller_test extends advanced_testcase {
      */
     public function test_instance_form_save_encrypts_value(): void {
         $field = $this->mock_field_controller();
+        $category = $field->get_category();
         
         $datarecord = [
-            'fieldid' => 0,
             'id' => 0,
             'value' => '',
+            'fieldid' => $field->get('id'),
+            'component' => $category->get_original_component(),
+            'area' => $category->get_original_area(),
+            'itemid' => $category->get_original_itemid(),
         ];
-
-        $controller = $this->mock_data_controller($field, $datarecord);
 
         $formdata = new \stdClass();
         $formdata->customfield_gitlab_token = 'my_secret_token';
@@ -172,6 +173,8 @@ class data_controller_test extends advanced_testcase {
             ->setConstructorArgs([0, (object) $datarecord, $field])
             ->onlyMethods(['save', 'get_form_element_name'])
             ->getMock();
+
+        $controllermock->field = $field;
 
         $controllermock->expects($this->once())->method('get_form_element_name')
             ->willReturn('customfield_gitlab_token');
