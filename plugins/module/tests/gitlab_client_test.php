@@ -54,6 +54,13 @@ class gitlab_client_test extends advanced_testcase {
     }
 
     public function test_url_builds_endpoints_and_query_parameters(): void {
+
+    
+        $this->assertEquals(http_build_query([
+            'page' => 2,
+            'per_page' => 50,
+        ]), 'page=2&per_page=50');
+        
         $client = new Gitlab('secret_token');
 
         $url = $client->url('/projects', ['page' => 2, 'per_page' => 50]);
