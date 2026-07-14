@@ -66,10 +66,9 @@ class bridge_test extends advanced_testcase {
     /**
      * Test join_group returns false when Group::join_group fails
      */
-    public function test_join_group_returns_false_when_join_fails(): void {
+    public function test_join_group_returns_false_when_already_in_group(): void {
         global $DB;
 
-        // Create test data
         $course = $this->getDataGenerator()->create_course();
         $user = $this->getDataGenerator()->create_user();
         
@@ -78,19 +77,25 @@ class bridge_test extends advanced_testcase {
         $module->name = 'Test Module';
         $module->group_size = 3;
         $moduleid = $DB->insert_record('gitlab', $module);
-
-        $group_record = new \stdClass();
-        $group_record->module_id = $moduleid;
-        $group_record->repository_id = 123;
-        $groupid = $DB->insert_record('gitlab_groups', $group_record);
-
         $moduleinstance = $DB->get_record('gitlab', ['id' => $moduleid]);
 
         $client = $this->create_mock_gitlab_client();
         $bridge = new Bridge($client);
 
-        $result = $bridge->join_group($groupid, $user->id, $moduleinstance);
+        $group_record = new \stdClass();
+        $group_record->module_id = $moduleid;
+        $group_record->repository_id = 1;
+        $groupid = $DB->insert_record('gitlab_groups', $group_record);
 
+        $result = $bridge->join_group($groupid, $user->id, $moduleinstance);
+        $this->assertTrue($result);
+
+        $group_record = new \stdClass();
+        $group_record->module_id = $moduleid;
+        $group_record->repository_id = 2;
+        $groupid = $DB->insert_record('gitlab_groups', $group_record);
+
+        $result = $bridge->join_group($groupid, $user->id, $moduleinstance);
         $this->assertFalse($result);
     }
 
