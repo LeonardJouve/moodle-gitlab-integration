@@ -16,6 +16,8 @@
 
 namespace mod_gitlab\local;
 
+use stdClass;
+
 /**
  * Helper test class
  *
