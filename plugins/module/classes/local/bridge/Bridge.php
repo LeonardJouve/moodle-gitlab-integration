@@ -313,7 +313,7 @@ class Bridge {
         $event->visible = instance_is_visible('mod_gitlab', $moduleinstance);
         $event->timeduration = 0;
 
-        calendar_event::create($event);
+        calendar_event::create($event, false);
     }
 
     public function send_submission_notifications(stdClass $moduleinstance, bool $soon) {

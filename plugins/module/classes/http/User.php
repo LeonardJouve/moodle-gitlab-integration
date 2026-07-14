@@ -48,7 +48,7 @@ class User {
     }
 
     public function get(int $id, array $params = []) {
-        return $this->client->get("/users" . $id, $params);
+        return $this->client->get("/users/" . $id, $params);
     }
 
     public function me() {
