@@ -26,6 +26,7 @@ namespace customfield_gitlab;
 
 use advanced_testcase;
 use core\encryption;
+use core_customfield\category_controller;
 use stdClass;
 
 /**
@@ -44,8 +45,9 @@ class data_controller_test extends advanced_testcase {
 
     private function mock_field_controller(): field_controller {
         $handler = \core_customfield\handler::get_handler('core_course', 'course');
-    
-        $category = $handler->create_category('GitLab');
+        $data = new stdClass();
+        $data->name = 'GitLab';
+        $category = category_controller::create(0, $data, $handler);
 
         $fieldrecord = new \stdClass();
         $fieldrecord->name = 'GitLab Token';
@@ -54,7 +56,7 @@ class data_controller_test extends advanced_testcase {
         $fieldrecord->configdata = '{}';
         $fieldrecord->category = $category;
 
-        return new field_controller(0, $fieldrecord);
+        return field_controller::create(0, $fieldrecord, $category);
     }
 
     private function mock_data_controller(field_controller $field, array $data = []): data_controller {
