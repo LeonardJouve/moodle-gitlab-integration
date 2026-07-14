@@ -85,6 +85,12 @@ class webhook_test extends advanced_testcase {
         $module->name = 'Test Module';
         $module->intro = '';
         $module->introformat = FORMAT_HTML;
+        $module->group_id = 1;
+        $module->parent_group = 1;
+        $module->group_size = 1;
+        $module->due_date = time();
+        $module->reviewers = json_encode([]);
+        $module->template_id = 1;
         $module->webhook_secret = '';
         $moduleid = $DB->insert_record('gitlab', $module);
 
@@ -100,15 +106,20 @@ class webhook_test extends advanced_testcase {
 
         $course = $this->getDataGenerator()->create_course();
 
-        $secretkey = base64_encode(random_bytes(32));
-        $encrypted_secret = encryption::encrypt($secretkey);
+        $secretkey = Webhook::generate_key();
 
         $module = new \stdClass();
         $module->course = $course->id;
         $module->name = 'Test Module';
         $module->intro = '';
         $module->introformat = FORMAT_HTML;
-        $module->webhook_secret = $encrypted_secret;
+        $module->group_id = 1;
+        $module->parent_group = 1;
+        $module->group_size = 1;
+        $module->due_date = time();
+        $module->reviewers = json_encode([]);
+        $module->template_id = 1;
+        $module->webhook_secret = encryption::encrypt($secretkey);
         $moduleid = $DB->insert_record('gitlab', $module);
 
         $key = Webhook::get_module_key($moduleid);
