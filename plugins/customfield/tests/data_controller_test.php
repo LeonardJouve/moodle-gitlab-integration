@@ -169,7 +169,7 @@ class data_controller_test extends advanced_testcase {
 
         // Mock the data and category
         $controllermock = $this->getMockBuilder(data_controller::class)
-            ->setConstructorArgs([0, $datarecord, $field])
+            ->setConstructorArgs([0, (object) $datarecord, $field])
             ->onlyMethods(['save', 'get_form_element_name'])
             ->getMock();
 
