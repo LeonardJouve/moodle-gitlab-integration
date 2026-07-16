@@ -21,10 +21,20 @@
         path: "{{ authentik_dir }}/blueprints"
         state: directory
 
-    - name: Copy blueprint file from local
-      copy:
+    - name: Create blueprint from template
+      ansible.builtin.template:
         src: res/moodle-authentik.yaml
         dest: "{{ authentik_dir }}/blueprints/moodle.yml"
+
+    - name: Create icons directory
+      file:
+        path: "{{ authentik_dir }}/icons"
+        state: directory
+
+    - name: Copy icon file from local
+      copy:
+        src: res/moodle.svg
+        dest: "{{ authentik_dir }}/icons/moodle.svg"
 
     - name: Check if env exists
       stat:
@@ -51,10 +61,15 @@
       community.docker.docker_compose_v2:
         project_src: "{{ authentik_dir }}"
         state: present
-
-    - name: Wait for startup
-      pause:
-        seconds: 10
+    
+    - name: Wait for authentik startup
+      ansible.builtin.uri:
+        url: "{{ authentik_external_url }}/"
+        method: GET
+      register: _result
+      until: _result.status == 200
+      retries: 30
+      delay: 5
 
     - name: Apply blueprint
       community.docker.docker_container_exec:

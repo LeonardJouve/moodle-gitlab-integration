@@ -1,3 +1,4 @@
 authentik_external_url: "http://localhost"
 authentik_external_host: "localhost"
+moodle_external_url: "http://localhost"
 moodle_external_host: "localhost"

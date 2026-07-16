@@ -37,6 +37,7 @@ services:
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
       AUTHENTIK_EXTERNAL_URL: ${AUTHENTIK_EXTERNAL_URL}
+      AUTHENTIK_BOOTSTRAP_PASSWORD: akadmin
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2026.2.2}
     restart: unless-stopped
     shm_size: 512mb
@@ -44,6 +45,7 @@ services:
       - ./data:/data
       - ./custom-templates:/templates
       - ./blueprints:/blueprints
+      - ./icons/moodle.svg:/web/authentik/sources/moodle.svg
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.authentik.rule=Host(`${AUTHENTIK_EXTERNAL_HOST}`)"
@@ -64,6 +66,7 @@ services:
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
+      AUTHENTIK_BOOTSTRAP_PASSWORD: akadmin
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2026.2.2}
     restart: unless-stopped
     shm_size: 512mb
