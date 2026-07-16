@@ -96,6 +96,14 @@ First modify `ansible/inventory.ini` with your host and URL configuration.
 
 Then update `ansible/group_vars/all.yaml` with your host and URL configuration.
 
+For example:
+```
+authentik_external_url: "http://auth-moodle-gitlab.duckdns.org"
+authentik_external_host: "auth-moodle-gitlab.duckdns.org"
+moodle_external_url: "http://moodle-gitlab.duckdns.org"
+moodle_external_host: "moodle-gitlab.duckdns.org"
+```
+
 For DNS, you can use a service such as [DuckDNS](https://www.duckdns.org/), which provides an easy-to-setup and free dynamic DNS solution.
 
 You can now run Ansible playbooks:
