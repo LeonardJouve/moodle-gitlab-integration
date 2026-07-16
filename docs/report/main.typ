@@ -1,14 +1,19 @@
-#import "@preview/basic-report:0.4.0": *
+#import "template.typ": template
+#set document(title: [
+  Moodle-GitLab Integration
+])
 
-#show: it => basic-report(
-  doc-category: "Bachelor thesis",
-  doc-title: "Integrating GitLab with Moodle",
-  author: "Jouve Léonard",
-  affiliation: "HEIG-VD",
-  logo: image("images/Heig.svg"),
-  language: "en",
-  compact-mode: false,
-  it
+#let abstract = []
+
+#show: template.with(
+  department : [TIC],
+  program : [Computer Science and Communications Systems],
+  specialization : [Software Engineering],
+  student : [Jouve Léonard],
+  date : datetime.today(),
+  supervisor: [Delgado Pamela],
+  institute : [HEIG-VD],
+  abstract : [#abstract],
 )
 
 = Introduction
@@ -681,6 +686,7 @@ A webhook is automatically created for the template repository. It listens for i
 
 #figure(
   image("images/gitlab_webhook.png"),
+  caption: [GitLab template repository webhook]
 )
 
 A webhook is also created for each group repository to monitor submission merge request events. It listens for close actions on submission merge requests. When a merge request is closed, GitLab notifies Moodle, which identifies the corresponding group submission and updates the submission status. This allows grading-related events to be reflected automatically within Moodle and enables students to be informed when their work has been evaluated.
@@ -842,4 +848,7 @@ See #underline[reports.pdf]
 
 #pagebreak()
 
-#bibliography("ref.yaml")
+#bibliography(
+  "ref.bib",
+  style: "ieee",
+)
