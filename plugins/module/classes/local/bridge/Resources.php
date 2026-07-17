@@ -62,6 +62,10 @@ class Resources {
         return 'update-group-repository';
     }
 
+    public static function instructionIssueLabel() {
+        return 'instruction';
+    }
+
     public static function webhookModuleHeader() {
         return 'module-id';
     }
@@ -82,7 +86,8 @@ class Resources {
 
     public function get_instructions_issue(int $repository_id): ?stdClass {
         $issues = $this->client->issue()->list($repository_id, [
-            'search' => Resources::instructionIssue(),
+            'labels' => Resources::instructionIssueLabel(),
+            'state' => 'opened',
             'order_by' => 'created_at',
         ]);
         if (count($issues) == 0) {
@@ -118,6 +123,7 @@ class Resources {
         $this->client->issue()->create($repository_id, Resources::instructionIssue(), $content, [
             'start_date' => date('Y-m-d', time()),
             'due_date' => date('Y-m-d', $due_date),
+            'labels' => Resources::instructionIssueLabel(),
         ]);
     }
 
@@ -125,6 +131,7 @@ class Resources {
         $merge_requests = $this->client->merge_request()->list($repository_id, array_merge([
             'source_branch' => $source,
             'target_branch' => $target,
+            'order_by' => 'created_at',
         ], $extra));
         if (count($merge_requests) == 0) {
             return null;
