@@ -30,11 +30,13 @@ Students, on the other hand, must navigate between multiple platforms to access 
 
 Existing solutions partially address these issues but remain limited. Some are proprietary and lack flexibility, while others are tightly coupled to specific platforms such as GitHub. Moreover, they are often not deeply integrated into LMS environments, requiring additional tools or workflows that increase complexity rather than reduce it. This situation highlights the need for an open, flexible, and LMS-native solution that seamlessly integrates Git-based workflows into the educational ecosystem.
 
+Furthermore, GitHub Classroom, one of the most widely used platforms for managing computer science assignments, has announced that it will discontinue its service on 28 August 2026. This development highlights the risks of relying on proprietary, closed-source tools and reinforces the need for a new open-source, LMS-native solution.
+
 #pagebreak()
 
 == Goal
 
-To address these challenges, this project aims to develop of an extensible integration between Moodle and GitLab. The solution consists of a custom Moodle plugin that communicates with the GitLab API. This integration will enable direct interaction with GitLab features from within the Moodle interface.
+To address these challenges, this project aims to develop an extensible integration between Moodle and GitLab. The solution consists of a custom Moodle plugin that communicates with the GitLab API. This integration will enable direct interaction with GitLab features from within the Moodle interface.
 
 The integration will automate workflows involved in programming assignments. This includes the creation and management of repositories, automatic setup of student groups, synchronization of project data, and integration of feedback and grading mechanisms. By embedding these functionalities into Moodle, both teachers and students benefit from a unified platform where all relevant information and actions are accessible.
 
@@ -49,28 +51,38 @@ The remainder of this report is organized as follows:
 - *State of the Art* reviews and evaluates existing solutions related to the proposed integration.
 - *Specifications* defines the project's objectives, deliverables, requirements, and expected outcomes.
 - *System Architecture* describes the architectural design chosen.
-- *Features* presents a detailed description of the functionalities provided by the developed integration.
-- *Development Process* outlines the main stages of the project's development and implementation process.
-- *Solution* details the final delivered solution.
-- *Contribution and Future Work* summarizes the project's contributions, presents potential improvements and directions for future development.
+- *Features* presents the initial requirements and expected functionalities of the integration, describing the objectives and capabilities targeted during development.
+- *Development Process* outlines the main stages of the project's development and implementation, as well as the project management practices followed throughout its execution.
+- *Solution* describes the final implemented integration, including the functionalities delivered and how the initial requirements were addressed.
+- *Contributions, Limitations and Future Work* summarizes the project's contributions, presents potential improvements and directions for future development.
 - *Appendices* contain the supplementary material accompanying this report.
 
 #pagebreak()
 
 = Context
 
-This chapter introduces the main platforms and technologies involved in the project. The presented information aims to provide a better understanding of the overall system and the role of each component within it.
+This chapter introduces the main platforms and technologies on which this work is based. The presented information provides the necessary background to understand the role of each platform, their use in computer science education workflows, and their relevance to the proposed integration.
 
 == Moodle
 
 #underline[Moodle] @moodle is an open-source Learning Management System (LMS) widely used by universities and educational institutions to organize courses, distribute learning materials, and manage academic activities. Its name stands for Modular Object-Oriented Dynamic Learning Environment. Moodle provides a modular structure based on courses, activities, and plugins, enabling institutions to adapt the platform according to their specific requirements.
+
+While working and studying at Curtin University, Martin Dougiamas gained experience with the WebCT LMS (now discontinued and replaced by products under the Blackboard brand @blackboard), which led him to investigate an alternative method of online teaching. In 1999 he started developing and testing early prototypes of a new LMS. The first version of Moodle was released in 2002, and the platform gradually grew into one of the most widely adopted learning management systems worldwide.
+
+#quote(
+  attribution: [Moodle story],
+)[
+  Now, nearly 450 million educators and learners worldwide use Moodle’s adaptable platform.
+] @moodle_story
+
+Finally, its large global community and long-term development have contributed to its reliability, customization, and sustainability.
 
 #figure(
   image("images/moodle_course.png", width: 80%),
   caption: [Moodle course]
 )
 
-In many institutions, Moodle acts as a central platform for teaching activities, including document sharing, assessment management, and student tracking. For example, platforms like Cyberlearn (used within HES-SO) are built on top of Moodle and extend its capabilities to address institutional requirements.
+In many institutions, Moodle acts as a central platform for teaching activities, including document sharing, assessment management, quizzes and evaluation. For example, platforms like Cyberlearn (used within HES-SO) are built on top of Moodle and extend its capabilities to address institutional requirements.
 
 As stated in the official Moodle #underline[documentation] @moodle_quote_modular, one of Moodle's main strengths lies in its modular architecture. Rather than attempting to provide all functionalities required by educational institutions, Moodle focuses on being a robust Learning Management System while allowing interoperability with external systems offering complementary services.
 
@@ -82,7 +94,7 @@ This extensible architecture has led to the creation of a large ecosystem of plu
 
 A well-known alternative to Moodle is #underline[Canvas] @canvas. While Moodle focuses on extensibility and customization, Canvas primarily emphasizes ease of use and straightforward setup.
 
-The Moodle ecosystem is mainly developed using PHP @php, with JavaScript used for client-side functionalities. Therefore, the developed Moodle plugin must follow the same technological stack and adhere with the development guidelines defined by the Moodle platform.
+The Moodle ecosystem is mainly developed using PHP @php, with JavaScript used for client-side functionalities. Therefore, the developed Moodle plugin must follow the same technological stack and comply with the development guidelines defined by the Moodle platform.
 
 == GitLab
 
@@ -111,16 +123,16 @@ We must link both to have a working integration.
 
 == GitLab Client
 
-On the GitLab API side, there a multiple existing GitLab Client solutions.
-A HTTP Client is an abstraction layer wrapping REST API endpoints behind a user-friendly interface.
+On the GitLab API side, there are multiple existing GitLab Client solutions.
+An HTTP Client is an abstraction layer wrapping REST API endpoints behind a user-friendly interface.
 
 Several implementations exist across different programming languages and ecosystems:
-- #underline[GitLab Tools] @gitlab_tools is a Java CLI 
-- #underline[GitLab Haskell] @gitlab_haskell is a Haskell library
-- #underline[python-gitlab] @python_gitlab is a Python package
+- #underline[GitLab4J] @gitlab4j provides a full-featured and easy-to-use Java library for working with the GitLab REST API, making it suitable for building Java-based applications that interact with GitLab.
+- #underline[GitLab Haskell] @gitlab_haskell is a Haskell library developed as part of the #underline[Canvas GitLab Integration] @canvas_gitLab_integration research project, which focuses on integrating GitLab with the Canvas learning management system. This project represents a similar academic effort to our work and will be discussed in more detail in a later section.
+- #underline[python-gitlab] @python_gitlab is a Python package widely used for automation and scripting tasks involving GitLab.
 
-Since the Moodle plugin will be developed in PHP #underline[GitLab PHP API Client] @gitlab_php_api_client seems to be the most suitable existing implementation.
-It provides support for the the full GitLab API v4 specification.
+Since the Moodle plugin is developed in PHP #underline[GitLab PHP API Client] @gitlab_php_api_client seems to be the most suitable existing implementation.
+It provides support for the full GitLab API v4 specification.
 
 However, Moodle plugins are designed to be self-contained and should avoid introducing unnecessary external dependencies. For this reason, a dedicated GitLab client will be implemented as part of this project, while taking inspiration from existing solutions and following their established design principles.
 
@@ -462,9 +474,9 @@ I then realized as a proof of concept @poc a simple GitLab integration within Mo
   caption: [Modal for adding resources has a new *GitLab* type of module]
 )
 
-The teacher must provide a GitLab token at the resource creation time.
+The teacher must provide a GitLab token when creating the resource. This token will then be transferred to the course level.
 
-Once created, the students can open the module created and view a button which triggers the creating of a GitLab repository. They can also see a list of existing repositories in the GitLab group with a direct link to them.
+Once created, the students can open the module created and view a button which triggers the creation of a GitLab repository. They can also see a list of existing repositories in the GitLab group with a direct link to them.
 
 #figure(
   image("images/poc_module.png", width: 80%),
@@ -759,6 +771,8 @@ Once grading is completed, students are notified on Moodle and can access feedba
 
 Following the completion of the assignment, the reference solution is published and made available to students. This allows them to compare their implementation with the expected solution, better understand the intended approach, and identify possible improvements in their work.
 
+#pagebreak()
+
 == Integration Flows
 
 The integration relies on a set of automated workflows to provision GitLab resources and react to GitLab hooks. These workflows cover the main stages of the practical assignment lifecycle, from module initialization and group creation to repository synchronization and grading notifications.
@@ -774,6 +788,8 @@ The module creation flow describes the automated initialization of a practical a
   caption: [Module creation flow]
 )
 
+#pagebreak()
+
 === Group creation
 
 The group creation flow presents the provisioning of student workspaces, including repository forking, branch configuration, merge request setup, permission assignment, and synchronization of assignment instructions.
@@ -783,6 +799,8 @@ The group creation flow presents the provisioning of student workspaces, includi
   caption: [Group creation flow]
 )
 
+#pagebreak()
+
 === Template repository webhook
 
 The template repository webhook flow illustrates how updates made to the template repository are propagated to group repositories. It handles synchronization events such as code updates and instruction changes while avoiding duplicate merge requests.
@@ -791,6 +809,8 @@ The template repository webhook flow illustrates how updates made to the templat
   image("images/flow_template_webhook.svg"),
   caption: [Template repository webhook flow]
 )
+
+#pagebreak()
 
 === Group repository webhook
 
@@ -809,25 +829,41 @@ Overall, the solution standardizes practical assignment management and improves 
 
 #pagebreak()
 
-= Contribution and Future Work
+= Contributions, Limitations and Future Work
 
-== Project Contribution
+== Project Contributions
 
 Before this project, practical assignment management often required manual coordination between Moodle and GitLab, including repository creation, permission configuration, assignment setup, and synchronization of updates. While existing solutions provided partial automation or integration capabilities, they generally lacked deep Learning Management System (LMS) integration or relied on proprietary platforms.
 
 This project extends the existing workflow by introducing an open-source, Moodle-native integration that connects Moodle and GitLab into a unified assignment management process. The proposed solution automates repetitive administrative tasks while preserving the flexibility and customization required for different teaching contexts, avoiding the limitations often introduced by overly rigid automation systems. By reducing platform fragmentation and providing a reference workflow for practical assignment management, the solution improves the consistency and maintainability of computer science education practices.
 
+== Limitations
+
+The project has a few limitations due to restrictions in GitLab's permission model:
+
+- Students can trigger actions that they should not be able to. For example, closing the submission merge request in their repository causes the plugin to send a "graded" notification in Moodle for every student in the group, even if the submission has not actually been graded.
+- The plugin relies on specific issue and merge request labels to track its state. If these labels are removed or modified manually, the plugin can no longer identify the corresponding issues or merge requests correctly, which may disrupt its operation.
+- The CI job responsible for checking protected files can be modified or removed entirely by students. As a result, the protection mechanism can be bypassed, rendering the check ineffective.
+
+These limitations are not easily addressed because GitLab does not provide fine-grained permissions for individual repository actions. Instead, permissions are managed through predefined user roles, making it difficult to restrict specific actions without also restricting broader repository access.
+
 == Future Work
 
 Several areas could be improved in future iterations of the project. First, additional work is required to strengthen error handling and improve user feedback. Providing clearer error messages and guidance would help users better understand the cause of failures and facilitate troubleshooting.
 
-Another improvement area concerns Moodle permission management. Each action should have its required permissions explicitly defined and validated. Moodle provides a capability-based permission system that allows fine-grained control through custom capabilities, which should be integrated to ensure better security, and modularity of the plugin.
+Another limitation is that the system currently operates synchronously. This can lead to delays while requests are being processed, as users must wait for the operation to complete before receiving a response. An improvement would be to use Moodle ad-hoc tasks to provide faster user feedback and process requests asynchronously in the background.
+
+The Moodle permission management could be improved as well. Each action should have its required permissions explicitly defined and validated. Moodle provides a capability-based permission system that allows fine-grained control through custom capabilities, which should be integrated to ensure better security, and modularity of the plugin.
 
 Finally, future development could focus on extending support to additional Version Control Systems (VCS), such as GitHub. Supporting multiple VCS platforms would increase the flexibility of the solution and allow institutions to adopt the solution within different technical environments.
 
 #pagebreak()
 
 = Appendices
+
+== Use of Artificial Intelligence
+
+The #underline[ChatGPT] @chat_gpt artificial intelligence tool was used during the writing of this thesis for language correction, translation assistance, and improving the overall clarity of the text. It was also used as a support tool during development to identify appropriate Moodle core APIs for specific use cases and to determine their correct usage when the official documentation was incomplete or lacked sufficient details.
 
 == Planning <appendix_planning>
 
