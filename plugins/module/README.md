@@ -16,7 +16,7 @@ Students and teachers can create groups, and students can join existing groups.
 
 Each group has its own repository, which is a fork of the template repository.
 
-After the module due date, the template’s solution branch is automatically submitted to each group repository as a merge request.
+Teachers can manually submit the template's solution branch as a merge request to each group repository at any time from the dashboard.
 
 Changes made in group repositories are also propagated back to the template repository via merge requests.
 
