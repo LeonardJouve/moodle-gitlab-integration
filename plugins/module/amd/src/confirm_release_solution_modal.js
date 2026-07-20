@@ -17,30 +17,20 @@ const showModal = async (moduleId) => {
 
     modal.getRoot().on(ModalEvents.save, (e) => {
         e.preventDefault();
-        modal.getRoot().find("form").submit();
+
+        modal.hide();
+        
+        Ajax.call([{
+            methodname: "mod_gitlab_release_solution",
+            args: {moduleid: moduleId},
+        }]);
     });
-
-    modal.getRoot().on("submit", "form", (e) => {
-        e.preventDefault();
-
-        submitForm(modal, moduleId);
-    });
-
+    
     modal.getRoot().on(ModalEvents.hidden, () => {
         modal.destroy();
     });
 
     modal.show();
-};
-
-const submitForm = (modal, moduleId) => {
-    modal.hide();
-    modal.destroy();
-    
-    Ajax.call([{
-        methodname: "mod_gitlab_release_solution",
-        args: {moduleid: moduleId}
-    }])[0].then(() => window.location.reload());
 };
 
 export const init = ({moduleId}) => {
