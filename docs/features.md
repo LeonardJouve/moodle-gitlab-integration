@@ -1,6 +1,6 @@
 # Features
 
-The objective of this integration is to enable interactions with GitLab features from within Moodle while automating repetitive workflows.
+The objective of the **RAW** integration is to enable interactions with GitLab features from within Moodle while automating repetitive workflows.
 
 # Configuration
 
@@ -42,7 +42,7 @@ You can create a parent group [here](https://gitlab.com/groups/new#create-group-
 
 ## Create module instance
 
-To create a plugin module instance, add a new resource and select the GitLab activity type.
+To create a plugin module instance, add a new resource and select the `RAW` activity type.
 
 ![Moodle create module](./images/moodle_create_module.png)
 

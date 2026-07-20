@@ -4,7 +4,7 @@ Learn more about Moodle module plugins in the official [documentation](https://m
 
 ## Purpose
 
-This plugin adds a new Moodle module type called _GitLab_.
+This plugin adds a new Moodle module type called _RAW_.
 
 This module is the central component of the integration.
 
@@ -65,7 +65,7 @@ The plugin stores its data in three main tables. The following tables contain th
 
 ### `gitlab`
 
-Stores GitLab activity module instances.
+Stores RAW activity module instances.
 
 | Field            | Description                                                  |
 | ---------------- | ------------------------------------------------------------ |
