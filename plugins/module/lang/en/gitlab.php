@@ -25,6 +25,16 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['gitlabfieldset'] = 'RAW configuration';
+$string['gitlabname'] = 'RAW';
+$string['gitlabsettings'] = 'RAW settings';
+$string['pluginname'] = 'RAW';
+$string['modulename'] = 'RAW';
+$string['modulenameplural'] = 'RAW modules';
+$string['modulename_help'] = '###### Key features
+* Create programming assignments with dedicated GitLab repositories for students or groups
+* Automates repository setup, updates, and grading workflows
+* Manage student projects directly from a Moodle course';
 $string['template_student_group_group'] = 'Group';
 $string['template_student_group_members'] = 'Members';
 $string['template_student_group_repository'] = 'Repository';
@@ -84,8 +94,8 @@ $string['template_teacher_template_release_solution'] = 'Release solution';
 $string['template_teacher_template_release'] = 'Release';
 $string['button_create_repository'] = 'Create GitLab Repository';
 $string['no_gitlab_username_err'] = 'Your GitLab username is not configured. Please set it under: Profile → User details → Edit profile → GitLab → GitLab Username.';
-$string['messageprovider:submission'] = 'Notification of GitLab submissions';
-$string['messageprovider:graded'] = 'Notification of GitLab grading';
+$string['messageprovider:submission'] = 'Notification of RAW submissions';
+$string['messageprovider:graded'] = 'Notification of RAW grading';
 $string['notification_module_view'] = 'Module view';
 $string['notification_submission_title'] = 'Assignment due on {$a->due_date}: {$a->name}';
 $string['notification_submission_soon_description'] = 'The assignment {$a->name} in the course {$a->course} is due soon.<br>Due date : {$a->due_date}';
@@ -108,8 +118,8 @@ $string['form_no_groups_err'] = 'No existing GitLab groups found. Please create 
 $string['form_no_token_err'] = 'No GitLab token found. Please define a token in the Moodle course settings.';
 $string['form_parent_group'] = 'Parent group';
 $string['form_parent_group_help'] = 'GitLab parent group containing created resources';
-$string['form_reviewer'] = 'GitLab reviewer';
-$string['form_reviewer_help'] = 'GitLab username of a reviewer';
+$string['form_reviewer'] = 'Assignment reviewer';
+$string['form_reviewer_help'] = 'Assignment reviewer username';
 $string['form_reviewer_repeats_add'] = 'Add a reviewer';
 $string['instructions_issue_help'] = 'Modify this to include instructions.';
 $string['submission_merge_request_title'] = 'Submission';
@@ -121,9 +131,6 @@ $string['commit_create_ci_file'] = 'Create ci file';
 $string['commit_create_protected_files'] = 'Create protected-files list';
 $string['setting_gitlab_host'] = 'GitLab host';
 $string['setting_gitlab_host_desc'] = 'Enter the base URL of your GitLab instance, for example: https://gitlab.com. Do not include a trailing slash.';
-$string['gitlabfieldset'] = 'gitlab';
-$string['gitlabname'] = 'gitlab';
-$string['gitlabsettings'] = 'gitlab';
 $string['message_repository_created'] = 'Repository created !';
 $string['message_joined_group'] = 'Joined group !';
 $string['message_left_group'] = 'Left group !';
@@ -153,9 +160,6 @@ $string['modal_delete_group_mismatch'] = 'The entered name does not match the gr
 $string['modal_release_solution_title'] = 'Release solution';
 $string['modal_release_solution_description'] = 'Are you sure yout want to release the solution branch?<br>A merge request containing the solution changes will be created for each group repository.';
 $string['modal_release_solution_confirm'] = 'Confirm';
-$string['modulename'] = 'GitLab';
-$string['modulenameplural'] = 'gitlab';
 $string['pluginadministration'] = 'administration';
-$string['pluginname'] = 'gitlab';
 $string['token_help'] = 'GitLab token';
 $string['token'] = 'Token';

@@ -133,7 +133,7 @@ For security reasons, change them as soon as possible.
 
 ## Notifications
 
-To enable student web notifications for assignment deadlines, configure _Notification of GitLab submissions_.
+To enable student web notifications for assignment deadlines, configure _Notification of RAW submissions_.
 
 This will send:
 
@@ -142,7 +142,7 @@ This will send:
 
 You can enable this under:
 
-_Site administration_ → _General_ → _Messaging_ → _Notification settings_ → _gitlab_
+_Site administration_ → _General_ → _Messaging_ → _Notification settings_ → _RAW_
 
 ## Webhooks
 
@@ -168,6 +168,6 @@ _Site administration_ → _General_ → _Location_ → _Location settings_ → _
 
 If your GitLab instance is hosted on a different domain, you can configure a custom GitLab URL in Moodle under:
 
-_Site administration_ → _Plugins_ → _Activity modules_ → _gitlab_
+_Site administration_ → _Plugins_ → _Activity modules_ → _RAW_
 
 ![Moodle GitLab settings](./images/moodle_gitlab_settings.png)
