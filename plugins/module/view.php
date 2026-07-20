@@ -95,7 +95,7 @@ $username = Helper::get_user_gitlab_username($USER->id);
 if ($username == null) {
     Template::error(get_string('no_gitlab_username_err', 'mod_gitlab'));
 } else if ($is_manager) {
-    Template::template($client, $resources, $moduleinstance->template_id, $moduleinstance->due_date, $reviewers);
+    Template::template($client, $resources, $moduleinstance->id, $moduleinstance->template_id, $moduleinstance->due_date, $reviewers);
     Template::list_teacher_groups($client, $resources, $moduleinstance->id, $moduleinstance->template_id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
 } else {
     $has_group = Group::has_group($moduleinstance->id, $USER->id);

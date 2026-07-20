@@ -173,13 +173,12 @@ class Bridge {
     public function release_solution(int $module_id, int $template_id) {
         $groups = Group::get_groups($module_id);
         foreach ($groups as $group) {
-            $this->client->merge_request()->create(
-                $template_id,
-                Resources::solutionBranch(),
-                Resources::baseBranch(),
-                get_string('solution_merge_request_title', 'mod_gitlab'),
-                ['target_project_id' => $group->repository_id],
-            );
+            $solution_merge_request = $this->resources->get_solution_merge_request($group->repository_id);
+
+            // create merge request only if it does not already exists
+            if ($solution_merge_request == null) {
+                $this->resources->create_solution_merge_request($template_id, $group->repository_id);
+            }
         }
     }
 
