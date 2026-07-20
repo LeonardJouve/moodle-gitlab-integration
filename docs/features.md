@@ -118,7 +118,7 @@ The repository contains:
 - An issue containing the practical work instructions. This issue is replicated to every group repository.
 - 2 branches:
     - **main**: The template used to initialize all group repositories.
-    - **solution**: The reference solution for the practical work. After the submission due date, this branch is proposed to each group as a merge request.
+    - **solution**: The reference solution for the practical work. Teachers can release this branch to each group as a merge request.
 
 After the submission due date, each group's submission merge request is also mirrored to the template repository, allowing reviewers to access all submissions from a single location.
 
@@ -139,7 +139,7 @@ Each group repository contains:
 
 A merge request from **main** to **base** is automatically created, allowing reviewers to easily inspect the group's modifications.
 
-After the submission due date, each group repository receives a merge request containing the contents of the template repository's solution branch.
+When the solution is published by the teachers, students can review and compare their implementation with the expected solution directly through a merge request.
 
 ## Webhook
 
