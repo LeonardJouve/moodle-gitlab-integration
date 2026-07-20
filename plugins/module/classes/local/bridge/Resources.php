@@ -66,6 +66,10 @@ class Resources {
         return 'instruction';
     }
 
+    public static function solutionMergeRequestLabel() {
+        return 'solution';
+    }
+
     public static function webhookModuleHeader() {
         return 'module-id';
     }
@@ -151,7 +155,9 @@ class Resources {
     }
 
     public function get_solution_merge_request(int $repository_id): ?stdClass {
-        return $this->get_merge_request($repository_id, Resources::solutionBranch(), Resources::baseBranch());
+        return $this->get_merge_request($repository_id, Resources::solutionBranch(), Resources::baseBranch(), [
+            'labels' => Resources::solutionMergeRequestLabel(),
+        ]);
     }
 
     public function get_latest_test_result(int $repository_id): ?stdClass {
@@ -243,6 +249,19 @@ class Resources {
             $PAGE->get_renderer('core')->render_from_template('mod_gitlab/protected-files', []),
             Resources::defaultBranch(),
             get_string('commit_create_protected_files', 'mod_gitlab'),
+        );
+    }
+
+    public function create_solution_merge_request(int $template_id, int $repository_id) {
+        $this->client->merge_request()->create(
+            $template_id,
+            Resources::solutionBranch(),
+            Resources::baseBranch(),
+            get_string('solution_merge_request_title', 'mod_gitlab'),
+            [
+                'labels' => Resources::solutionMergeRequestLabel(),
+                'target_project_id' => $repository_id,
+            ],
         );
     }
 }

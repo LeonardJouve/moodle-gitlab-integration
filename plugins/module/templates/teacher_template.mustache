@@ -113,6 +113,19 @@
                 </div>
 
                 <div class="d-flex align-items-center">
+                    <span class="mb-0">{{#str}} template_teacher_template_release_solution, mod_gitlab {{/str}}</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-end">
+                    {{#js}}
+                        require(['mod_gitlab/confirm_release_solution_modal'], (module) => module.init({moduleId: {{ module_id }}}));
+                    {{/js}}
+                    
+                    <button class="btn btn-primary" id="release-solution">
+                        {{#str}} template_teacher_template_release, mod_gitlab {{/str}}
+                    </button>
+                </div>
+                
+                <div class="d-flex align-items-center">
                     <span class="mb-0">{{#str}} template_teacher_template_get_source, mod_gitlab {{/str}}</span>
                 </div>
                 <div class="d-flex align-items-center justify-content-end">

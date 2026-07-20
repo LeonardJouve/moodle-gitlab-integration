@@ -102,10 +102,11 @@ class Template {
         echo $OUTPUT->render_from_template('mod_gitlab/student_group', $data);
     }
 
-    public static function template(Gitlab $client, Resources $resources, int $template_id, int $due_date, array $reviewer_ids) {
+    public static function template(Gitlab $client, Resources $resources, int $module_id, int $template_id, int $due_date, array $reviewer_ids) {
         global $OUTPUT, $DB;
 
         $data = new stdClass();
+        $data->module_id = $module_id;
         $data->due_date = userdate($due_date, get_string('strftimedaydatetime', 'langconfig'));
         
         list($in_sql, $params) = $DB->get_in_or_equal($reviewer_ids, SQL_PARAMS_NAMED, '', true, NULL);

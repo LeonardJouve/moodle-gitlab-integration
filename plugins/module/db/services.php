@@ -64,4 +64,12 @@ $functions = [
         'type'        => 'read',
         'ajax'        => true,
     ],
+    'mod_gitlab_release_solution' => [
+        'classname'   => 'mod_gitlab\external\release_solution',
+        'methodname'  => 'execute',
+        'classpath'   => '',
+        'description' => 'Release solution branch',
+        'type'        => 'read',
+        'ajax'        => true,
+    ],
 ];
