@@ -25,4 +25,4 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'GitLab Custom Fields';
+$string['pluginname'] = 'RAW Custom Fields';
