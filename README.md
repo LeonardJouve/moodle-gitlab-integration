@@ -1,5 +1,5 @@
 # Introduction
-Repository Assignment Workflow (RAW) is an exten­sible integration between Moodle and GitLab through Moodle plugins and the GitLab REST API.
+_Repository Assignment Workflow_ (RAW) is an exten­sible integration between Moodle and GitLab through Moodle plugins and the GitLab REST API.
 
 Both platforms are widely used in Computer Science education but operate independently, which can result in fragmented workflows for both students and teachers.
 
