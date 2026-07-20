@@ -22,7 +22,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_gitlab\local;
+namespace mod_gitlab\local\bridge;
 
 use stdClass;
 use Throwable;
@@ -71,19 +71,53 @@ class Group {
             null;
     }
 
+    private static function build_groups_with_members(array $memberships) {
+        global $DB;    
+
+        $user_ids = array_filter(array_map(
+            function ($membership) {
+                return $membership->user_id;
+            }, $memberships),
+        );
+
+        list($in_sql, $params) = $DB->get_in_or_equal($user_ids, SQL_PARAMS_NAMED, '', true, NULL);
+
+        $users = $DB->get_records_sql("
+            SELECT id, username
+            FROM {user}
+            WHERE id $in_sql
+        ", $params);
+
+        $groups = [];
+
+        foreach ($memberships as $membership) {
+            if (!isset($groups[$membership->id])) {
+                $groups[$membership->id] = (object) [
+                    'repository_id' => $membership->repository_id,
+                    'id' => $membership->id,
+                    'members' => [],
+                ];
+            }
+
+            if ($membership->user_id && isset($users[$membership->user_id])) {
+                $groups[$membership->id]->members[] = $users[$membership->user_id]->username;
+            }
+        }
+
+        return array_values($groups);
+    }
+
     public static function group_with_members(int $module_id, int $user_id) {
         global $DB;
 
-        return $DB->get_record_sql("
+        $memberships = $DB->get_records_sql("
             SELECT
                 g.id,
                 g.repository_id,
-                COALESCE(array_agg(u.username) FILTER (WHERE u.username IS NOT NULL), ARRAY[]::text[]) AS members
+                m.user_id
             FROM {gitlab_groups} g
             LEFT JOIN {gitlab_group_members} m
                 ON m.group_id = g.id
-            LEFT JOIN {user} u
-                ON u.id = m.user_id
             WHERE
                 g.module_id = :module_id
                 AND EXISTS (
@@ -92,33 +126,33 @@ class Group {
                     WHERE gm.group_id = g.id
                     AND gm.user_id = :user_id
                 )
-            GROUP BY g.id
         ", [
             'module_id' => $module_id,
             'user_id' => $user_id,
         ]);
+
+        $groups = Group::build_groups_with_members($memberships);
+
+        return $groups[0] ?? null;
     }
 
     public static function get_groups(int $module_id) {
         global $DB;
         
-        $groups = $DB->get_records_sql("
+        $memberships = $DB->get_records_sql("
             SELECT
                 g.id,
                 g.repository_id,
-                COALESCE(array_agg(u.username) FILTER (WHERE u.username IS NOT NULL), ARRAY[]::text[]) AS members
+                m.user_id
             FROM {gitlab_groups} g
             LEFT JOIN {gitlab_group_members} m
                 ON m.group_id = g.id
-            LEFT JOIN {user} u
-                ON u.id = m.user_id
             WHERE g.module_id = :module_id
-            GROUP BY g.id
-        ", [
-            'module_id' => $module_id,
-        ]);
+        ", ['module_id' => $module_id]);
 
-        return array_values($groups);
+        $groups = Group::build_groups_with_members($memberships);
+
+        return $groups;
     }
 
     public static function create_group(int $module_id, int $repository_id): ?int {

@@ -20,37 +20,41 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_gitlab\local;
+namespace mod_gitlab\external;
 
-use core\task\adhoc_task;
+defined('MOODLE_INTERNAL') || die();
+
+use \core_external\external_api;
+use \core_external\external_function_parameters;
+use \core_external\external_value;
 use mod_gitlab\http\Gitlab;
+use mod_gitlab\local\bridge\Bridge;
+use mod_gitlab\local\Helper;
 
-class SubmissionSoonTask extends adhoc_task {
-    public static function instance(int $module_id): self {
-        $task = new self();
-        $task->set_custom_data((object) [
-            'module_id' => $module_id,
+class release_solution extends external_api {
+    public static function execute_parameters() {
+        return new external_function_parameters([
+            'moduleid' => new external_value(PARAM_INT, 'id'),
         ]);
-
-        return $task;
     }
 
-    public function execute() {
+    public static function execute(int $moduleid) {
         global $DB;
 
-        $custom_data = $this->get_custom_data();
-        $module_id = $custom_data->module_id;
-
-        $module = $DB->get_record('gitlab', ['id' => $module_id], '*', MUST_EXIST);
-
+        $module = $DB->get_record('gitlab', ['id' => $moduleid], '*', MUST_EXIST);
+       
         $token = Helper::get_course_gitlab_token($module->course);
         $client = new Gitlab($token);
         $bridge = new Bridge($client);
 
-        $bridge->send_submission_notifications($module, true);
+        $bridge->release_solution($moduleid, $module->template_id);
+
+        return ['result' => 'ok'];
     }
 
-    public function retry_until_success(): bool {
-        return false;
+    public static function execute_returns() {
+        return new external_function_parameters([
+            'result' => new external_value(PARAM_TEXT, 'result'),
+        ]);
     }
 }

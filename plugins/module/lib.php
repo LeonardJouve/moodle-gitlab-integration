@@ -25,11 +25,11 @@
 use core\task\manager;
 use mod_gitlab\local\Helper;
 use mod_gitlab\http\Gitlab;
-use mod_gitlab\local\Bridge;
-use mod_gitlab\local\FinalizeGroupCreationTask;
-use mod_gitlab\local\Resources;
-use mod_gitlab\local\SubmissionSoonTask;
-use mod_gitlab\local\SubmissionTask;
+use mod_gitlab\local\bridge\Bridge;
+use mod_gitlab\local\bridge\Resources;
+use mod_gitlab\local\task\FinalizeGroupCreationTask;
+use mod_gitlab\local\task\SubmissionSoonTask;
+use mod_gitlab\local\task\SubmissionTask;
 
 /**
  * Return if the plugin supports $feature.
@@ -245,6 +245,30 @@ function mod_gitlab_output_fragment_manage_group_form($args) {
     require_capability('mod/gitlab:addinstance', $context);
 
     $mform = new mod_gitlab_manage_group_form(null, $args);
+
+    ob_start();
+    $mform->display();
+    $o .= ob_get_contents();
+    ob_end_clean();
+
+    return $o;
+}
+
+/**
+ * Serve the manual enrol users form as a fragment.
+ *
+ * @param array $args List of named arguments for the fragment loader.
+ * @return string
+ */
+function mod_gitlab_output_fragment_confirm_delete_form($args) {
+    $args = (object) $args;
+    $context = $args->context;
+    $o = '';
+
+    // TODO
+    // require_capability('mod/gitlab:deletegroup', $context);
+
+    $mform = new mod_gitlab_confirm_delete_form(null, $args);
 
     ob_start();
     $mform->display();

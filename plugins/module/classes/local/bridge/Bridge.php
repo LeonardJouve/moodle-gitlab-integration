@@ -20,7 +20,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_gitlab\local;
+namespace mod_gitlab\local\bridge;
 
 use calendar_event;
 use core\encryption;
@@ -28,6 +28,11 @@ use core\task\manager;
 use core\url;
 use core_user;
 use mod_gitlab\http\Gitlab;
+use mod_gitlab\local\Helper;
+use mod_gitlab\local\task\FinalizeGroupCreationTask;
+use mod_gitlab\local\task\SubmissionSoonTask;
+use mod_gitlab\local\task\SubmissionTask;
+use mod_gitlab\local\Webhook;
 use stdClass;
 
 require_once($CFG->dirroot.'/calendar/lib.php');
@@ -76,7 +81,7 @@ class Bridge {
 
         $moduleinstance->id = $DB->insert_record('gitlab', $moduleinstance);
 
-        $this->resources->add_template_webhook_custom_header($moduleinstance->id, $webhook->id, $template->id);
+        $this->resources->add_webhook_custom_header($moduleinstance->id, $webhook->id, $template->id);
 
         $this->create_calendar_event($moduleinstance);
 
@@ -125,7 +130,7 @@ class Bridge {
         ];
     }
 
-    public function finalize_create_group(int $repository_id, array $reviewers, int $template_id, int $due_date) {
+    public function finalize_create_group(int $repository_id, array $reviewers, int $template_id, int $due_date, int $module_id) {
         $this->client->branch()->unprotect($repository_id, Resources::defaultBranch());
 
         // base branch
@@ -142,6 +147,13 @@ class Bridge {
         $issue = $this->resources->get_instructions_issue($template_id);
         if ($issue != null) {
             $this->resources->create_instructions_issue($repository_id, $issue->description, $due_date);
+        }
+
+        $secret = Webhook::get_module_key($module_id);
+        if ($secret != null) {
+            $webhook = $this->resources->create_group_webhook($repository_id, base64_encode($secret));
+    
+            $this->resources->add_webhook_custom_header($module_id, $webhook->id, $repository_id);
         }
     }
 
@@ -161,13 +173,12 @@ class Bridge {
     public function release_solution(int $module_id, int $template_id) {
         $groups = Group::get_groups($module_id);
         foreach ($groups as $group) {
-            $this->client->merge_request()->create(
-                $template_id,
-                Resources::solutionBranch(),
-                Resources::baseBranch(),
-                get_string('solution_merge_request_title', 'mod_gitlab'),
-                ['target_project_id' => $group->repository_id],
-            );
+            $solution_merge_request = $this->resources->get_solution_merge_request($group->repository_id);
+
+            // create merge request only if it does not already exists
+            if ($solution_merge_request == null) {
+                $this->resources->create_solution_merge_request($template_id, $group->repository_id);
+            }
         }
     }
 
@@ -175,7 +186,7 @@ class Bridge {
         $groups = Group::get_groups($module_id);
         foreach ($groups as $group) {
             $label = Resources::submissionMergeRequestLabel($group->id);
-            $name = implode("-", explode(',', trim($group->members, '{}'))) . ':' . $label;
+            $name = implode("-", $group->members) . ':' . $label;
         
             $this->client->merge_request()->create(
                 $group->repository_id,
@@ -301,26 +312,41 @@ class Bridge {
         $event->visible = instance_is_visible('mod_gitlab', $moduleinstance);
         $event->timeduration = 0;
 
-        calendar_event::create($event);
+        calendar_event::create($event, false);
     }
 
     public function send_submission_notifications(stdClass $moduleinstance, bool $soon) {
         global $DB;    
 
         $course = $DB->get_field('course', 'fullname', ['id' => $moduleinstance->course], MUST_EXIST);
-        $groups = $DB->get_records_sql("
+        $memberships = $DB->get_records_sql("
             SELECT
                 g.id,
                 g.repository_id,
-                COALESCE(array_agg(m.user_id) FILTER (WHERE m.user_id IS NOT NULL), ARRAY[]::int[]) AS members
+                m.user_id
             FROM {gitlab_groups} g
             LEFT JOIN {gitlab_group_members} m
                 ON m.group_id = g.id
             WHERE g.module_id = :module_id
-            GROUP BY g.id
         ", [
             'module_id' => $moduleinstance->id,
         ]);
+
+        $groups = [];
+
+        foreach ($memberships as $membership) {
+            if (!isset($groups[$membership->id])) {
+                $groups[$membership->id] = (object) [
+                    'id' => $membership->id,
+                    'repository_id' => $membership->repository_id,
+                    'members' => [],
+                ];
+            }
+
+            if ($membership->user_id) {
+                $groups[$membership->id]->members[] = $membership->user_id;
+            }
+        }
 
         $content = get_string(
             $soon ?
@@ -334,8 +360,7 @@ class Bridge {
         );
 
         foreach ($groups as $group) {
-            $members = array_map('intval', explode(',', trim($group->members, '{}')));
-            foreach ($members as $member) {
+            foreach ($group->members as $member) {
                 $this->send_submission_notification($moduleinstance->id, $member, $moduleinstance->name, $moduleinstance->due_date, $content);
             }
         }

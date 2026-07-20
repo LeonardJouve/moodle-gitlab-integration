@@ -20,11 +20,12 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_gitlab\local;
+namespace mod_gitlab\local\bridge;
 
 use core\url;
 use mod_gitlab\http\Gitlab;
 use mod_gitlab\http\RuntimeException;
+use mod_gitlab\local\Helper;
 use stdClass;
 
 class Resources {
@@ -61,6 +62,14 @@ class Resources {
         return 'update-group-repository';
     }
 
+    public static function instructionIssueLabel() {
+        return 'instruction';
+    }
+
+    public static function solutionMergeRequestLabel() {
+        return 'solution';
+    }
+
     public static function webhookModuleHeader() {
         return 'module-id';
     }
@@ -81,7 +90,8 @@ class Resources {
 
     public function get_instructions_issue(int $repository_id): ?stdClass {
         $issues = $this->client->issue()->list($repository_id, [
-            'search' => Resources::instructionIssue(),
+            'labels' => Resources::instructionIssueLabel(),
+            'state' => 'opened',
             'order_by' => 'created_at',
         ]);
         if (count($issues) == 0) {
@@ -117,6 +127,7 @@ class Resources {
         $this->client->issue()->create($repository_id, Resources::instructionIssue(), $content, [
             'start_date' => date('Y-m-d', time()),
             'due_date' => date('Y-m-d', $due_date),
+            'labels' => Resources::instructionIssueLabel(),
         ]);
     }
 
@@ -124,6 +135,7 @@ class Resources {
         $merge_requests = $this->client->merge_request()->list($repository_id, array_merge([
             'source_branch' => $source,
             'target_branch' => $target,
+            'order_by' => 'created_at',
         ], $extra));
         if (count($merge_requests) == 0) {
             return null;
@@ -143,7 +155,9 @@ class Resources {
     }
 
     public function get_solution_merge_request(int $repository_id): ?stdClass {
-        return $this->get_merge_request($repository_id, Resources::solutionBranch(), Resources::baseBranch());
+        return $this->get_merge_request($repository_id, Resources::solutionBranch(), Resources::baseBranch(), [
+            'labels' => Resources::solutionMergeRequestLabel(),
+        ]);
     }
 
     public function get_latest_test_result(int $repository_id): ?stdClass {
@@ -176,12 +190,25 @@ class Resources {
         );
     }
 
-    public function add_template_webhook_custom_header(int $module_id, int $hook_id, int $template_id) {
+    public function add_webhook_custom_header(int $module_id, int $hook_id, int $repository_id) {
         return $this->client->webhook()->set_custom_header(
-            $template_id,
+            $repository_id,
             $hook_id,
             Resources::webhookModuleHeader(),
             $module_id,
+        );
+    }
+
+    public function create_group_webhook(int $repository_id, string $secret): stdClass {
+        return $this->client->webhook()->create(
+            $repository_id,
+            (new url('/mod/gitlab/webhook.php'))->out(false),
+            [
+                'name' => get_string('webhook_name', 'mod_gitlab'),
+                'signing_token' => 'whsec_' . $secret,
+                'merge_requests_events' => true,
+                'enable_ssl_verification' => false,
+            ],
         );
     }
 
@@ -222,6 +249,19 @@ class Resources {
             $PAGE->get_renderer('core')->render_from_template('mod_gitlab/protected-files', []),
             Resources::defaultBranch(),
             get_string('commit_create_protected_files', 'mod_gitlab'),
+        );
+    }
+
+    public function create_solution_merge_request(int $template_id, int $repository_id) {
+        $this->client->merge_request()->create(
+            $template_id,
+            Resources::solutionBranch(),
+            Resources::baseBranch(),
+            get_string('solution_merge_request_title', 'mod_gitlab'),
+            [
+                'labels' => Resources::solutionMergeRequestLabel(),
+                'target_project_id' => $repository_id,
+            ],
         );
     }
 }

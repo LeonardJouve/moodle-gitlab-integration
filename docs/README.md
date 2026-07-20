@@ -88,9 +88,6 @@ docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
 
 ### Ansible
 
-> [!WARNING]
-> These playbooks are still a work in progress and require manual configuration.
-
 ![IaC](./images/iac.svg)
 
 This repository includes Ansible playbooks to provision a server with SSH access and a Moodle instance.
@@ -99,9 +96,15 @@ First modify `ansible/inventory.ini` with your host and URL configuration.
 
 Then update `ansible/group_vars/all.yaml` with your host and URL configuration.
 
-For DNS, you can use a service such as [DuckDNS](https://www.duckdns.org/), which provides an easy-to-setup and free dynamic DNS solution.
+For example:
+```
+authentik_external_url: "http://auth-moodle-gitlab.duckdns.org"
+authentik_external_host: "auth-moodle-gitlab.duckdns.org"
+moodle_external_url: "http://moodle-gitlab.duckdns.org"
+moodle_external_host: "moodle-gitlab.duckdns.org"
+```
 
-Finally modifiy `ansible/playbooks/res/moodle-authentik.yaml` with your host and URL settings.
+For DNS, you can use a service such as [DuckDNS](https://www.duckdns.org/), which provides an easy-to-setup and free dynamic DNS solution.
 
 You can now run Ansible playbooks:
 
@@ -113,25 +116,18 @@ ansible-playbook -i inventory.ini playbooks/authentik.yaml
 ansible-playbook -i inventory.ini playbooks/moodle.yaml
 ```
 
-After deployment, complete the Authentik setup by visiting:
-```
-http://<authentik_external_host>/if/flow/initial-setup/
-```
-
-If the authentik blueprint apply failed, rerun the playbook after creating your Authentik account:
-```
-ansible-playbook -i inventory.ini playbooks/authentik.yaml
-```
-
-You may also need to:
-- Remove the automatically created moodle outpost
-- Expose the Moodle application using the default outpost
-- Enable the Local Docker connection integration on the selected outpost
-
 Your app should now be running and accessible at:
 ```
 http://<moodle_external_host>
 ```
+
+The default credentials are:
+```
+username: akadmin
+password: akadmin
+```
+
+For security reasons, change them as soon as possible.
 
 # Configuration
 

@@ -111,10 +111,13 @@ class Gitlab {
     }
 
     public function url(string $endpoint, array $params = []) {
+        $options['CURLOPT_HTTPGET'] = 1;
+        
         $url = $this->base_url . $endpoint;
 
         if (!empty($params)) {
-            $url .= '?' . http_build_query($params);
+            $url .= (stripos($url, '?') !== false) ? '&' : '?';
+            $url .= http_build_query($params, '', '&');
         }
 
         return $url;

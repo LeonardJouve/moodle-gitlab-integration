@@ -14,20 +14,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+namespace mod_gitlab\local;
+
+use stdClass;
+
 /**
+ * Helper test class
+ *
  * @package     mod_gitlab
- * @category    string
  * @copyright   2026 Léonard Jouve leonard.jouve@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class TestHelper {
+    public static function mock_module(): stdClass {
+        $module = new stdClass();
+        $module->course = 1;
+        $module->name = '';
+        $module->intro = '';
+        $module->introformat = FORMAT_HTML;
+        $module->group_id = 1;
+        $module->parent_group = 1;
+        $module->group_size = 1;
+        $module->due_date = time();
+        $module->reviewers = json_encode([]);
+        $module->template_id = 1;
+        $module->webhook_secret = '';
 
-defined('MOODLE_INTERNAL') || die();
-
-$messageproviders = [
-    'submission' => [
-        'capability' => 'mod/gitlab:view',
-    ],
-    'graded' => [
-        'capability' => 'mod/gitlab:view',
-    ],
-];
+        return $module;
+    }
+}

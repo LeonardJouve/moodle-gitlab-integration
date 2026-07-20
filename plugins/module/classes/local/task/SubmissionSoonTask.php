@@ -20,17 +20,17 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_gitlab\local;
+namespace mod_gitlab\local\task;
 
 use core\task\adhoc_task;
 use mod_gitlab\http\Gitlab;
-use mod_gitlab\http\RuntimeException;
+use mod_gitlab\local\bridge\Bridge;
+use mod_gitlab\local\Helper;
 
-class FinalizeGroupCreationTask extends adhoc_task {
-    public static function instance(int $repository_id, int $module_id): self {
+class SubmissionSoonTask extends adhoc_task {
+    public static function instance(int $module_id): self {
         $task = new self();
         $task->set_custom_data((object) [
-            'repository_id' => $repository_id,
             'module_id' => $module_id,
         ]);
 
@@ -41,39 +41,15 @@ class FinalizeGroupCreationTask extends adhoc_task {
         global $DB;
 
         $custom_data = $this->get_custom_data();
-        $repository_id = $custom_data->repository_id;
         $module_id = $custom_data->module_id;
 
         $module = $DB->get_record('gitlab', ['id' => $module_id], '*', MUST_EXIST);
 
-        $reviewers = json_decode($module->reviewers, true) ?? [];
         $token = Helper::get_course_gitlab_token($module->course);
-        
         $client = new Gitlab($token);
         $bridge = new Bridge($client);
 
-        $interval = 2;
-        $timeout = time() + 120;
-        do {
-            $repository = $client->project()->get($repository_id);
-
-            if ($repository->import_status === 'failed' || time() > $timeout) {
-                throw new \RuntimeException("GitLab import failed");
-            }
-
-            if ($repository->import_status === 'finished') {
-                try {
-                    $branch = $client->branch()->get($repository_id, Resources::defaultBranch());
-                    if ($branch->protected && $branch->default) {
-                        break;
-                    }
-                } catch (RuntimeException $e) {} 
-            }
-
-            sleep($interval);
-        } while (true);
-
-        $bridge->finalize_create_group($repository->id, $reviewers, $module->template_id, $module->due_date);
+        $bridge->send_submission_notifications($module, true);
     }
 
     public function retry_until_success(): bool {
