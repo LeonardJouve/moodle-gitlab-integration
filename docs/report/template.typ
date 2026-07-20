@@ -30,6 +30,7 @@
   supervisor : [supervisor name],
   institute : [supervisor institute name],
   abstract : [abstract],
+  footer_title: [title used in the footer],
   doc,
 ) = {
           
@@ -154,7 +155,7 @@
       set text(size: 9pt)
       line(length: 100%)
       v(0.5em)
-      document.title
+      footer_title
       h(1fr)
       counter(page).display("1")
       h(1fr)

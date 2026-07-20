@@ -8,10 +8,10 @@ participant GitLab
 participant Group
 participant Template
 
-Teacher -> Moodle: Create GitLab module
+Teacher -> Moodle: Create RAW module
 Moodle -> Plugin: Create module
 
-Plugin -> GitLab: Create GitLab group
+Plugin -> GitLab: Create RAW group
 GitLab --> Plugin: Group created
 
 Plugin -> Group: Create template repository
