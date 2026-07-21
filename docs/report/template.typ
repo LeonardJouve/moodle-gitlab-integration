@@ -167,9 +167,11 @@
   context counter(page).update(1)
 
   set heading(numbering: "1.")
+  
   show heading.where(level: 1): it => {
     set text(size: 24pt, weight: "bold")
-    block[#it.body]
+    block[#counter(heading).display("1.") #it.body]
+    v(0.2em)
   }
   
   show heading.where(level: 2): it => {

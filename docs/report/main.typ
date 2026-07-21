@@ -1,8 +1,6 @@
 #import "template.typ": template
 #set document(title: [
-  #text(size: 1.3em)[RAW]
-
-  A GitLab Integration within Moodle
+  Integrating GitLab with Moodle
 ])
 
 #let abstract = [
@@ -44,8 +42,6 @@ Students, on the other hand, must navigate between multiple platforms to access 
 Existing solutions partially address these issues but remain limited. Some are proprietary and lack flexibility, while others are tightly coupled to specific platforms such as GitHub. Moreover, they are often not deeply integrated into LMS environments, requiring additional tools or workflows that increase complexity rather than reduce it. This situation highlights the need for an open, flexible, and LMS-native solution that seamlessly integrates Git-based workflows into the educational ecosystem.
 
 Furthermore, GitHub Classroom, one of the most widely used platforms for managing computer science assignments, has announced that it will discontinue its service on 28 August 2026. This development highlights the risks of relying on proprietary, closed-source tools and reinforces the need for a new open-source, LMS-native solution.
-
-#pagebreak()
 
 == Goal
 
@@ -186,40 +182,39 @@ Following this decision, GitHub redirected users toward partner solutions:
 It is not widely adopted yet, but it is built with GitHub integration in the core.
 It claims to integrate GitHub Classroom directly with the LMS and add additional features.
 
-#pagebreak()
-
-#table(
-  columns: (auto, auto, auto, auto, auto),
-  align: center,
-  stroke: .5pt,
-
-  table.header(
-    [],
-    [*Open source*],
-    [*LMS integration*],
-    [*VCS independent*],
-    [*Extensible*],
-  ),
-
-  [GitHub Classroom], [\~], [✗], [✗], [✗],
-  [Codio],            [✗], [\~], [✗], [✗],
-  [Classroom 50],     [✓], [✗], [✗], [\~],
-  [RepoBee],          [✓], [✗], [✓], [✓],
-  [Classmoji],        [✓], [✓], [\~], [\~],
-  [This work],        [✓], [✓], [\~], [✓],
-)
-
-#align(center)[
-  _✓ Supported, \~ Partially supported, ✗ Not supported._
+#align(center + horizon)[
+  #table(
+    columns: (auto, auto, auto, auto, auto),
+    align: center,
+    stroke: .5pt,
   
-  _Comparison of existing solutions_
+    table.header(
+      [],
+      [*Open source*],
+      [*LMS integration*],
+      [*VCS independent*],
+      [*Extensible*],
+    ),
+  
+    [GitHub Classroom], [\~], [✗], [✗], [✗],
+    [Codio],            [✗], [\~], [✗], [✗],
+    [Classroom 50],     [✓], [✗], [✗], [\~],
+    [RepoBee],          [✓], [✗], [✓], [✓],
+    [Classmoji],        [✓], [✓], [\~], [\~],
+    [This work],        [✓], [✓], [\~], [✓],
+  )
+  
+  #align(center)[
+    _✓ Supported, \~ Partially supported, ✗ Not supported._
+    
+    _Comparison of existing solutions_
+  ]
 ]
 
 As shown in the comparison, existing solutions either lack deep LMS integration, rely on proprietary platforms, or are limited to GitHub. Currently, there is no open-source, Moodle-native integration with GitLab that supports automated assignment workflows. This gap motivated the development of *RAW*, which aims to provide an extensible, open-source solution for managing assignments through Version Control Systems directly within the LMS platform.
 
-== Academic work
+== Related Research Project
 
-=== Canvas GitLab Integration
 #underline[Canvas GitLab Integration] @canvas_gitLab_integration is a research project aiming to enrich learning processes.
 
 The paper highlights that separating version control systems (VCS) from learning management systems (LMS) leads to a fragmented and inefficient user experience, as students and instructors must switch between platforms. To address this, the authors propose a high-level programming framework that integrates Canvas and GitLab to reduce fragmentation and improve the overall educational experience.
@@ -323,14 +318,24 @@ The plugin defines two custom fields:
 - A *course-level* field for storing a course-specific GitLab token.
 - A *user-level* field for storing the user's GitLab username.
 
-#figure(
-  image("images/moodle_course_token.png"),
-  caption: [Course custom field for GitLab token]
-)
-
-#figure(
-  image("images/moodle_gitlab_username.png"),
-  caption: [User custom field for GitLab username]
+#grid(
+  columns: (1fr, 1fr),
+  gutter: 1em,
+  align(center + horizon)[
+    #figure(
+      image("images/moodle_course_token.png"),
+      caption: [Course custom field for GitLab token]
+    )
+  ],
+  align(center + horizon)[
+     #figure(
+      image(
+        "images/moodle_gitlab_username.png",
+        width: 65%,
+      ),
+      caption: [User custom field for GitLab username]
+    )
+  ],
 )
 
 The GitLab token field uses the newly created encrypted text field type to encrypt the token before it is stored in the database. This ensures that sensitive credentials are not stored in plaintext and cannot be directly accessed through database inspection.
@@ -346,13 +351,15 @@ The *Activity module* plugin introduces a new Moodle activity type called *RAW*.
   caption: [new *RAW* activity module]
 )
 
-This plugin acts as the main bridge between Moodle and GitLab. It communicates with Moodle Core to retrieve course and user data, create activity instances, and manage Moodle-side information. A dedicated GitLab Client component handles all communication with GitLab.
+The plugin acts as the primary bridge between Moodle and GitLab. Unlike GitHub Classroom, which provides a standalone platform separate from learning management systems, *RAW* offers a fully integrated solution within Moodle, allowing Git-based assignment workflows to be managed directly from the LMS.
+
+*RAW* communicates with Moodle Core to retrieve course and user data, create activity instances, and manage Moodle-side information. A dedicated GitLab Client component handles all communication with GitLab.
 
 The GitLab Client interacts with the GitLab REST API to provision and manage GitLab resources according to the desired state. Using the REST API keeps both platforms decoupled: Moodle does not need to know about GitLab's internal implementation, and GitLab does not require any Moodle-specific configuration.
 
 #figure(
   image("images/integration.svg"),
-  caption: [Moodle with GitLab integration]
+  caption: [RAW plugin interactions with GitLab]
 )
 
 #pagebreak()
@@ -362,7 +369,7 @@ The GitLab Client interacts with the GitLab REST API to provision and manage Git
 The following features represent the initial requirements identified for the integration. These requirements define the expected behavior and scope of the solution, including the management of GitLab resources, the interaction between Moodle and GitLab, and the handling of user and course-specific data.
 
 #figure(
-  image("images/module.svg", width: 60%),
+  image("images/module.svg", width: 50%),
   caption: [GitLab module on Moodle course page]
 )
 
@@ -384,7 +391,7 @@ _
 _
 
 #figure(
- image("images/teacher_dashboard.svg", width: 80%),
+ image("images/teacher_dashboard.svg", width: 90%),
   caption: [Teacher dashboard scaffold]
 )
 
@@ -402,12 +409,16 @@ _
 _
 
 #figure(
-  image("images/student_groups.svg", width: 70%),
+  move(dx: 3em)[
+    #image("images/student_groups.svg", width: 80%)
+  ],
   caption: [Student groups list scaffold]
 )
 
 #figure(
-  image("images/student_group.svg", width: 80%),
+  move(dx: 3.3em)[
+    #image("images/student_group.svg", width: 75%)
+  ],
   caption: [Student group scaffold]
 )
 
@@ -431,7 +442,7 @@ _
 
 #figure(
   image("images/gitlab_resources.svg"),
-  caption: [GitLab practical work structure]
+  caption: [GitLab resources structure]
 )
 
 == Other
@@ -442,7 +453,7 @@ Potential candidates include assessment platforms such as #underline[Gradescope]
 
 #pagebreak()
 
-= Development Process
+= Development Methodology
 
 This project was carried out over the course of one academic semester, with a total workload of 450 hours for the various activities required to complete it. These activities included the initial research phase, specification and design of the solution, implementation and testing, and documentation. This chapter presents the main stages of the development process and describes the progression of the work throughout the project.
 
@@ -461,18 +472,13 @@ Task management is handled via a #underline[Kanban board] @kanban. Items are org
 
 The next step was building as a proof of concept @poc, a simple GitLab integration within Moodle. This includes creation of a Moodle module plugin. This kind of plugin provides a new type of resource a teacher can add to a course.
 
-#figure(
-  image("images/poc_add_module.png", width: 70%),
-  caption: [Modal for adding resources has a new *GitLab* type of module]
-)
-
 The teacher must provide a GitLab token when creating the resource. In the final *RAW* plugin, this token will then be transferred to the course level.
 
 Once created, students can open the module and see a button that creates of a GitLab repository. They can also see a list of existing repositories in the GitLab group, with direct links to each.
 
 #figure(
   image("images/poc_module.png", width: 80%),
-  caption: [GitLab module view]
+  caption: [POC *GitLab* module view]
 )
 
 #figure(
@@ -492,7 +498,7 @@ To handle communication between the different services, #underline[Traefik] @tra
 
 #figure(
   image("images/iac.svg", width: 70%),
-  caption: [IaC architecture]
+  caption: [IaC architecture for RAW]
 )
 
 Finally, a GitHub Action was added to automate updates after each push to the project's main branch.
@@ -593,17 +599,26 @@ Teachers and reviewers have direct access to the GitLab template repository asso
 
 The interface also provides an overview of the student groups associated with the activity. Teachers can create and manage groups, assign members, and access the corresponding GitLab repositories and submission information.
 
-#figure(
-  image("images/moodle_teacher_group.png"),
-  caption: [Teacher dashboard's student groups list],
+#grid(
+  columns: (3fr, 1fr),
+  gutter: 1em,
+  align(center + horizon)[
+    #figure(
+      image("images/moodle_teacher_group.png"),
+      caption: [Teacher dashboard student groups],
+    )
+  ],
+  align(center + horizon)[
+    #figure(
+      image("images/moodle_get_code.png"),
+      caption: [Ways to #linebreak() retrieve group code]
+    )
+  ],
 )
+
 
 For evaluation purposes, reviewers and teachers can retrieve group submissions using different methods. They can clone repositories using SSH or HTTPS, inspect the exact repository state at the submission deadline by checking out the corresponding commit, review submissions through merge requests centralized in the template repository, or download the source code as a ZIP archive.
 
-#figure(
-  image("images/moodle_get_code.png"),
-  caption: [Different ways to retrieve group code],
-)
 
 
 == Student view
@@ -636,7 +651,7 @@ The plugin automates the creation and management of GitLab resources required fo
 
 For each activity, the plugin automatically creates a dedicated GitLab group inside the selected parent group. This group acts as a container for all resources associated with the Moodle activity.
 
-A template repository is also created for the practical work. This repository is accessible to the GitLab token owner and the selected reviewers, and it provides the initial project structure used to generate student repositories. It contains the practical work instructions as an issue, which is replicated to each group repository, as well as two branches: the `main` branch used as the template for initializing group repositories and the `solution` branch containing the reference solution. The solution branch can be submitted to each group through a merge request at any time by teachers.
+A template repository is also created for the practical work. This repository is accessible to the GitLab token owner and the selected reviewers, and it provides the initial project structure used to generate student repositories. It contains the practical work instructions as an issue, which is replicated to each group repository, as well as two branches: the `main` branch used as the template for initializing group repositories and the `solution` branch containing the reference solution. The solution branch can be released to each group through a merge request at any time by teachers.
 
 For each student group, the plugin creates a fork of the template repository and configures access permissions according to the user's role. Group members receive Developer access, the GitLab token owner receives Owner access, and selected reviewers receive Maintainer access.
 
@@ -714,11 +729,6 @@ The job runs during merge request pipelines and compares the files modified by t
 The `.gitlab/protected-files` file contains one protected file or pattern per line, allowing teachers to define which files should not be modified as part of the assignment.
 
 If a modified file matches one of the protected patterns, the pipeline fails and reports the affected file. This provides students with immediate feedback when they modify a protected file and helps reviewers identify changes that may require additional attention during the evaluation process.
-
-#figure(
-  image("images/gitlab_protected_files.png"),
-  caption: [GitLab CI protected files pipeline]
-)
 
 This mechanism is intended as an informational safeguard rather than a security feature. It assists reviewers in identifying potentially sensitive modifications but does not prevent users from modifying the CI configuration itself.
 
