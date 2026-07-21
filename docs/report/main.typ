@@ -112,7 +112,7 @@ The Moodle ecosystem is primarily developed using PHP @php, with JavaScript used
 The main GitLab features include source code hosting and management via Git repositories, merge requests and code review workflows, issue tracking and project management tools, and CI/CD pipelines for automated testing and deployment. Additionally, GitLab provides extensibility through integrations that use Webhooks and REST/GraphQL APIs.
 
 #figure(
-  image("images/gitlab_repo.png", width: 80%),
+  image("images/gitlab_repo.png", width: 75%),
   caption: [GitLab repository]
 )
 
@@ -453,28 +453,28 @@ Potential candidates include assessment platforms such as #underline[Gradescope]
 
 #pagebreak()
 
-= Development Methodology
+= Planning and Timeline
 
-This project was carried out over the course of one academic semester, with a total workload of 450 hours for the various activities required to complete it. These activities included the initial research phase, specification and design of the solution, implementation and testing, and documentation. This chapter presents the main stages of the development process and describes the progression of the work throughout the project.
+This project was carried out over the course of one academic semester, with a total workload of 450 hours for the various activities required to complete it.
 
 == Research and Specification
 
-The first months were mainly focused on establishing the project requirements, defining the scope, and identifying feasible features. This phase also included a state-of-the-art analysis to study existing solutions, evaluate current approaches, and identify the limitations and gaps addressed by this project. The analysis provided a better understanding of the existing ecosystem and helped guide the design choices.
+The first months were mainly focused on establishing the project requirements, defining the scope, and identifying feasible features. This phase also included a state-of-the-art analysis to examine existing solutions, evaluate current approaches, and identify the limitations and gaps that this project addresses. The analysis provided a better understanding of the existing ecosystem and helped guide the design choices.
 
 The outcome of this phase was a well-defined feature list, a Gantt chart @appendix_planning, and a Kanban board @appendix_board, providing a structured roadmap for the project development.
 
 == Workflow
 
-The development workflow for this project uses a Git feature-branch strategy to ensure isolated, organized, and traceable changes. Each feature is implemented in a separate Git branch, allowing for review before integration into the main codebase.
-Task management is handled via a #underline[Kanban board] @kanban. Items are organized by priority and annotated with their dependencies. This ensures critical tasks are addressed first and provides visibility into blocking/critical tasks.
+The development workflow for this project used a Git feature-branch strategy to ensure isolated, organized, and traceable changes. Each feature was implemented in a separate Git branch, allowing for review before integration into the main codebase.
+Task management was handled via a #underline[Kanban board] @kanban. Items were organized by priority and annotated with their dependencies. This ensured critical tasks were addressed first and provided visibility into blocking/critical tasks.
 
 == Proof Of Concept
 
-The next step was building as a proof of concept @poc, a simple GitLab integration within Moodle. This includes creation of a Moodle module plugin. This kind of plugin provides a new type of resource a teacher can add to a course.
+The next step was to build a proof of concept @poc, a simple GitLab integration within Moodle. This included creation of a Moodle module plugin. This kind of plugin provided a new type of resource a teacher can add to a course.
 
-The teacher must provide a GitLab token when creating the resource. In the final *RAW* plugin, this token will then be transferred to the course level.
+The teacher must provide a GitLab token when creating the resource. In the final *RAW* plugin, this token was then transferred to the course level.
 
-Once created, students can open the module and see a button that creates of a GitLab repository. They can also see a list of existing repositories in the GitLab group, with direct links to each.
+Once created, students can open the module and create a GitLab repository. They can also see a list of existing repositories in the GitLab group, with direct links to each.
 
 #figure(
   image("images/poc_module.png", width: 80%),
@@ -494,7 +494,7 @@ Once the infrastructure was provisioned, Configuration-as-Code principles were a
 
 The deployed environment consists of a Moodle instance protected by #underline[Authentik] @authentik as an identity provider. Authentik was selected because it provides an open-source authentication solution that supports modern authentication protocols with minimal configuration, reducing complexity.
 
-To handle communication between the different services, #underline[Traefik] @traefik was used as a reverse proxy and ingress controller. Traefik is particularly well-suited for containerized environments due to its ease of use and its ability to configure routing rules based on running services dynamically.
+To handle communication between the different services, #underline[Traefik] @traefik was used as a reverse proxy and ingress controller. Traefik is particularly well-suited for containerized environments due to its ease of use and its ability to dynamically configure routing rules based on running services.
 
 #figure(
   image("images/iac.svg", width: 70%),
@@ -503,7 +503,7 @@ To handle communication between the different services, #underline[Traefik] @tra
 
 Finally, a GitHub Action was added to automate updates after each push to the project's main branch.
 
-== Solution design
+== System design
 
 The solution was designed around a modular architecture separating Moodle-specific logic, GitLab resource management, and API communication. It follows the Moodle Activity module plugin structure and naming conventions described in the official documentation.
 
@@ -520,6 +520,20 @@ The Bridge component delegates GitLab-related operations to the Resources compon
   image("images/moodle_module_plugin_components.svg"),
   caption: [Component interactions during group creation]
 )
+
+== Implementation and Testing
+
+This phase covered the development of Moodle plugins and the combination of their components. It included implementing the GitLab client, Moodle user interfaces, automated workflows, and required features. Unit tests were developed alongside the implementation to validate individual components and ensure the correctness of the functionalities. Additional manual testing was performed to identify issues, verify integrations, and improve the solution's overall reliability.
+
+== Documentation and Thesis Writing
+
+The final phase focused on documenting the developed solution and writing the thesis report. It included preparing technical documentation, describing the architecture and implementation choices, presenting the results, and summarizing the lessons learned throughout the project. The report was continuously updated throughout the project to reflect the implementation's evolution and maintain accurate documentation.
+
+#pagebreak()
+
+= Development Methodology
+
+This chapter presents the main stages of the development process and describes the progression of the work throughout the project.
 
 == GitLab client
 
@@ -593,7 +607,7 @@ The teacher interface provides access to the main activity settings, including t
 Teachers and reviewers have direct access to the GitLab template repository associated with the activity. This repository serves as a central workspace for preparing practical work, defining the initial project structure, instructions, and required resources before group repositories are created.
 
 #figure(
-  image("images/moodle_teacher_template.png"),
+  image("images/moodle_teacher_template.png", width: 83%),
   caption: [Teacher dashboard template repository],
 )
 
@@ -611,15 +625,13 @@ The interface also provides an overview of the student groups associated with th
   align(center + horizon)[
     #figure(
       image("images/moodle_get_code.png"),
-      caption: [Ways to #linebreak() retrieve group code]
+      caption: [Different ways to retrieve group code]
     )
   ],
 )
 
 
 For evaluation purposes, reviewers and teachers can retrieve group submissions using different methods. They can clone repositories using SSH or HTTPS, inspect the exact repository state at the submission deadline by checking out the corresponding commit, review submissions through merge requests centralized in the template repository, or download the source code as a ZIP archive.
-
-
 
 == Student view
 
@@ -628,7 +640,7 @@ The student interface provides access to GitLab-related information directly fro
 Students who are not assigned to a group can view available groups, create a new group, or join an existing group that has not reached its maximum capacity.
 
 #figure(
-  image("images/moodle_student_groups.png"),
+  image("images/moodle_student_groups.png", width: 95%),
   caption: [Student group selection interface],
 )
 
@@ -637,7 +649,7 @@ Once a student becomes a member of a group, additional options become available,
 The integration allows students to follow the complete submission workflow in Moodle without manually switching between Moodle and GitLab.
 
 #figure(
-  image("images/moodle_student_group.png"),
+  image("images/moodle_student_group.png", width: 85%),
   caption: [Student group interface],
 )
 
@@ -670,7 +682,7 @@ This automation removes repetitive manual configuration, ensures consistency acr
 
 In the previous steps, links between Moodle and GitLab resources were represented using placeholders. The goal of this step was to replace these placeholder values with the actual links corresponding to the GitLab resources created during the workflow.
 
-== Notifications, Calendar events and Adhoc Tasks
+== Notifications, Calendar events and Tasks
 
 The plugin integrates with Moodle notification and calendar systems to provide deadline reminders and keep users informed about relevant events.
 
