@@ -899,6 +899,9 @@ See #underline[gantt.xlsx]
 
 See #underline[reports.pdf]
 
+== Poster <appendix_poster>
+See #underline[poster.pdf]
+
 == Source code <appendix_code>
 #underline[GitHub Repository] @code
 
