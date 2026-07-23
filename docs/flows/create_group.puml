@@ -1,0 +1,40 @@
+@startuml
+title Create Group
+
+actor Student
+participant Moodle
+participant Plugin
+participant GitLab
+participant Repository
+
+Student -> Moodle: Create group
+Moodle -> Plugin: Create group
+
+Plugin -> GitLab: Fork template repository
+GitLab --> Plugin: Repository created
+
+Plugin -> Repository: Unprotect main branch
+Repository --> Plugin: Main branch unprotected
+
+Plugin -> Repository: Create base branch
+Repository --> Plugin: Base branch created
+
+Plugin -> Repository: Protect base branch
+Repository --> Plugin: Base branch protected
+
+Plugin -> Repository: Create submission merge request
+Repository --> Plugin: Merge request created
+
+Plugin -> Repository: Add reviewers as maintainers
+Repository --> Plugin: Permissions configured
+
+Plugin -> Repository: Copy instructions issue
+Repository --> Plugin: Issue copied
+
+Plugin -> Repository: Create grading webhook
+Repository --> Plugin: Webhook registered
+
+Plugin --> Moodle: Group created
+
+Moodle --> Student: Update UI
+@enduml

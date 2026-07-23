@@ -1,0 +1,18 @@
+@startuml
+title Group repository webhook
+
+participant GitLab
+participant Plugin
+participant Moodle
+actor "Group Members" as Students
+
+GitLab -> Plugin: Receive merge request event
+
+alt Merge request closed
+    loop For each group member
+        Plugin -> Moodle: Send graded notification
+        Moodle -> Students: Notify work graded
+    end
+end
+
+@enduml

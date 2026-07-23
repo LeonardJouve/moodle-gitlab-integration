@@ -1,0 +1,27 @@
+@startuml
+title RAW components interactions
+
+actor Student
+participant Moodle
+participant "Module Plugin" as ModulePlugin
+participant Bridge
+participant "Module Database" as ModuleDatabase
+participant Resources
+participant "GitLab Client" as GitLabClient
+participant GitLab
+
+Student-> Moodle: Create group
+Moodle -> ModulePlugin: Load plugin
+ModulePlugin -> Bridge: Request group creation
+Bridge -> Resources: Create repository
+Resources -> GitLabClient: Create API request
+GitLabClient -> GitLab: Send API call
+GitLab --> GitLabClient: Return response
+GitLabClient --> Resources: Process response
+Resources --> Bridge: Return repository
+Bridge -> ModuleDatabase: Store group informations
+ModuleDatabase --> Bridge: Return result
+Bridge --> ModulePlugin: Return operation result
+ModulePlugin --> Moodle: Return result
+Moodle --> Student: Update page content
+@enduml

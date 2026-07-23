@@ -1,0 +1,29 @@
+@startuml
+
+title Template repository webhook
+
+participant GitLab
+participant Plugin
+participant "Group Repositories" as Groups
+
+GitLab -> Plugin: Receive template webhook event
+
+alt Push event
+    loop For each group repository
+        Plugin -> Groups: Check existing merge request
+        
+        alt Merge request does not exist
+            Plugin -> Groups: Create merge request
+            Groups --> Plugin: Merge request created
+        else Merge request already exists
+            Plugin -> Groups: Skip creation
+        end
+    end
+else Issue event
+    loop For each group repository
+        Plugin -> Groups: Update instructions issue
+        Groups --> Plugin: Issue updated
+    end
+end
+
+@enduml
