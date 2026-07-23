@@ -881,10 +881,6 @@ The #underline[Grammarly] @grammarly tool was also used to verify grammatical co
 
 See #underline[gantt.xlsx]
 
-== Weekly meeting reports <appendix_reports>
-
-See #underline[reports.pdf]
-
 == Poster <appendix_poster>
 See #underline[poster.pdf]
 
