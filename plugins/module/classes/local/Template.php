@@ -79,15 +79,22 @@ class Template {
         $data->https_url = $repository->http_url_to_repo;
         $data->ssh_url = $repository->ssh_url_to_repo;
 
+        $instruction_issue = $resources->get_instructions_issue($repository->id);
+        if ($instruction_issue != null) {
+            $data->instruction_url = $instruction_issue->web_url;
+        }
+
         $data->is_graded = false;
         $submission_merge_request = $resources->get_student_submission_merge_request($repository->id);
+        $last_test_result = null;
         if ($submission_merge_request != null) {
             $data->is_graded = $submission_merge_request->state == 'closed';
             $data->feedback_url = $submission_merge_request->web_url;
+            
+            $last_test_result = $resources->get_latest_test_result($repository->id, $submission_merge_request->iid);
         }
 
         $data->last_test_pass = false;
-        $last_test_result = $resources->get_latest_test_result($repository->id);
         $data->has_test_result = $last_test_result != null;
         if ($data->has_test_result) {
             $data->test_url = $last_test_result->web_url;
@@ -102,10 +109,10 @@ class Template {
             $data->delay = format_time($time - $due_date);
         }
 
-        $data->has_solution = (time() - $due_date) > 0;
-
+        
         $solution_merge_request = $resources->get_solution_merge_request($repository->id);
-        if ($solution_merge_request != null) {
+        $data->has_solution = $solution_merge_request != null;
+        if ($data->has_solution) {
             $data->solution_url = $solution_merge_request->web_url;
         }
 
@@ -187,6 +194,11 @@ class Template {
             $group->ssh_url = $repository->ssh_url_to_repo;
             $group->https_url = $repository->http_url_to_repo;
 
+            $instruction_issue = $resources->get_instructions_issue($group->repository_id);
+            if ($instruction_issue != null) {
+                $group->instruction_url = $instruction_issue->web_url;
+            }
+
             $last_in_time_commit = $client->commit()->get_last_until($group->repository_id, $due_date);
             if ($last_in_time_commit != null) {
                 $group->checkout_due_date = 'git checkout ' . $last_in_time_commit->id;
@@ -205,12 +217,14 @@ class Template {
             }
             
             $submission_merge_request = $resources->get_student_submission_merge_request($group->repository_id);
+            $last_test_result = null;
             if ($submission_merge_request != null) {
                 $group->feedback_url = $submission_merge_request->web_url;
                 $group->is_graded = $submission_merge_request->state == 'closed';
+                
+                $last_test_result = $resources->get_latest_test_result($group->repository_id, $submission_merge_request->iid);
             }
 
-            $last_test_result = $resources->get_latest_test_result($group->repository_id);
 
             $group->has_test_result = $last_test_result != null;
             if ($group->has_test_result) {
