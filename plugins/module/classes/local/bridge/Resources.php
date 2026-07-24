@@ -160,10 +160,10 @@ class Resources {
         ]);
     }
 
-    public function get_latest_test_result(int $repository_id): ?stdClass {
+    public function get_latest_test_result(int $repository_id, int $merge_request_iid): ?stdClass {
         try {
             return $this->client->pipeline()->latest($repository_id, [
-                'ref' => Resources::defaultBranch(),
+                'ref' => 'refs/merge-requests/' . $merge_request_iid . '/head',
             ]);
         }catch (RuntimeException $e) {
             return null;

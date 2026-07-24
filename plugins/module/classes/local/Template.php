@@ -81,13 +81,15 @@ class Template {
 
         $data->is_graded = false;
         $submission_merge_request = $resources->get_student_submission_merge_request($repository->id);
+        $last_test_result = null;
         if ($submission_merge_request != null) {
             $data->is_graded = $submission_merge_request->state == 'closed';
             $data->feedback_url = $submission_merge_request->web_url;
+            
+            $last_test_result = $resources->get_latest_test_result($repository->id, $submission_merge_request->iid);
         }
 
         $data->last_test_pass = false;
-        $last_test_result = $resources->get_latest_test_result($repository->id);
         $data->has_test_result = $last_test_result != null;
         if ($data->has_test_result) {
             $data->test_url = $last_test_result->web_url;
@@ -205,12 +207,14 @@ class Template {
             }
             
             $submission_merge_request = $resources->get_student_submission_merge_request($group->repository_id);
+            $last_test_result = null;
             if ($submission_merge_request != null) {
                 $group->feedback_url = $submission_merge_request->web_url;
                 $group->is_graded = $submission_merge_request->state == 'closed';
+                
+                $last_test_result = $resources->get_latest_test_result($group->repository_id, $submission_merge_request->iid);
             }
 
-            $last_test_result = $resources->get_latest_test_result($group->repository_id);
 
             $group->has_test_result = $last_test_result != null;
             if ($group->has_test_result) {
