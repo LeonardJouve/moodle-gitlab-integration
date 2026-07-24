@@ -35,7 +35,6 @@ $capabilities = [
             'teacher' => CAP_ALLOW,
             'student' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'mod/assign:view',
     ],
     'mod/gitlab:creategroup' => [
         'captype' => 'write',
@@ -46,7 +45,6 @@ $capabilities = [
             'teacher' => CAP_ALLOW,
             'student' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'mod/assign:submit',
     ],
     'mod/gitlab:deletegroup' => [
         'captype' => 'write',
@@ -56,7 +54,6 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'teacher' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'mod/assign:grade',
     ],
     'mod/gitlab:joingroup' => [
         'captype' => 'write',
@@ -64,7 +61,6 @@ $capabilities = [
         'archetypes' => [
             'student' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'mod/assign:submit',
     ],
     'mod/gitlab:leavegroup' => [
         'captype' => 'write',
@@ -72,7 +68,6 @@ $capabilities = [
         'archetypes' => [
             'student' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'mod/assign:submit',
     ],
     'mod/gitlab:managemembers' => [
         'captype' => 'write',
@@ -82,7 +77,6 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'teacher' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'mod/assign:grade',
     ],
     'mod/gitlab:releasesolution' => [
         'captype' => 'write',
@@ -92,7 +86,6 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'teacher' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'mod/assign:grade',
     ],
     'mod/gitlab:viewdashboard' => [
         'captype' => 'read',
@@ -102,7 +95,6 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'mod/assign:grade',
     ],
     'mod/gitlab:reviewer' => [
         'captype' => 'read',
@@ -121,6 +113,5 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'moodle/course:manageactivities',
     ],
 ];
