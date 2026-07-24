@@ -79,6 +79,11 @@ class Template {
         $data->https_url = $repository->http_url_to_repo;
         $data->ssh_url = $repository->ssh_url_to_repo;
 
+        $instruction_issue = $resources->get_instructions_issue($repository->id);
+        if ($instruction_issue != null) {
+            $data->instruction_url = $instruction_issue->web_url;
+        }
+
         $data->is_graded = false;
         $submission_merge_request = $resources->get_student_submission_merge_request($repository->id);
         $last_test_result = null;
@@ -104,10 +109,10 @@ class Template {
             $data->delay = format_time($time - $due_date);
         }
 
-        $data->has_solution = (time() - $due_date) > 0;
-
+        
         $solution_merge_request = $resources->get_solution_merge_request($repository->id);
-        if ($solution_merge_request != null) {
+        $data->has_solution = $solution_merge_request != null;
+        if ($data->has_solution) {
             $data->solution_url = $solution_merge_request->web_url;
         }
 
@@ -188,6 +193,11 @@ class Template {
             $group->download_latest_url = $client->project()->archive($group->repository_id);
             $group->ssh_url = $repository->ssh_url_to_repo;
             $group->https_url = $repository->http_url_to_repo;
+
+            $instruction_issue = $resources->get_instructions_issue($group->repository_id);
+            if ($instruction_issue != null) {
+                $group->instruction_url = $instruction_issue->web_url;
+            }
 
             $last_in_time_commit = $client->commit()->get_last_until($group->repository_id, $due_date);
             if ($last_in_time_commit != null) {
