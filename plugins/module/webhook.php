@@ -72,22 +72,16 @@ if ($content == null) {
     exit;
 }
 
-$ok = true;
 switch ($content->object_kind) {
 case 'push':
-    $ok = Webhook::handle_push_event($content);
+    Webhook::handle_push_event($content);
     break;
 case 'issue':
-    $ok = Webhook::handle_issue_event($content);
+    Webhook::handle_issue_event($content);
     break;
 case 'merge_request':
-    $ok = Webhook::handle_merge_request_event($content);
+    Webhook::handle_merge_request_event($content);
     break;
-}
-
-if (!$ok) {
-    http_response_code($HTTP_BAD_REQUEST);
-    exit;
 }
 
 http_response_code($HTTP_OK);
