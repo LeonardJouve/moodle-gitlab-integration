@@ -24,6 +24,7 @@ namespace mod_gitlab\external;
 
 defined('MOODLE_INTERNAL') || die();
 
+use context_module;
 use \core_external\external_api;
 use \core_external\external_function_parameters;
 use \core_external\external_value;
@@ -41,7 +42,14 @@ class release_solution extends external_api {
     public static function execute(int $moduleid) {
         global $DB;
 
+        self::validate_parameters(self::execute_parameters(), ['moduleid' => $moduleid]);
+
         $module = $DB->get_record('gitlab', ['id' => $moduleid], '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('gitlab', $module->id, 0, false, MUST_EXIST);
+        /** @var \core\context $context */
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+        require_capability('mod/gitlab:releasesolution', $context);
        
         $token = Helper::get_course_gitlab_token($module->course);
         $client = new Gitlab($token);

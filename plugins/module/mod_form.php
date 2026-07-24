@@ -49,6 +49,10 @@ class mod_gitlab_mod_form extends moodleform_mod {
         /** @var mixed $course */
         $course = $this->get_course();
 
+        /** @var \core\context $context */
+        $context = context_course::instance($course->id);
+        require_capability('mod/gitlab:addinstance', $context);
+
         $token = Helper::get_course_gitlab_token($course->id);
         if ($token === null) {
             $mform->addElement(

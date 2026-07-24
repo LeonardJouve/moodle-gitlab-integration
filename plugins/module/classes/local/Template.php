@@ -22,6 +22,7 @@
 
 namespace mod_gitlab\local;
 
+use context_module;
 use core\url;
 use html_writer;
 use mod_gitlab\http\Gitlab;
@@ -31,6 +32,13 @@ use mod_gitlab\local\bridge\Resources;
 use stdClass;
 
 class Template {
+    private static function check_capability(int $module_id, string $capability) {
+        $cm = get_coursemodule_from_instance('gitlab', $module_id, 0, false, MUST_EXIST);
+        /** @var \core\context $context */
+        $context = context_module::instance($cm->id);
+        require_capability($capability, $context);
+    }
+
     private static function get_group_name(array $members) {
         return count($members) > 0 ?
             get_string('message_group_name', 'mod_gitlab', ['members' => implode(', ', $members)]) :
@@ -44,10 +52,12 @@ class Template {
         );
     }
 
-    public static function student_group(Gitlab $client, Resources $resources, int $instance_id, int $user_id, int $max_member, int $due_date) {
+    public static function student_group(Gitlab $client, Resources $resources, int $module_id, int $user_id, int $max_member, int $due_date) {
         global $OUTPUT;
+
+        Template::check_capability($module_id, 'mod/gitlab:view');
         
-        $group = Group::group_with_members($instance_id, $user_id);
+        $group = Group::group_with_members($module_id, $user_id);
         
         $data = new stdClass();
         $data->members = $group->members;
@@ -105,6 +115,8 @@ class Template {
     public static function template(Gitlab $client, Resources $resources, int $module_id, int $template_id, int $due_date, array $reviewer_ids) {
         global $OUTPUT, $DB;
 
+        Template::check_capability($module_id, 'mod/gitlab:viewdashboard');
+
         $data = new stdClass();
         $data->module_id = $module_id;
         $data->due_date = userdate($due_date, get_string('strftimedaydatetime', 'langconfig'));
@@ -144,6 +156,8 @@ class Template {
 
     public static function list_teacher_groups(Gitlab $client, Resources $resources, int $module_id, int $template_id, int $max_member, int $due_date, int $context_id) {
         global $OUTPUT;
+
+        Template::check_capability($module_id, 'mod/gitlab:viewdashboard');
 
         $data = new stdClass();
         $data->max_member = $max_member;
@@ -220,6 +234,8 @@ class Template {
 
     public static function list_student_groups(int $module_id, int $max_member) {
         global $OUTPUT;
+
+        Template::check_capability($module_id, 'mod/gitlab:view');
 
         $data = new stdClass();
         $data->create_group_url = (new url('/mod/gitlab/view.php', [

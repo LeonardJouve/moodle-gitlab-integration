@@ -239,10 +239,7 @@ function gitlab_delete_instance($id) {
  */
 function mod_gitlab_output_fragment_manage_group_form($args) {
     $args = (object) $args;
-    $context = $args->context;
     $o = '';
-
-    require_capability('mod/gitlab:addinstance', $context);
 
     $mform = new mod_gitlab_manage_group_form(null, $args);
 
@@ -262,11 +259,7 @@ function mod_gitlab_output_fragment_manage_group_form($args) {
  */
 function mod_gitlab_output_fragment_confirm_delete_form($args) {
     $args = (object) $args;
-    $context = $args->context;
     $o = '';
-
-    // TODO
-    // require_capability('mod/gitlab:deletegroup', $context);
 
     $mform = new mod_gitlab_confirm_delete_form(null, $args);
 

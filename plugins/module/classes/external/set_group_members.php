@@ -29,6 +29,7 @@ use \core_external\external_function_parameters;
 use \core_external\external_multiple_structure;
 use \core_external\external_value;
 use context_course;
+use context_module;
 use mod_gitlab\http\Gitlab;
 use mod_gitlab\local\bridge\Bridge;
 use mod_gitlab\local\Helper;
@@ -46,15 +47,19 @@ class set_group_members extends external_api {
 
     public static function execute(int $groupid, array $members) {
         global $DB;
-    
-        $module_id = $DB->get_field_sql("
-            SELECT g.module_id
-            FROM {gitlab_groups} g
-            WHERE g.id = :group_id
-        ", [
-            'group_id' => $groupid,
+
+        self::validate_parameters(self::execute_parameters(), [
+            'groupid' => $groupid,
+            'members' => $members,
         ]);
 
+        $module_id = $DB->get_field('gitlab_groups', 'module_id', ['id' => $groupid], MUST_EXIST);
+        $cm = get_coursemodule_from_instance('gitlab', $module_id, 0, false, MUST_EXIST);
+        /** @var \core\context $context */
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+        require_capability('mod/gitlab:managemembers', $context);
+    
         $moduleinstance = $DB->get_record('gitlab', ['id' => $module_id], '*', MUST_EXIST);
         /** @var \core\context $coursecontext */
         $coursecontext = context_course::instance($moduleinstance->course);

@@ -24,6 +24,7 @@ namespace mod_gitlab\external;
 
 defined('MOODLE_INTERNAL') || die();
 
+use context_module;
 use \core_external\external_api;
 use \core_external\external_function_parameters;
 use \core_external\external_value;
@@ -43,13 +44,18 @@ class form_user_selector extends external_api {
     public static function execute(int $courseid, int $groupid, string $search) {
         global $DB;
 
-        $module_id = $DB->get_field_sql("
-            SELECT g.module_id
-            FROM {gitlab_groups} g
-            WHERE g.id = :group_id
-        ", [
-            'group_id' => $groupid,
+        self::validate_parameters(self::execute_parameters(), [
+            'courseid' => $courseid,
+            'groupid' => $groupid,
+            'search' => $search,
         ]);
+
+        $module_id = $DB->get_field('gitlab_groups', 'module_id', ['id' => $groupid], MUST_EXIST);
+        $cm = get_coursemodule_from_instance('gitlab', $module_id, 0, false, MUST_EXIST);
+        /** @var \core\context $context */
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+        require_capability('mod/gitlab:managemembers', $context);
 
         $sql_search = '%' . $search . '%';
         $users = $DB->get_records_sql("

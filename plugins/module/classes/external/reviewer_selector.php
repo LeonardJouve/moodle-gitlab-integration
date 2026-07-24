@@ -24,6 +24,7 @@ namespace mod_gitlab\external;
 
 defined('MOODLE_INTERNAL') || die();
 
+use context_course;
 use \core_external\external_api;
 use \core_external\external_function_parameters;
 use \core_external\external_multiple_structure;
@@ -42,15 +43,36 @@ class reviewer_selector extends external_api {
     public static function execute(int $courseid, string $search) {
         global $DB;
 
+        self::validate_parameters(self::execute_parameters(), [
+            'courseid' => $courseid,
+            'search' => $search,
+        ]);
+
+        /** @var \core\context $context */
+        $context = context_course::instance($courseid);
+        self::validate_context($context);
+        require_capability('mod/gitlab:addinstance', $context);
+
         $sql_search = '%' . $search . '%';
         $users = $DB->get_records_sql("
             SELECT DISTINCT u.id, u.firstname, u.lastname
             FROM {user} u
             JOIN {user_enrolments} ue ON ue.userid = u.id
-            JOIN {enrol} e ON (e.id = ue.enrolid AND e.courseid = :course_id)
-            WHERE (u.firstname LIKE :search1 OR u.lastname LIKE :search2 OR u.username LIKE :search3)
+            JOIN {enrol} e ON (e.id = ue.enrolid AND e.courseid = :course_id1)
+            JOIN {role_assignments} ra ON ra.userid = u.id
+            JOIN {role_capabilities} rc ON rc.roleid = ra.roleid
+            JOIN {context} ctx ON ctx.id = ra.contextid AND ctx.contextlevel = :context_level
+            WHERE
+                rc.permission = :permission AND
+                rc.capability = :capability AND
+                ctx.instanceid = :course_id2 AND
+                (u.firstname LIKE :search1 OR u.lastname LIKE :search2 OR u.username LIKE :search3)
         ", [
-            'course_id' => $courseid,
+            'course_id1' => $courseid,
+            'context_level' => CONTEXT_COURSE,
+            'permission' => CAP_ALLOW,
+            'capability' => 'mod/gitlab:reviewer',
+            'course_id2' => $courseid,
             'search1'   => $sql_search,
             'search2'   => $sql_search,
             'search3'   => $sql_search,
