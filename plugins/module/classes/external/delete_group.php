@@ -24,6 +24,7 @@ namespace mod_gitlab\external;
 
 defined('MOODLE_INTERNAL') || die();
 
+use context_module;
 use \core_external\external_api;
 use \core_external\external_function_parameters;
 use \core_external\external_value;
@@ -37,7 +38,19 @@ class delete_group extends external_api {
     }
 
     public static function execute(int $groupid) {
+        global $DB;
+
+        self::validate_parameters(self::execute_parameters(), ['groupid' => $groupid]);
+
+        $module_id = $DB->get_field('gitlab_groups', 'module_id', ['id' => $groupid], MUST_EXIST);
+        $cm = get_coursemodule_from_instance('gitlab', $module_id, 0, false, MUST_EXIST);
+        /** @var \core\context $context */
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+        require_capability('mod/gitlab:deletegroup', $context);
+
         $ok = Group::delete_group($groupid);
+        
         return ['result' => $ok ? 'ok' : 'fail'];
     }
 

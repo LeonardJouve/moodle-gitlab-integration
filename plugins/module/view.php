@@ -57,10 +57,7 @@ require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 require_capability('mod/gitlab:view', $modulecontext);
 
-$reviewers = json_decode($moduleinstance->reviewers, true) ?: [];
-$is_reviewer = in_array($USER->id, $reviewers);
-$is_teacher = has_capability('mod/gitlab:addinstance', $modulecontext);
-$is_manager = $is_reviewer || $is_teacher;
+$is_teacher = has_capability('mod/gitlab:viewdashboard', $modulecontext);
 
 $PAGE->set_url('/mod/gitlab/view.php', ['id' => $cm->id]);
 $PAGE->set_title(format_string($moduleinstance->name));
@@ -74,13 +71,12 @@ $resources = new Resources($client);
 
 $ok = true;
 
-// TODO handle perm
 switch ($action) {
 case 'joingroup':
     $ok = Action::join_group($bridge, $moduleinstance);
     break;
 case 'creategroup':
-    $ok = Action::create_group($bridge, $moduleinstance, !$is_manager);
+    $ok = Action::create_group($bridge, $moduleinstance, !$is_teacher);
     break;
 }
 
@@ -94,7 +90,8 @@ $username = Helper::get_user_gitlab_username($USER->id);
 
 if ($username == null) {
     Template::error(get_string('no_gitlab_username_err', 'mod_gitlab'));
-} else if ($is_manager) {
+} else if ($is_teacher) {
+    $reviewers = json_decode($moduleinstance->reviewers, true) ?: [];
     Template::template($client, $resources, $moduleinstance->id, $moduleinstance->template_id, $moduleinstance->due_date, $reviewers);
     Template::list_teacher_groups($client, $resources, $moduleinstance->id, $moduleinstance->template_id, $moduleinstance->group_size, $moduleinstance->due_date, $modulecontext->id);
 } else {

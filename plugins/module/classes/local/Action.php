@@ -22,13 +22,23 @@
 
 namespace mod_gitlab\local;
 
+use context_module;
 use core\url;
 use mod_gitlab\http\RuntimeException;
 use mod_gitlab\local\bridge\Bridge;
 
 class Action {
+    private static function check_capability(int $module_id, string $capability) {
+        $cm = get_coursemodule_from_instance('gitlab', $module_id, 0, false, MUST_EXIST);
+        /** @var \core\context $context */
+        $context = context_module::instance($cm->id);
+        require_capability($capability, $context);
+    }
+
     public static function join_group(Bridge $bridge, mixed $moduleinstance) {
         global $USER;
+
+        Action::check_capability($moduleinstance->id, 'mod/gitlab:joingroup');
 
         $group_id = optional_param('group_id', '', PARAM_INT);
         if (!$group_id || !$bridge->join_group($group_id, $USER->id, $moduleinstance)) {
@@ -46,6 +56,8 @@ class Action {
 
     public static function create_group(Bridge $bridge, mixed $moduleinstance, bool $join) {
         global $USER;
+
+        Action::check_capability($moduleinstance->id, 'mod/gitlab:creategroup');
 
         try {
             $result = $bridge->create_group($moduleinstance);
