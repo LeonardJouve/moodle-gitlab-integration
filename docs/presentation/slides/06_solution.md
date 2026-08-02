@@ -17,5 +17,5 @@ A Moodle-native, extensible, and open-source solution.
 
 - Follows the 3 design principles defined previously
 - Built using two Moodle plugins:
-  **Custom field**, **Activity module**
+  **Custom Field**, **Activity Module**
 </div>

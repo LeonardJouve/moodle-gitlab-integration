@@ -35,8 +35,11 @@ src: ./slides/07_demonstration.md
 src: ./slides/08_features.md
 ---
 ---
-src: ./slides/09_state_future_work.md
+src: ./slides/09_features.md
 ---
 ---
-src: ./slides/10_contributions_limitations.md
+src: ./slides/10_limitations_future_work.md
+---
+---
+src: ./slides/11_contributions.md
 ---
