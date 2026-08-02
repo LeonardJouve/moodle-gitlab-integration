@@ -27,8 +27,3 @@ Moodle and GitLab are both widely used in computer science education, but operat
 </div>
 
 </div>
-
-<!--
-- initial problem
-- how the project went
--->

@@ -34,8 +34,3 @@ Design a solution around 3 core principles
 </div>
 
 </div>
-
-<!--
-- project needs
-- what it will enable
--->

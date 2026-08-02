@@ -29,7 +29,3 @@
 </div>
 
 </div>
-
-<!--
-- VCS (GitLab), LMS (Moodle) platforms
--->
