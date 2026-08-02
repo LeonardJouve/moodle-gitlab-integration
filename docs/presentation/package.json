@@ -1,0 +1,22 @@
+{
+  "name": "presentation",
+  "type": "module",
+  "scripts": {
+    "slide": "slidev slides.md",
+    "export": "slidev export slides.md"
+  },
+  "dependencies": {
+    "@slidev/cli": "^52.18.1",
+    "@slidev/theme-default": "latest"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "nub",
+      "version": "^0.6.0",
+      "onFail": "warn"
+    }
+  },
+  "devDependencies": {
+    "playwright-chromium": "^1.62.1"
+  }
+}
