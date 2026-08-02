@@ -1,9 +1,5 @@
 # State of the Art
 
-<div class="text-lg opacity-85 mb-8">
-No open-source solution currently provides a complete Moodle-native integration with GitLab
-</div>
-
 <div class="rounded-2xl overflow-hidden border border-white/10">
 
 <style>
@@ -13,23 +9,17 @@ th, td {
 }
 </style>
 
-| Solution | Open Source | Moodle Native | GitLab Support |
-|---|---|---|---|
-| GitHub Classroom | ❌ | ❌ | ❌ |
-| Zohoflow | ❌ | ❌ | ✅ |
-| Classmoji | ✅ | ❌ | ❌ |
-| Canvas Gitlab Integration | ✅ | ❌ | ✅ |
-| **This Project** | ✅ | ✅ | ✅ |
+| | **Automation** | **Open source** | **LMS integration** | **VCS independent** |
+|-|-|-|-|-|
+| GitHub Classroom | ✅ | 🟡 | ❌ | ❌ |
+| Codio | ✅ | ❌ | 🟡 | ❌ |
+| Classroom 50 | ✅ | ✅ | ❌ | ❌ |
+| RepoBee | 🟡 | ✅ | ❌ | ✅ |
+| Classmoji | ✅ | ✅ | ✅ | 🟡 |
+| **This work** | ✅ | ✅ | ✅ | 🟡 |
 
 </div>
 
-<div class="mt-5 text-sm opacity-60">
+<div class="mt-5 text-lg opacity-85">
 The project aims to fill this gap with a native fully integrated and extensible open-source solution
 </div>
-
-<!--
-- existant solutions comparison
-  - what they enable
-  - what they are missing
-- how my solution positions itself
--->
