@@ -11,5 +11,5 @@ Jouve Léonard
 </div>
 
 <div class="mt-10 opacity-50">
-Improving assignment workflows in computer science education
+A unified workflow for programming assignments in computer science education
 </div>

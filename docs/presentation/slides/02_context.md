@@ -36,7 +36,6 @@ Current solutions are either **proprietary**, **GitHub-focused**, or **poorly in
 </div>
 
 <!--
-- VCS (GitLab), LMS (Moodle) platforms
 - initial problem
 - how the project went
 -->

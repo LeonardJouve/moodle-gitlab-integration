@@ -4,7 +4,10 @@ title: RAW
 author: Jouve Léonard — HEIG-VD
 transition: slide-left
 colorSchema: dark
-src: ./slides/01_title.md
+src: ./slides/00_title.md
+---
+---
+src: ./slides/01_platforms.md
 ---
 ---
 src: ./slides/02_context.md
@@ -31,7 +34,7 @@ src: ./slides/08_architecture.md
 src: ./slides/09_features.md
 ---
 ---
-src: ./slides/10_future_work.md
+src: ./slides/10_state_future_work.md
 ---
 ---
 src: ./slides/11_contributions_limitations.md
