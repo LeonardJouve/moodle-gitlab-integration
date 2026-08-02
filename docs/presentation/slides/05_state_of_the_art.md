@@ -19,7 +19,3 @@ th, td {
 | **This work** | ✅ | ✅ | ✅ | 🟡 |
 
 </div>
-
-<div class="mt-5 text-lg opacity-85">
-The project aims to fill this gap with a native fully integrated and extensible open-source solution
-</div>
