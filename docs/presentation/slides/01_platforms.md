@@ -3,15 +3,15 @@
 <div class="grid grid-cols-2 gap-8">
 
 <div class="p-5 rounded-2xl border border-purple-700 bg-purple-500/10">
-<h4>Learning Management Systems (LMS)</h4><br>
+<h4>Learning Management Systems (LMS)</h4>
 
 - Centralizes course organization and documents
 - Manages assignments, submissions, and grading
-- Widely used in higher education
+- Provides a structured environment for teaching and learning
 </div>
 
 <div class="p-5 rounded-2xl border border-purple-700 bg-purple-500/10">
-<h4>Version Control Systems (VCS)</h4><br>
+<h4>Version Control Systems (VCS)</h4>
 
 - Manages source code and development workflows
 - Enables collaboration through Git repositories
