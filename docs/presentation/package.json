@@ -15,5 +15,8 @@
       "version": "^0.6.0",
       "onFail": "warn"
     }
+  },
+  "devDependencies": {
+    "playwright-chromium": "^1.62.1"
   }
 }

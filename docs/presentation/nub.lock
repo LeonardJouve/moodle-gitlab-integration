@@ -10,10 +10,14 @@ importers:
     dependencies:
       '@slidev/cli':
         specifier: ^52.18.1
-        version: 52.18.1(@types/markdown-it@14.1.2)(markdown-it@14.3.0)(postcss@8.5.25)
+        version: 52.18.1(@types/markdown-it@14.1.2)(markdown-it@14.3.0)(playwright-chromium@1.62.1)(postcss@8.5.25)
       '@slidev/theme-default':
         specifier: latest
         version: 0.25.0
+    devDependencies:
+      playwright-chromium:
+        specifier: ^1.62.1
+        version: 1.62.1
 
 packages:
 
@@ -2659,6 +2663,16 @@ packages:
   plantuml-encoder@1.4.0:
     resolution: {integrity: sha512-sxMwpDw/ySY1WB2CE3+IdMuEcWibJ72DDOsXLkSmEaSzwEUaYBT6DWgOfBiHGCux4q433X6+OEFWjlVqp7gL6g==}
 
+  playwright-chromium@1.62.1:
+    resolution: {integrity: sha512-yRMzeViD44qD1ZVMNupp82NJQNjumZ02W5r7+DmtD5+7aP9+v66a0PsAk63ewpVDH1GxMf/J/mO+TS1sTaK29w==}
+    engines: {node: '>=20'}
+    hasBin: true
+
+  playwright-core@1.62.1:
+    resolution: {integrity: sha512-wPYSwEBJY9GHraISXqyqtx0na0LpO3XEX7jNDhntbex7tzUS7kLnZsOlFruFJB4Hi/rhDMjXGqHewDZ68nYZVw==}
+    engines: {node: '>=20'}
+    hasBin: true
+
   points-on-curve@0.2.0:
     resolution: {integrity: sha512-0mYKnYYe9ZcqMCWhUjItv/oHjvgEsfKvnUTg8sAtnHr3GVy7rGkXCb6d5cSyqrWqL4k81b9CPg3urd+T7aop3A==}
 
@@ -4109,7 +4123,7 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@slidev/cli@52.18.1(@types/markdown-it@14.1.2)(markdown-it@14.3.0)(postcss@8.5.25)':
+  '@slidev/cli@52.18.1(@types/markdown-it@14.1.2)(markdown-it@14.3.0)(playwright-chromium@1.62.1)(postcss@8.5.25)':
     dependencies:
       '@antfu/ni': 30.3.0
       '@antfu/utils': 9.3.0
@@ -4157,6 +4171,7 @@ snapshots:
       pdf-lib: 1.17.1
       picomatch: 4.0.5
       plantuml-encoder: 1.4.0
+      playwright-chromium: 1.62.1
       postcss-nested: 7.0.2(postcss@8.5.25)
       pptxgenjs: 4.0.1
       prompts: 2.4.2
@@ -6513,6 +6528,12 @@ snapshots:
       pathe: 2.0.3
 
   plantuml-encoder@1.4.0: {}
+
+  playwright-chromium@1.62.1:
+    dependencies:
+      playwright-core: 1.62.1
+
+  playwright-core@1.62.1: {}
 
   points-on-curve@0.2.0: {}
 
