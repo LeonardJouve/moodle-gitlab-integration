@@ -125,6 +125,7 @@
                 </div>
                 {{/has_test_result}}
 
+                {{#has_solution}}
                 <div class="d-flex align-items-center">
                     <span class="mb-0">{{#str}} template_student_group_solution, mod_gitlab {{/str}}</span>
                 </div>
@@ -140,6 +141,7 @@
                         {{#str}} template_student_group_open, mod_gitlab {{/str}}
                     </a>
                 </div>
+                {{/has_solution}}
                 
                 <div class="d-flex align-items-center">
                     <span class="mb-0">{{#str}} template_student_group_get_source, mod_gitlab {{/str}}</span>
