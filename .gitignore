@@ -11,3 +11,4 @@ inventory.ini
 all.yaml
 
 node_modules
+dist

@@ -8,7 +8,6 @@
 
 <div class="mt-5 p-5 rounded-2xl border border-purple-700 bg-purple-500/10">
 
-- No control over platform evolution
 - Risk of service discontinuation
 - Potential pricing changes
 - Limited adaptability to specific needs

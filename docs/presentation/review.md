@@ -25,6 +25,7 @@
 
 - renommer RAW
 - legende architecture
+- mention db dans schema architecture
 - ajout 2-3 slides démontrent la recherche derrière ma solution
 
 # demo
