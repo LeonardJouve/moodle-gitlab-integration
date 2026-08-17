@@ -16,6 +16,6 @@ th, td {
 | Classroom 50 | ✅ | ✅ | ❌ | ❌ |
 | RepoBee | 🟡 | ✅ | ❌ | ✅ |
 | Classmoji | ✅ | ✅ | ✅ | 🟡 |
-| **This work** | ✅ | ✅ | ✅ | 🟡 |
+| **RAW** | ✅ | ✅ | ✅ | 🟡 |
 
 </div>
