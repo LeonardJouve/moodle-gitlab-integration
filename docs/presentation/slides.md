@@ -23,9 +23,6 @@ src: ./slides/03_specifications.md
 src: ./slides/04_design_principles.md
 ---
 ---
-src: ./slides/05_risks.md
----
----
 src: ./slides/06_state_of_the_art.md
 ---
 ---

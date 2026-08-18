@@ -26,15 +26,15 @@
 
 <div class="grid grid-cols-[1.2fr_1fr] gap-5 mt-6">
   <div class="p-5 rounded-2xl border border-white/15 bg-white/5 font-mono text-sm leading-8 flex flex-col justify-center">
-    <div><span class="opacity-50">$client = new <span class="text-orange-400">GitLabClient</span>($token);</span></div>
-    <div><span class="opacity-50">$client-&gt;</span><span class="text-green-400">group()</span><span class="opacity-50">-&gt;create(...);</span></div>
-    <div><span class="opacity-50">$client-&gt;</span><span class="text-blue-400">project()</span><span class="opacity-50">-&gt;fork(...);</span></div>
+    <div><span class="opacity-50">$client = new <span class="text-green-400">GitLabClient</span>($token);</span></div>
+    <div><span class="opacity-50">$client-&gt;</span><span class="text-purple-400">group()</span><span class="opacity-50">-&gt;create(...);</span></div>
+    <div><span class="opacity-50">$client-&gt;</span><span class="text-purple-400">project()</span><span class="opacity-50">-&gt;fork(...);</span></div>
   </div>
   <div class="p-5 rounded-2xl border border-purple-700 bg-purple-500/10">
     <ul class="mt-2">
-      <li>Provides high-level operations instead of raw HTTP requests</li>
-      <li>Inspired by the GitLab PHP API Client library</li>
-      <li>Resource clients mirror GitLab's API structure</li>
+      <li>Abstracts HTTP requests behind a structured, intuitive interface</li>
+      <li>Client mirrors GitLab's API resources structure</li>
+      <li>Inspired by the <strong>GitLab PHP API Client</strong> library</li>
     </ul>
   </div>
 </div>

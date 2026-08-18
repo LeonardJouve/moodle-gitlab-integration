@@ -30,7 +30,7 @@
     <img src="../images/gitlab.png" width="50px" height="50px"/>
     <div>
         <b class="text-2xl">GitLab</b>
-        <div class="text-sm opacity-75">Self-hosting, data sovereignty, API and webhooks</div>
+        <div class="text-sm opacity-75">Self-hosting, data sovereignty</div>
     </div>
 </div>
 

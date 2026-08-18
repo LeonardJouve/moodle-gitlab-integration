@@ -8,7 +8,7 @@
 
 - Assess existing solutions and APIs
 - Design a modular architecture
-- Implement, deploy, and validate
+- Implement, deploy, test and validate
 
 </div>
 
@@ -28,7 +28,7 @@
 
 - Report and planning
 - Presentation and poster
-- Plugins, documentation, tests, and architecture
+- Plugins, documentation, tests, and infrastructure
 
 </div>
 

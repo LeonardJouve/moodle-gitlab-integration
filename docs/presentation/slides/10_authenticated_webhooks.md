@@ -24,11 +24,11 @@
   </div>
 </div>
 
-<div class="mt-5 p-4 rounded-2xl border border-white/15 bg-white/5 text-center font-mono">
+<!-- <div class="mt-5 p-4 rounded-2xl border border-white/15 bg-white/5 text-center font-mono">
   HMAC-SHA256(id.timestamp.body, module_secret)
-</div>
+</div> -->
 
-<div class="grid grid-cols-3 gap-5 mt-5">
+<div class="grid grid-cols-3 gap-5 mt-6">
   <div class="p-4 rounded-2xl border border-purple-700 bg-purple-500/10">
     Per-Activity Secret
     <div class="mt-2 text-sm opacity-80">Random 32-byte key, stored encrypted in database.</div>

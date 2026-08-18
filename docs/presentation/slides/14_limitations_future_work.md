@@ -8,7 +8,6 @@
 
 - Limited by GitLab's permission model
 - Administrator access for plugin installation
-- Dependence on a GitLab access token
 - Manual Moodle–GitLab identity mapping
 
 </div>
