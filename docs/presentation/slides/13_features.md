@@ -7,7 +7,6 @@
 - Automated repository provisioning
 - Repository access and permission management
 - Webhook synchronization
-- Protected files verification
 - Custom GitLab host support
 
 </div>
