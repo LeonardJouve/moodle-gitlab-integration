@@ -25,7 +25,7 @@
   - Retrieve submissions
 - Student interface
   - Create or join groups
-  - Access repository information
+  - Access repository
 
 </div>
 

@@ -9,6 +9,9 @@
     "@slidev/cli": "^52.18.1",
     "@slidev/theme-default": "latest"
   },
+  "overrides": {
+    "cytoscape": "3.33.4"
+  },
   "devEngines": {
     "packageManager": {
       "name": "nub",

@@ -1,7 +1,7 @@
 # Context
 
 <div class="text-lg opacity-85 max-w-4xl">
-Moodle and GitLab are both widely used in computer science education, but operate independently leading to fragmented workflows.
+LMS and VCS platforms are both essential in computer science education, but operate independently, leading to fragmented workflows.
 </div>
 
 <div class="grid grid-cols-2 gap-6 mt-10">
@@ -11,7 +11,7 @@ Moodle and GitLab are both widely used in computer science education, but operat
 ### Teachers
 
 - Create repositories manually
-- Configure GitLab permissions by hand
+- Configure repository permissions by hand
 - Manage multiple platforms
 
 </div>

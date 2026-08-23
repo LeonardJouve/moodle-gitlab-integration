@@ -6,11 +6,9 @@
 
 ### Limitations
 
-GitLab permission model limits control
-
-- Students closing their submission merge request
-- Removing GitLab resources labels
-- Students can modify the protected files CI job
+- Limited by GitLab's permission model
+- Administrator access for plugin installation
+- Manual Moodle–GitLab identity mapping
 
 </div>
 
@@ -21,6 +19,7 @@ GitLab permission model limits control
 - Improve error handling and user feedback
 - Process long-running operations asynchronously
 - Support additional Version Control Systems (VCS)
+- Validate with representative users
 
 </div>
 
