@@ -11,11 +11,11 @@ th, td {
 
 | | **Automation** | **Open source** | **LMS integration** | **VCS independent** |
 |-|-|-|-|-|
-| GitHub Classroom | ✅ | 🟡 | ❌ | ❌ |
-| Codio | ✅ | ❌ | 🟡 | ❌ |
-| Classroom 50 | ✅ | ✅ | ❌ | ❌ |
-| RepoBee | 🟡 | ✅ | ❌ | ✅ |
-| Classmoji | ✅ | ✅ | ✅ | 🟡 |
+| GitHub Classroom <small>(GitHub Inc.)</small> | ✅ | 🟡 | ❌ | ❌ |
+| Codio <small>(Codio Inc.)</small> | ✅ | ❌ | 🟡 | ❌ |
+| Classroom 50 <small>(Fifty Foundation)</small> | ✅ | ✅ | ❌ | ❌ |
+| RepoBee <small>(KTH Royal Institute of Technology)</small> | 🟡 | ✅ | ❌ | ✅ |
+| Classmoji <small>(Dartmouth College)</small> | ✅ | ✅ | ✅ | 🟡 |
 | **RAW** | ✅ | ✅ | ✅ | 🟡 |
 
 </div>
