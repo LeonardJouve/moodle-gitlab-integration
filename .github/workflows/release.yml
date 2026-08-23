@@ -1,0 +1,41 @@
+name: Release Moodle plugins
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to release
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+
+      - name: Package plugins
+        run: |
+          git archive --format=zip --prefix=gitlab/ --output="mod_gitlab-${RELEASE_TAG}.zip" HEAD:plugins/module
+          git archive --format=zip --prefix=gitlab/ --output="customfield_gitlab-${RELEASE_TAG}.zip" HEAD:plugins/customfield
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$RELEASE_TAG" \
+            "mod_gitlab-${RELEASE_TAG}.zip" \
+            "customfield_gitlab-${RELEASE_TAG}.zip" \
+            --verify-tag \
+            --generate-notes \
+            --title "$RELEASE_TAG"
