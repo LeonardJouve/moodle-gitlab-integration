@@ -16,6 +16,6 @@ th, td {
 | Classroom 50 <small>(Fifty Foundation)</small> | ✅ | ✅ | ❌ | ❌ |
 | RepoBee <small>(KTH Royal Institute of Technology)</small> | 🟡 | ✅ | ❌ | ✅ |
 | Classmoji <small>(Dartmouth College)</small> | ✅ | ✅ | ✅ | 🟡 |
-| **RAW** | ✅ | ✅ | ✅ | 🟡 |
+| **RAW (HEIG-VD)** | ✅ | ✅ | ✅ | 🟡 |
 
 </div>

@@ -28,6 +28,9 @@ src: ./slides/06_state_of_the_art.md
 ---
 src: ./slides/07_solution.md
 ---
+---
+src: ./slides/08_installation.md
+---
 <!-- ---
 src: ./slides/08_gitlab_client.md
 --- -->
