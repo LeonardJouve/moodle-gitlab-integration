@@ -29,12 +29,6 @@ src: ./slides/06_state_of_the_art.md
 src: ./slides/07_solution.md
 ---
 ---
-src: ./slides/08_installation.md
----
-<!-- ---
-src: ./slides/08_gitlab_client.md
---- -->
----
 src: ./slides/09_secure_token_storage.md
 ---
 ---
@@ -48,6 +42,9 @@ src: ./slides/12_features.md
 ---
 ---
 src: ./slides/13_features.md
+---
+---
+src: ./slides/08_installation.md
 ---
 ---
 src: ./slides/14_limitations_future_work.md
